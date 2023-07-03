@@ -6,6 +6,7 @@ using System.IO;
 using Veldrid;
 using System.Runtime.CompilerServices;
 using ImGuiNET;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RszTool
 {
@@ -67,25 +68,7 @@ namespace RszTool
                 ImGuiConfigFlags.DockingEnable;
             io.Fonts.Flags |= ImFontAtlasFlags.NoBakedLines;
 
-            CreateDeviceResources(gd, outputDescription);
-            SetPerFrameImGuiData(1f / 60f);
-            ImGui.NewFrame();
-            _frameBegun = true;
-        }
-
-        public void WindowResized(int width, int height)
-        {
-            _windowWidth = width;
-            _windowHeight = height;
-        }
-
-        public void DestroyDeviceObjects()
-        {
-            Dispose();
-        }
-
-        public void CreateDeviceResources(GraphicsDevice gd, OutputDescription outputDescription)
-        {
+#region CreateDeviceResources
             _gd = gd;
             ResourceFactory factory = gd.ResourceFactory;
             _vertexBuffer = factory.CreateBuffer(new BufferDescription(10000, BufferUsage.VertexBuffer | BufferUsage.Dynamic));
@@ -132,6 +115,22 @@ namespace RszTool
                 gd.PointSampler));
 
             _fontTextureResourceSet = factory.CreateResourceSet(new ResourceSetDescription(_textureLayout, _fontTextureView));
+#endregion
+
+            SetPerFrameImGuiData(1f / 60f);
+            ImGui.NewFrame();
+            _frameBegun = true;
+        }
+
+        public void WindowResized(int width, int height)
+        {
+            _windowWidth = width;
+            _windowHeight = height;
+        }
+
+        public void DestroyDeviceObjects()
+        {
+            Dispose();
         }
 
         /// <summary>
@@ -165,7 +164,7 @@ namespace RszTool
         /// </summary>
         public IntPtr GetOrCreateImGuiBinding(ResourceFactory factory, Texture texture)
         {
-            if (!_autoViewsByTexture.TryGetValue(texture, out TextureView textureView))
+            if (!_autoViewsByTexture.TryGetValue(texture, out TextureView? textureView))
             {
                 textureView = factory.CreateTextureView(texture);
                 _autoViewsByTexture.Add(texture, textureView);
@@ -234,8 +233,12 @@ namespace RszTool
         private byte[] GetEmbeddedResourceBytes(string resourceName)
         {
             Assembly assembly = typeof(ImGuiController).Assembly;
-            using (Stream s = assembly.GetManifestResourceStream(resourceName))
+            using (Stream? s = assembly.GetManifestResourceStream(resourceName))
             {
+                if (s == null)
+                {
+                    throw new ApplicationException($"assembly.GetManifestResourceStream(\"{resourceName}\") failed.");
+                }
                 byte[] ret = new byte[s.Length];
                 s.Read(ret, 0, (int)s.Length);
                 return ret;
@@ -245,6 +248,7 @@ namespace RszTool
         /// <summary>
         /// Recreates the device texture used to render text.
         /// </summary>
+        [MemberNotNull(nameof(_fontTexture), nameof(_fontTextureView))]
         public void RecreateFontDeviceTexture(GraphicsDevice gd)
         {
             ImGuiIOPtr io = ImGui.GetIO();

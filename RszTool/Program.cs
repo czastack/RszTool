@@ -13,10 +13,6 @@ namespace RszTool // Note: actual namespace depends on the project name.
 {
     internal class Program
     {
-        private static Sdl2Window _window;
-        private static GraphicsDevice _gd;
-        private static CommandList _cl;
-        private static ImGuiController _controller;
         // private static MemoryEditor _memoryEditor;
 
         // UI state
@@ -27,7 +23,6 @@ namespace RszTool // Note: actual namespace depends on the project name.
         private static bool _showImGuiDemoWindow = true;
         private static bool _showAnotherWindow = false;
         private static bool _showMemoryEditor = false;
-        private static byte[] _memoryEditorData;
         private static uint s_tab_bar_flags = (uint)ImGuiTabBarFlags.Reorderable;
         static bool[] s_opened = { true, true, true, true }; // Persistent user state
 
@@ -35,22 +30,26 @@ namespace RszTool // Note: actual namespace depends on the project name.
 
         static void Main(string[] args)
         {
+            Sdl2Window _window;
+            GraphicsDevice _gd;
+            CommandList _cl;
+            ImGuiController _controller;
+
             // Create window, GraphicsDevice, and all resources necessary for the demo.
             VeldridStartup.CreateWindowAndGraphicsDevice(
                 new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "ImGui.NET Sample Program"),
                 new GraphicsDeviceOptions(true, null, true, ResourceBindingModel.Improved, true, true),
                 out _window,
                 out _gd);
+            _cl = _gd.ResourceFactory.CreateCommandList();
+            _controller = new ImGuiController(_gd, _gd.MainSwapchain.Framebuffer.OutputDescription, _window.Width, _window.Height);
             _window.Resized += () =>
             {
                 _gd.MainSwapchain.Resize((uint)_window.Width, (uint)_window.Height);
                 _controller.WindowResized(_window.Width, _window.Height);
             };
-            _cl = _gd.ResourceFactory.CreateCommandList();
-            _controller = new ImGuiController(_gd, _gd.MainSwapchain.Framebuffer.OutputDescription, _window.Width, _window.Height);
             // _memoryEditor = new MemoryEditor();
             Random random = new Random();
-            _memoryEditorData = Enumerable.Range(0, 1024).Select(i => (byte)random.Next(255)).ToArray();
 
             var stopwatch = Stopwatch.StartNew();
             float deltaTime = 0f;
