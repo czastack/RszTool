@@ -62,6 +62,11 @@ namespace RszTool
                 ImGuiConfigFlags.DockingEnable;
             io.Fonts.Flags |= ImFontAtlasFlags.NoBakedLines;
 
+            if (OperatingSystem.IsWindows())
+            {
+                io.Fonts.AddFontFromFileTTF("c:\\Windows\\Fonts\\msyh.ttc", 30.0f, IntPtr.Zero, io.Fonts.GetGlyphRangesChineseSimplifiedCommon());
+            }
+
 #region CreateDeviceResources
             _gd = gd;
             ResourceFactory factory = gd.ResourceFactory;
