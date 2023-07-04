@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using uint64 = System.UInt64;
 using int64 = System.Int64;
+using System.Text;
 
 namespace RszTool
 {
@@ -41,12 +42,13 @@ namespace RszTool
         private string Local_Directory;
         private string JsonPath;
         private string extractedDir;
+        private string xFmt;
 
-        uint RSZOffset;
-        uint BHVTStart;
+        int RSZOffset;
+        int BHVTStart;
         int UVARStart;
-        uint lastVarEnd;
-        uint realStart = uint.MaxValue;
+        int lastVarEnd;
+        int realStart = -1;
         int level;
         int finished;
         int broken;
@@ -80,7 +82,7 @@ namespace RszTool
             if (ShowAlignment)
             {
                 int varLen = 0;
-                uint maxVars = ((FileSize() - RSZOffset) / 6);
+                long maxVars = ((FileSize() - RSZOffset) / 6);
                 if (maxVars > 1000000)
                     maxVars = 1000000;
                 uint[] offs = new uint[maxVars];
@@ -99,7 +101,7 @@ namespace RszTool
             Local_Directory = Local_Directory.Remove((int)findValue, Local_Directory.Length - (int)findValue) + "natives\\";
             string dir = Local_Directory.ToLower();
 
-            ushort maxLevels;
+            ushort maxLevels = 0;
             ulong[] RSZAddresses = new ulong[6000];
             h = FindFirst(5919570, 1, 0, 0, 0.0, 1, 0, 0, 24) + 4;
             while (h != 3)
@@ -108,13 +110,12 @@ namespace RszTool
                 maxLevels++;
                 h = FindFirst(5919570, 1, 0, 0, 0.0, 1, h, 0, 24) + 4;
             }
-            uint RSZFileMaxDivs = maxLevels / 100 + 1;
+            int RSZFileMaxDivs = maxLevels / 100 + 1;
             uint[] RSZFileWaypoints = new uint[RSZFileMaxDivs];
             uint RSZFileDivCounter;
 
             if (AutoDetectGame) {
-
-                if (RTVersion && (filename.Contains("scn.1[89]") || filename.Contains("pfb.16") || filename.Contains("motfsm2.30")
+                if (RTVersion && (Regex.IsMatch(filename, "scn.1[89]") || filename.Contains("pfb.16") || filename.Contains("motfsm2.30")
                     || filename.Contains("rcol.10") || filename.Contains("fsmv2.30") || filename.Contains("rcol.2")))
                 {
                     Console.WriteLine("Detected Pre-RayTracing file extension");
@@ -246,25 +247,25 @@ namespace RszTool
 
             if (firstGameObj != -1)
             {
-                RTVersion = (ReadUInt((ulong)(firstGameObj + 4)) == 216572408); //check if CRC version is new
+                RTVersion = (ReadUInt(firstGameObj + 4) == 216572408); //check if CRC version is new
             }
             else if (firstFolder != -1)
             {
-                RTVersion = (ReadUInt((ulong)(firstFolder + 4)) == 2121287109);
+                RTVersion = (ReadUInt(firstFolder + 4) == 2121287109);
             }
             else if (firstFSM != -1)
             {
-                RTVersion = (ReadUInt((ulong)(firstFSM + 4)) == 1025596507 && Regex.IsMatch(filename, "motfsm2\\.36$") == false);
+                RTVersion = (ReadUInt(firstFSM + 4) == 1025596507 && Regex.IsMatch(filename, "motfsm2\\.36$") == false);
             }
             else if (firstRCOL != -1)
             {
-                RTVersion = ((ReadUInt((ulong)(firstRCOL + 4)) == 374943849) && Regex.IsMatch(filename, "rcol\\.11$") == false);
+                RTVersion = ((ReadUInt(firstRCOL + 4) == 374943849) && Regex.IsMatch(filename, "rcol\\.11$") == false);
             }
         }
 
         void AutoDetectVersion() {
             string hashName;
-            uint checkedVersions, instanceCount, objectCount, hash, zz, varsChecked;
+            uint checkedVersions, instanceCount = 0, objectCount, hash, zz, varsChecked = 0;
             bool origRTVersion = RTVersion;
             int badCRCs;
             string origVersion = RSZVersion, origExtractedDir = (string)extractedDir, origXFmt = xFmt,
@@ -272,8 +273,11 @@ namespace RszTool
 
             FSeek(RSZOffset);
             if (FTell() + 12 < FileSize())
-                instanceCount = ReadUInt(FTell() + 12), objectCount = ReadUInt(FTell() + 8);
-            if (instanceCount) {
+            {
+                instanceCount = ReadUInt(FTell() + 12);
+                objectCount = ReadUInt(FTell() + 8);
+            }
+            if (instanceCount != 0) {
                 FSeek(ReadUInt(RSZOffset+24) + RSZOffset + 8);
                 //if (ReadUInt64() != 0) {
                 //    if (RSZVersion != "RE7")
@@ -338,23 +342,34 @@ namespace RszTool
             }
         }
 
-        private ulong FileSize()
+        private long FileSize()
         {
-            return (ulong)fileStream.Length;
+            return fileStream.Length;
         }
 
-        private void FSeek(uint64 tell)
+        private void FSeek(int64 tell)
         {
-            fileStream.Position = (long)tell;
+            fileStream.Position = tell;
         }
 
-        private float ReadFloat(uint64 tell)
+        private float ReadFloat(int64 tell)
         {
             FSeek(tell);
             return reader.ReadSingle();
         }
 
-        private uint ReadUInt(uint64 tell)
+        private int ReadInt(int64 tell)
+        {
+            FSeek(tell);
+            return reader.ReadInt32();
+        }
+
+        private int ReadInt()
+        {
+            return reader.ReadInt32();
+        }
+
+        private uint ReadUInt(int64 tell)
         {
             FSeek(tell);
             return reader.ReadUInt32();
@@ -370,7 +385,7 @@ namespace RszTool
             return reader.ReadByte();
         }
 
-        private byte ReadUByte(uint64 tell)
+        private byte ReadUByte(int64 tell)
         {
             FSeek(tell);
             return reader.ReadByte();
@@ -381,7 +396,7 @@ namespace RszTool
             return reader.ReadSByte();
         }
 
-        private sbyte ReadByte(uint64 tell)
+        private sbyte ReadByte(int64 tell)
         {
             FSeek(tell);
             return reader.ReadSByte();
@@ -392,7 +407,7 @@ namespace RszTool
             return reader.ReadUInt16();
         }
 
-        private ushort ReadUShort(uint64 tell)
+        private ushort ReadUShort(int64 tell)
         {
             FSeek(tell);
             return reader.ReadUInt16();
@@ -404,9 +419,93 @@ namespace RszTool
             fileStream.Read(buffer, 0, n);
         }
 
-        private ulong FTell()
+        public static string MarshalStringTrim(string text)
         {
-            return (ulong)fileStream.Position;
+            int n = text.IndexOf('\0');
+            if (n != -1)
+            {
+                text = text.Substring(0, n);
+            }
+            return text;
+        }
+
+        private string ReadWString(int64 pos, int maxLen=-1)
+        {
+            FSeek(pos);
+            string result = "";
+            Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
+            if (maxLen != -1)
+            {
+                byte[] buffer = new byte[maxLen * 2];
+                int readCount = fileStream.Read(buffer);
+                if (readCount != 0)
+                {
+                    int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
+                    result = System.Text.Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount);
+                }
+            }
+            else
+            {
+                StringBuilder sb = new();
+                byte[] buffer = new byte[256];
+                do
+                {
+                    int readCount = fileStream.Read(buffer);
+                    if (readCount != 0)
+                    {
+                        int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
+                        sb.Append(System.Text.Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount));
+                        if (n != -1) break;
+                    }
+                    if (readCount != buffer.Length)
+                    {
+                        break;
+                    }
+                } while (true);
+                result = sb.ToString();
+            }
+            return result;
+        }
+
+        private int ReadWStringLength(int64 pos, int maxLen=-1)
+        {
+            FSeek(pos);
+            int result = 0;
+            Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
+            if (maxLen != -1)
+            {
+                byte[] buffer = new byte[maxLen * 2];
+                int readCount = fileStream.Read(buffer);
+                if (readCount != 0)
+                {
+                    int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
+                    result = (n != -1 ? n : readCount) / 2;
+                }
+            }
+            else
+            {
+                byte[] buffer = new byte[256];
+                do
+                {
+                    int readCount = fileStream.Read(buffer);
+                    if (readCount != 0)
+                    {
+                        int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
+                        result += (n != -1 ? n : readCount) / 2;
+                        if (n != -1) break;
+                    }
+                    if (readCount != buffer.Length)
+                    {
+                        break;
+                    }
+                } while (true);
+            }
+            return result;
+        }
+
+        private long FTell()
+        {
+            return fileStream.Position;
         }
 
         private void FSkip(long skip)
@@ -414,7 +513,7 @@ namespace RszTool
             fileStream.Seek(skip, SeekOrigin.Current);
         }
 
-        bool detectedColorVector(uint64 tell)
+        bool detectedColorVector(int64 tell)
         {
             if (tell + 16 <= FileSize())
             {
@@ -424,7 +523,7 @@ namespace RszTool
             return false;
         }
 
-        float readColorFloat(uint64 tell)
+        float readColorFloat(int64 tell)
         {
             float colorFlt = ReadFloat(tell);
             if (colorFlt <= 1)
@@ -436,49 +535,239 @@ namespace RszTool
             return colorFlt;
         }
 
-        bool detectedFloat(uint64 offset)
+        bool detectedFloat(int64 offset)
         {
             if (offset + 4 <= FileSize())
             {
                 float flt = ReadFloat(offset);
                 if (BHVTStart != -1)
-                    return (ReadUByte(offset + 3) < 255 && (Abs(flt) > 0.000001 && Abs(flt) < 100000) || ReadInt(offset) == 0);
-                else return (ReadUByte(offset + 3) < 255 && (Abs(flt) > 0.0000001 && Abs(flt) < 10000000) || ReadInt(offset) == 0);
+                    return (ReadUByte(offset + 3) < 255 && (Math.Abs(flt) > 0.000001 && Math.Abs(flt) < 100000) || ReadInt(offset) == 0);
+                else return (ReadUByte(offset + 3) < 255 && (Math.Abs(flt) > 0.0000001 && Math.Abs(flt) < 10000000) || ReadInt(offset) == 0);
             }
             return false;
         }
 
-        bool detectedStringSm(uint64 offset)
+        bool detectedStringSm(int64 offset)
         {
-            if (offset + 4 <= FileSize())
-                if (ReadUShort(offset - 2) == 0)
-                    if (ReadByte(offset) != 0 || ReadUShort(offset) == 0)
-                        if (ReadByte(offset + 1) == 0 || sizeof(ReadWString(offset)) > 5)
-                            //if (sizeof(ReadWString(offset)) >= 2)
-                                return true;
+            if (offset + 4 <= FileSize() && ReadUShort(offset - 2) == 0 &&
+                (ReadByte(offset) != 0 || ReadUShort(offset) == 0) &&
+                (ReadByte(offset + 1) == 0 || ReadWStringLength(offset) > 5))
+                //if (sizeof(ReadWString(offset)) >= 2)
+                return true;
             return false;
         }
 
-        bool detectedString(uint64 offset)
+        bool detectedString(int64 offset)
         {
-            if (offset + 6 <= FileSize())
-                if (ReadByte(offset) != 0 && ReadByte(offset + 1) == 0)
-                    if (ReadByte(offset + 2) != 0 && ReadByte(offset + 3) == 0)
-                        if (ReadByte(offset + 4) != 0) // && ReadByte(offset + 5) == 0
-                            return true;
+            if (offset + 6 <= FileSize() && ReadByte(offset) != 0 && ReadByte(offset + 1) == 0 &&
+                ReadByte(offset + 2) != 0 && ReadByte(offset + 3) == 0 && ReadByte(offset + 4) != 0)
+                return true;
             return false;
         }
 
-        bool detectedNode(uint tell)
+        bool detectedNode(int64 tell)
         {
-            if (tell + 12 < FileSize())
-                if (ReadInt(tell - 4) == 0)
-                    if (ReadInt(tell) != -1)
-                        if (detectedHash(tell))
-                            if (ReadInt(tell + 8) != 0)
-                                if (detectedStringSm(startof(Header.BHVT.mNamePool) + 4 + (ReadUInt(tell + 8) * 2)))
-                                    return true;
+            if (tell + 12 < FileSize() && ReadInt(tell - 4) == 0 && ReadInt(tell) != -1 &&
+                detectedHash(tell) && ReadInt(tell + 8) != 0 &&
+                detectedStringSm(startof(Header.BHVT.mNamePool) + 4 + (ReadUInt(tell + 8) * 2)))
+                return true;
             return false;
+        }
+
+        bool detectedBools(int64 tell) {
+            uint nonBoolTotal = 0;
+            for (int o=0; o<4; o++)
+                if (ReadUByte(tell + o) > 1)
+                    nonBoolTotal++;
+            if (nonBoolTotal == 0)
+                return true;
+            return false;
+        }
+
+        bool detectedHash(int64 tell) {
+            int tst = ReadInt(tell);
+            if (tst == -1 || tst == 0)
+                return false;
+            int nonHashTotal = 0;
+            for (int o=0; o<4; o++)
+                if (ReadUByte(tell + o) == 0)
+                    nonHashTotal++;
+            if (nonHashTotal <= 1)
+                return true;
+            return false;
+        }
+
+        ulong getAlignedOffset(ulong tell, uint alignment) {
+            ulong offset = tell;
+            switch (alignment) {
+                case 2:  offset = tell + (tell % 2); break;  // 2-byte
+                case 4:  offset = (tell + 3) & 0xFFFFFFFFFFFFFFFC; break;  // 4-byte
+                case 8:  offset = (tell + 7) & 0xFFFFFFFFFFFFFFF8; break;  // 8-byte
+                case 16: offset = (tell + 15) & 0xFFFFFFFFFFFFFFF0; break; // 16-byte
+                default: break;
+            }
+            return offset;
+        }
+    }
+
+    enum BHVTlvl {
+        id_All = -1,
+        id_Actions = 0,
+        id_Selectors = 1,
+        id_SelectorCallers = 2,
+        id_Conditions = 3,
+        id_TransitionEvents = 4,
+        id_ExpressionTreeConditions = 5,
+        id_StaticActions = 6,
+        id_StaticSelectorCallers = 7,
+        id_StaticConditions = 8,
+        id_StaticTransitionEvents = 9,
+        id_StaticExpressionTreeConditions = 10,
+        id_Transition = 11,
+        id_Paths = 12,
+        id_Tags = 13,
+        id_NameHash = 14
+    }
+
+    enum TypeIDs : uint {
+        ukn_error = 0,
+        ukn_type,
+        not_init,
+        class_not_found,
+        out_of_range,
+        Undefined_tid,
+        Object_tid,
+        Action_tid,
+        Struct_tid,
+        NativeObject_tid,
+        Resource_tid,
+        UserData_tid,
+        Bool_tid,
+        C8_tid,
+        C16_tid,
+        S8_tid,
+        U8_tid,
+        S16_tid,
+        U16_tid,
+        S32_tid,
+        U32_tid,
+        S64_tid,
+        U64_tid,
+        F32_tid,
+        F64_tid,
+        String_tid,
+        MBString_tid,
+        Enum_tid,
+        Uint2_tid,
+        Uint3_tid,
+        Uint4_tid,
+        Int2_tid,
+        Int3_tid,
+        Int4_tid,
+        Float2_tid,
+        Float3_tid,
+        Float4_tid,
+        Float3x3_tid,
+        Float3x4_tid,
+        Float4x3_tid,
+        Float4x4_tid,
+        Half2_tid,
+        Half4_tid,
+        Mat3_tid,
+        Mat4_tid,
+        Vec2_tid,
+        Vec3_tid,
+        Vec4_tid,
+        VecU4_tid,
+        Quaternion_tid,
+        Guid_tid,
+        Color_tid,
+        DateTime_tid,
+        AABB_tid,
+        Capsule_tid,
+        TaperedCapsule_tid,
+        Cone_tid,
+        Line_tid,
+        LineSegment_tid,
+        OBB_tid,
+        Plane_tid,
+        PlaneXZ_tid,
+        Point_tid,
+        Range_tid,
+        RangeI_tid,
+        Ray_tid,
+        RayY_tid,
+        Segment_tid,
+        Size_tid,
+        Sphere_tid,
+        Triangle_tid,
+        Cylinder_tid,
+        Ellipsoid_tid,
+        Area_tid,
+        Torus_tid,
+        Rect_tid,
+        Rect3D_tid,
+        Frustum_tid,
+        KeyFrame_tid,
+        Uri_tid,
+        GameObjectRef_tid,
+        RuntimeType_tid,
+        Sfix_tid,
+        Sfix2_tid,
+        Sfix3_tid,
+        Sfix4_tid,
+        Position_tid,
+        F16_tid,
+        End_tid,
+        Data_tid
+    };
+
+    public struct BHVTCount
+    {
+        private byte listSize;
+        public int Count;
+
+        public BHVTCount(int listSize)
+        {
+            this.listSize = (byte)listSize;
+            Count = 0;
+        }
+
+        public string ReadBHVTCount(BHVTCount c)
+        {
+            return c.Count.ToString();
+        }
+
+        public void WriteBHVTCount(ref BHVTCount c, string s)
+        {
+            int newCount = int.Parse(s);
+            if (newCount - c.Count > 0)
+            {
+                int k, j, padding;
+                int addedSz = ((newCount - c.Count) * 4 * c.listSize);
+
+                if (((newCount - c.Count) * 4 * c.listSize) % 16 != 0)
+                {
+                    padding = 0;
+                    while ((RSZOffset + addedSz + padding) % 16 != RSZOffset % 16)
+                        padding++;
+                }
+
+                FixBHVTOffsets(addedSz + padding, RSZOffset);
+                int extraStateBytes = 0;
+                if (c.listSize == 6 && c.Count > 0) //states
+                    extraStateBytes = ((startof(parentof(c)) + sizeof(parentof(c)) - (startof(c) + 4)) - (c.Count * 4 * c.listSize));
+
+                for (k = c.listSize; k > 0; k--)
+                {
+                    InsertBytes(startof(c) + 4 + ((c.Count * 4) * k) + (extraStateBytes), 4 * (newCount - c.Count), 0);
+                    Console.WriteLine("inserting {0} bytes at {1} for +{2} new items", 4 * (newCount - c.Count), startof(c) + 4 + (c.Count * 4) * k, newCount - c.Count);
+                }
+                if (padding > 0)
+                    InsertBytes(RSZOffset + addedSz, padding, 0);
+                ShowRefreshMessage("");
+            }
+            c.Count = newCount;
         }
     }
 }
