@@ -43,6 +43,7 @@ namespace RszTool
         private FileStream fileStream;
         private BinaryReader reader;
         private BinaryWriter writer;
+        private RszParser rszParser;
         private string filename;
         private string Local_Directory;
         private string JsonPath;
@@ -61,23 +62,29 @@ namespace RszTool
         byte isAIFile;
         byte[] magic = new byte[4];
         ushort headerStringsCount;
-        uint[] headerStrings;
+        Dictionary<int, uint> headerStrings;
         uint[] dummyArr = new uint[1];
-        byte[] PasteBuffer = new byte[100000]; // 100KB buffer
+        // byte[] PasteBuffer = new byte[100000]; // 100KB buffer
+        Dictionary<int, long> RSZAddresses;
+        Dictionary<int, uint> RSZFileWaypoints;
+        Dictionary<int, uint>? offs;
+        Dictionary<int, uint>? aligns;
+        Dictionary<int, uint>? sizes;
+        uint RSZFileDivCounter;
 
-        public void Init(string filename)
+        public RszFileReader(string filename)
         {
             // variables:
             int i, j, k, m, n, o, h, temp;
             int matchSize, lastGameObject;
-            int[] uniqueHashes = new int[5000];
             int hashesLen;
             int noRetry;
 
             RSZOffset = FindFirst("RSZ", 1, 0, 0, 0.0, 1, 0, 0, 24);
             BHVTStart = FindFirst("BHVT", 1, 0, 0, 0.0, 1, 0, 0, 24);
             UVARStart = (int)BHVTStart;
-            headerStrings = new uint[1 + RSZOffset / 64];
+            // local uint headerStrings[1 + RSZOffset / 64] <hidden=true>;
+            headerStrings = new();
 
             if (detectedHash(4) && !detectedHash(0))
                 ReadBytes(magic, 4, 4);
@@ -86,17 +93,17 @@ namespace RszTool
 
             if (ShowAlignment)
             {
-                int varLen = 0;
+                // int varLen = 0;
                 long maxVars = ((FileSize() - RSZOffset) / 6);
                 if (maxVars > 1000000)
                     maxVars = 1000000;
-                uint[] offs = new uint[maxVars];
-                uint[] aligns = new uint[maxVars];
-                uint[] sizes = new uint[maxVars];
+                offs = new();
+                aligns = new();
+                sizes = new();
             }
             else
             {
-                int varLen = 0;
+                // int varLen = 0;
             }
 
             this.filename = filename;
@@ -107,7 +114,7 @@ namespace RszTool
             string dir = Local_Directory.ToLower();
 
             ushort maxLevels = 0;
-            ulong[] RSZAddresses = new ulong[6000];
+            RSZAddresses = new();
             h = FindFirst(5919570, 1, 0, 0, 0.0, 1, 0, 0, 24) + 4;
             while (h != 3)
             {
@@ -116,8 +123,8 @@ namespace RszTool
                 h = FindFirst(5919570, 1, 0, 0, 0.0, 1, h, 0, 24) + 4;
             }
             int RSZFileMaxDivs = maxLevels / 100 + 1;
-            uint[] RSZFileWaypoints = new uint[RSZFileMaxDivs];
-            uint RSZFileDivCounter;
+            // local uint RSZFileWaypoints[RSZFileMaxDivs] <hidden=true>;
+            RSZFileWaypoints = new();
 
             if (AutoDetectGame) {
                 if (RTVersion && (Regex.IsMatch(filename, "scn.1[89]") || filename.Contains("pfb.16") || filename.Contains("motfsm2.30")
@@ -266,6 +273,12 @@ namespace RszTool
             {
                 RTVersion = ((ReadUInt(firstRCOL + 4) == 374943849) && Regex.IsMatch(filename, "rcol\\.11$") == false);
             }
+        }
+
+        // Start of reading File
+        public void StartRead()
+        {
+
         }
 
         void AutoDetectVersion() {
@@ -741,16 +754,25 @@ namespace RszTool
             }
         }
 
-        bool isValidString(long tell) {
-            int alignedOffs = getAlignedOffset(tell, 4);
+        string ReadHashName(uint32 hash) {
+            return rszParser.GetRSZClassName(hash);
+        }
+
+        string ReadHASHWithName(uint32 hash) {
+            return $"{hash:X} -- {rszParser.GetRSZClassName(hash)}";
+        }
+
+        bool isValidString(long tell)
+        {
+            long alignedOffs = getAlignedOffset(tell, 4);
             if (alignedOffs + 4 >= FileSize())
                 return false;
             uint size = ReadUInt(alignedOffs);
-            if (ReadWStringLength(alignedOffs+4) == 0)
+            if (ReadWStringLength(alignedOffs + 4) == 0)
                 return false;
-            string text = ReadWString(alignedOffs+4);
-            return (alignedOffs+8 <= FileSize() && ReadUInt64(alignedOffs) == 1 || size == 0 ||
-                (size == text.Length / 2 && ReadUByte(alignedOffs+7) != 0) );
+            string text = ReadWString(alignedOffs + 4);
+            return (alignedOffs + 8 <= FileSize() && ReadUInt64(alignedOffs) == 1 || size == 0 ||
+                (size == text.Length / 2 && ReadUByte(alignedOffs + 7) != 0));
         }
 
         void redetectStringBehind() {
