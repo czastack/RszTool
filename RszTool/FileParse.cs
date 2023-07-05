@@ -6,6 +6,7 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+// #if false
 namespace RszTool
 {
     public class RszFileReader
@@ -1331,129 +1332,6 @@ namespace RszTool
         }
     }
 
-    enum BHVTlvl {
-        id_All = -1,
-        id_Actions = 0,
-        id_Selectors = 1,
-        id_SelectorCallers = 2,
-        id_Conditions = 3,
-        id_TransitionEvents = 4,
-        id_ExpressionTreeConditions = 5,
-        id_StaticActions = 6,
-        id_StaticSelectorCallers = 7,
-        id_StaticConditions = 8,
-        id_StaticTransitionEvents = 9,
-        id_StaticExpressionTreeConditions = 10,
-        id_Transition = 11,
-        id_Paths = 12,
-        id_Tags = 13,
-        id_NameHash = 14
-    }
-
-    enum TypeIDs : uint {
-        ukn_error = 0,
-        ukn_type,
-        not_init,
-        class_not_found,
-        out_of_range,
-        Undefined_tid,
-        Object_tid,
-        Action_tid,
-        Struct_tid,
-        NativeObject_tid,
-        Resource_tid,
-        UserData_tid,
-        Bool_tid,
-        C8_tid,
-        C16_tid,
-        S8_tid,
-        U8_tid,
-        S16_tid,
-        U16_tid,
-        S32_tid,
-        U32_tid,
-        S64_tid,
-        U64_tid,
-        F32_tid,
-        F64_tid,
-        String_tid,
-        MBString_tid,
-        Enum_tid,
-        Uint2_tid,
-        Uint3_tid,
-        Uint4_tid,
-        Int2_tid,
-        Int3_tid,
-        Int4_tid,
-        Float2_tid,
-        Float3_tid,
-        Float4_tid,
-        Float3x3_tid,
-        Float3x4_tid,
-        Float4x3_tid,
-        Float4x4_tid,
-        Half2_tid,
-        Half4_tid,
-        Mat3_tid,
-        Mat4_tid,
-        Vec2_tid,
-        Vec3_tid,
-        Vec4_tid,
-        VecU4_tid,
-        Quaternion_tid,
-        Guid_tid,
-        Color_tid,
-        DateTime_tid,
-        AABB_tid,
-        Capsule_tid,
-        TaperedCapsule_tid,
-        Cone_tid,
-        Line_tid,
-        LineSegment_tid,
-        OBB_tid,
-        Plane_tid,
-        PlaneXZ_tid,
-        Point_tid,
-        Range_tid,
-        RangeI_tid,
-        Ray_tid,
-        RayY_tid,
-        Segment_tid,
-        Size_tid,
-        Sphere_tid,
-        Triangle_tid,
-        Cylinder_tid,
-        Ellipsoid_tid,
-        Area_tid,
-        Torus_tid,
-        Rect_tid,
-        Rect3D_tid,
-        Frustum_tid,
-        KeyFrame_tid,
-        Uri_tid,
-        GameObjectRef_tid,
-        RuntimeType_tid,
-        Sfix_tid,
-        Sfix2_tid,
-        Sfix3_tid,
-        Sfix4_tid,
-        Position_tid,
-        F16_tid,
-        End_tid,
-        Data_tid
-    };
-
-    enum MAGIC {
-        id_SCN = 5129043,
-        id_PFB = 4343376,
-        id_USR = 5395285,
-        id_RCOL = 1280262994,
-        id_mfs2 = 846423661,
-        id_BHVT = 1414940738,
-        id_uvar = 1918989941,
-        id_fchr = 1919443814,
-    }
-
     public struct BHVTCount
     {
         private byte listSize;
@@ -1572,3 +1450,4 @@ namespace RszTool
         public uint timeScale;
     }
 }
+// #endif

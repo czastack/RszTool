@@ -6,9 +6,16 @@ namespace RszTool
     {
         static void Main(string[] args)
         {
-            ImGuiSetup setup = new();
-            setup.SubmitUI += SubmitUI;
-            setup.Loop();
+            // ImGuiSetup setup = new();
+            // setup.SubmitUI += SubmitUI;
+            // setup.Loop();
+
+            TimerRecord record = new();
+            record.Start("RszParser");
+            RszParser parser = new("rszre4.json");
+            record.End();
+            Console.WriteLine(parser.GetRSZClassName(0x1001342f));
+            Console.WriteLine(parser.GetFieldName(0x1004b6b4, 1));
         }
 
         private static void SubmitUI()
