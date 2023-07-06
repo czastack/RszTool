@@ -17,9 +17,16 @@ namespace RszTool
         public DataField AddField<T>(string name, int size = 0, int offset = 0, int align = 0)
         {
             var type = typeof(T);
-            if (type.IsValueType && size == 0)
+            if (size == 0)
             {
-                size = Unsafe.SizeOf<T>();
+                if (type.IsValueType)
+                {
+                    size = Unsafe.SizeOf<T>();
+                }
+                else
+                {
+                    throw new System.ArgumentException("Type is not value type, cannot get size");
+                }
             }
             if (offset == 0)
             {

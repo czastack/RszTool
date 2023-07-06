@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 // #if false
 namespace RszTool
 {
-    public class RszFileReader
+    public class RszFileHandler
     {
         // Game Extracted Path
         const string DMC5Path = "F:\\modmanager\\REtool\\DMC_chunk_000\\natives\\x64\\";
@@ -72,7 +72,10 @@ namespace RszTool
         Dictionary<int, uint>? sizes;
         uint RSZFileDivCounter;
 
-        public RszFileReader(string filename)
+        public BinaryReader Reader => reader;
+        public BinaryWriter Writer => writer;
+
+        public RszFileHandler(string filename)
         {
             // variables:
             int i, j, k, m, n, o, h, temp;
@@ -1359,7 +1362,7 @@ namespace RszTool
         private byte listSize;
         public int Count;
 
-        public BHVTCount(int listSize, RszFileReader reader)
+        public BHVTCount(int listSize, RszFileHandler reader)
         {
             this.listSize = (byte)listSize;
             Count = reader.ReadInt();
@@ -1370,7 +1373,7 @@ namespace RszTool
             return c.Count.ToString();
         }
 
-        public void WriteBHVTCount(ref BHVTCount c, string s, RszFileReader reader)
+        public void WriteBHVTCount(ref BHVTCount c, string s, RszFileHandler reader)
         {
             int newCount = int.Parse(s);
             if (newCount - c.Count > 0)
@@ -1431,8 +1434,8 @@ namespace RszTool
         public static void WriteStringToHash(ref HashGenerator h, string s)
         {
             h.String_Form = s;
-            h.Hash_Form = (int)RszFileReader.hash_wide(h.String_Form);
-            h.Hash_Form_unsigned = RszFileReader.hash_wide(h.String_Form);
+            h.Hash_Form = (int)RszFileHandler.hash_wide(h.String_Form);
+            h.Hash_Form_unsigned = RszFileHandler.hash_wide(h.String_Form);
         }
 
         public static string readRCOLWarning(ref uint u)
