@@ -6,10 +6,10 @@ namespace RszTool
     public class DataClass
     {
         public string Name { get; set; } = "";
-        public List<DataField> Fields { get; } = new();
+        public List<BaseDataField> Fields { get; } = new();
         public int Size { get; set; }
 
-        public DataField? GetFiled(string name)
+        public BaseDataField? GetFiled(string name)
         {
             return Fields.FirstOrDefault(f => f.Name == name);
         }
@@ -44,9 +44,30 @@ namespace RszTool
             Fields.Add(field);
             return field;
         }
+
+        public ArrayField AddArrayField(string name, BaseDataField baseField, int offset = 0, int length = 0)
+        {
+            var field = new ArrayField(name, offset, length, baseField);
+            Fields.Add(field);
+            return field;
+        }
+
+        public ClassField AddClassField(string name, DataClass @class, int offset = 0)
+        {
+            var field = new ClassField(name, offset, @class);
+            Fields.Add(field);
+            return field;
+        }
     }
 
-    public class DataObject
+    public interface IDataContainer
+    {
+        long Start { get; }
+        string Name { get; }
+        RszFileHandler? Handler { get; }
+    }
+
+    public class DataObject : IDataContainer
     {
         public DataObject(string? name, long start, DataClass? cls)
         {
@@ -58,7 +79,7 @@ namespace RszTool
         public string Name { get; set; }
         public long Start { get; set; }
         public DataClass Class { get; set; }
-        public List<DataField> Fields => Class.Fields;
+        public List<BaseDataField> Fields => Class.Fields;
         public WeakReference<RszFileHandler>? HandlerRef { get; set; }
 
         public DataField AddField<T>(string name, T value, int size = 0, int offset = 0, int align = 0)
@@ -69,25 +90,50 @@ namespace RszTool
         public RszFileHandler? Handler => HandlerRef?.GetTarget();
     }
 
-    public class DataField
+    public class DataArray : IDataContainer
     {
-        public DataField(string name, int size, int offset, Type type)
+        public string Name { get; set; } = "";
+        public long Start { get; set; }
+        public WeakReference<RszFileHandler>? HandlerRef { get; set; }
+
+        public RszFileHandler? Handler => HandlerRef?.GetTarget();
+    }
+
+    public enum DataType
+    {
+        Native,
+        Object,
+        Array,
+    }
+
+    public class BaseDataField
+    {
+        public BaseDataField(string name, int size, int offset)
         {
             Name = name;
             Size = size;
             Offset = offset;
-            Type = type;
         }
 
         public string Name { get; set; } = "";
         public int Size { get; set; }
         public int Offset { get; set; }
-        public Type Type { get; set; }
 
         public long GetAddress(DataObject instance)
         {
             return instance.Start + Offset;
         }
+    }
+
+    public class DataField : BaseDataField
+    {
+        public DataField(string name, int size, int offset, Type type)
+            : base(name, size, offset)
+        {
+            Type = type;
+        }
+
+        public Type Type { get; set; }
 
         public virtual object? ReadValue(DataObject instance)
         {
@@ -163,6 +209,30 @@ namespace RszTool
             }
             return false;
         }
+    }
+
+    public class ClassField : BaseDataField
+    {
+        public ClassField(string name, int offset, DataClass @class)
+            : base(name, @class.Size, offset)
+        {
+            Class = @class;
+        }
+
+        public DataClass? Class { get; set; }
+    }
+
+    public class ArrayField : BaseDataField
+    {
+        public ArrayField(string name, int offset, int length, BaseDataField field)
+            : base(name, field.Size * length, offset)
+        {
+            Length = length;
+            Field = field;
+        }
+
+        public int Length { get; set; }
+        public BaseDataField Field { get; set; }
     }
 
 
