@@ -61,6 +61,11 @@ namespace RszTool
 
     public class DataClass
     {
+        public DataClass(string name = "")
+        {
+            Name = name;
+        }
+
         public string Name { get; set; } = "";
         public List<DataField> Fields { get; } = new();
         public int Size { get; set; }
@@ -72,6 +77,10 @@ namespace RszTool
 
         public DataClass AddField(DataField field)
         {
+            if (field.Offset == 0)
+            {
+                field.Offset = Size;
+            }
             int size = field.Size;
             if (field.Offset + size >= Size)
             {
@@ -99,21 +108,13 @@ namespace RszTool
 
         public DataField AddArrayField(string name, DataType elementType, int length = 0, int offset = 0)
         {
-            if (offset == 0)
-            {
-                offset = Size;
-            }
             var field = new DataField(name, Fields.Count, offset, new ArrayType(elementType, length));
             AddField(field);
             return field;
         }
 
-        public DataField AddClassField(string name, DataClass @class, int offset = 0)
+        public DataField AddObjectField(string name, DataClass @class, int offset = 0)
         {
-            if (offset == 0)
-            {
-                offset = Size;
-            }
             var field = new DataField(name, Fields.Count, offset, new ObjectType(@class));
             AddField(field);
             return field;
@@ -124,7 +125,7 @@ namespace RszTool
     {
         long Start { get; }
         string Name { get; }
-        RszFileHandler? Handler { get; }
+        FileHandler? Handler { get; }
 
         object GetValue(int index);
         void SetValue(int index, object value);
@@ -312,7 +313,7 @@ namespace RszTool
         {
             Name = name ?? cls.Name;
             Start = start;
-            Class = cls ?? new DataClass();
+            Class = cls ?? new DataClass(Name);
             Datas = datas ?? new object[Class.Fields.Count];
         }
 
@@ -321,8 +322,8 @@ namespace RszTool
         public DataClass Class { get; set; }
         object[] Datas { get; set; }
         public List<DataField> Fields => Class.Fields;
-        public WeakReference<RszFileHandler>? HandlerRef { get; set; }
-        public RszFileHandler? Handler => HandlerRef?.GetTarget();
+        public WeakReference<FileHandler>? HandlerRef { get; set; }
+        public FileHandler? Handler => HandlerRef?.GetTarget();
 
         public int FieldIndex(string name)
         {
@@ -453,8 +454,8 @@ namespace RszTool
         public long Start { get; set; }
         public ArrayType ArrayType { get; set; }
         object[] Datas { get; set; }
-        public WeakReference<RszFileHandler>? HandlerRef { get; set; }
-        public RszFileHandler? Handler => HandlerRef?.GetTarget();
+        public WeakReference<FileHandler>? HandlerRef { get; set; }
+        public FileHandler? Handler => HandlerRef?.GetTarget();
 
         private DataField tempField;
 

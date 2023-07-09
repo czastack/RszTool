@@ -327,7 +327,7 @@ namespace RszTool
                                 default: break;
                             }
 
-                            JsonPath = Lower(Path.GetDirectoryName(filename) + "rsz" + RSZVersion);
+                            JsonPath = (Path.GetDirectoryName(filename) + "rsz" + RSZVersion).ToLower();
                             if (RTVersion && (RSZVersion == "RE2" || RSZVersion == "RE3" || RSZVersion == "RE7"))
                                 JsonPath = JsonPath + "rt";
                             JsonPath = JsonPath + ".json";
@@ -340,7 +340,7 @@ namespace RszTool
                             RSZVersion = origVersion; extractedDir = origExtractedDir; xFmt = origXFmt;
                             Local_Directory = origLocal_Directory; JsonPath = origJsonPath; RTVersion = origRTVersion;
                         } else {
-                            Printf("RSZVersion auto detected to %s\n", RSZVersion);
+                            Console.WriteLine($"RSZVersion auto detected to {RSZVersion}");
                             break;
                         }
                     } //else
@@ -1350,7 +1350,7 @@ namespace RszTool
 
             if (rs.structType == 0 && ReadUInt(startof(RSZ)) != 5919570)
             {
-                Printf("RSZMagic not found at RSZ[{0}] in BHVT header\n", getLevelRSZ(startof(RSZ)));
+                Console.WriteLine($"RSZMagic not found at RSZ[{getLevelRSZ(startof(RSZ))}] in BHVT header");
             }
 
             FSeek(startof(rs.offset) + 8);

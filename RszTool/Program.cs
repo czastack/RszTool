@@ -10,6 +10,18 @@ namespace RszTool
             // setup.SubmitUI += SubmitUI;
             // setup.Loop();
 
+            TestModel();
+        }
+
+        private static void TestModel()
+        {
+            string rszPath = @"C:\Users\An\Documents\Hack\Re\re4\RETool\re_chunk_000\natives\STM\_Chainsaw\Environment\Scene\Gimmick\st40\gimmick_st40_200_p100.scn.20";
+            FileHandler handler = new(rszPath);
+            DataClass cls = new();
+        }
+
+        private static void TestRszParser()
+        {
             TimerRecord record = new();
             record.Start("RszParser");
             RszParser parser = new("rszre4.json");
