@@ -31,6 +31,11 @@ namespace RszTool
                 return Marshal.SizeOf(Type);
             }
         }
+
+        public override string ToString()
+        {
+            return Type.ToString();
+        }
     }
 
     public class ObjectType : DataType
@@ -43,6 +48,11 @@ namespace RszTool
         public DataClass Class { get; set; }
 
         public override int Size => Class.Size;
+
+        public override string ToString()
+        {
+            return Class.Name;
+        }
     }
 
     public class ArrayType : DataType
@@ -57,6 +67,11 @@ namespace RszTool
         public DataType ElementType { get; set; }
 
         public override int Size => ElementType.Size * Length;
+
+        public override string ToString()
+        {
+            return $"{ElementType}[{Length}]";
+        }
     }
 
     public class DataClass
@@ -90,7 +105,7 @@ namespace RszTool
             return this;
         }
 
-        public DataField AddField<T>(string name, int offset = 0, int align = 0)
+        public DataClass AddField<T>(string name, int offset = 0, int align = 0)
         {
             var type = typeof(T);
             if (offset == 0)
@@ -103,21 +118,21 @@ namespace RszTool
             }
             var field = new DataField(name, Fields.Count, offset, new NativeType(type));
             AddField(field);
-            return field;
+            return this;
         }
 
-        public DataField AddArrayField(string name, DataType elementType, int length = 0, int offset = 0)
+        public DataClass AddArrayField(string name, DataType elementType, int length = 0, int offset = 0)
         {
             var field = new DataField(name, Fields.Count, offset, new ArrayType(elementType, length));
             AddField(field);
-            return field;
+            return this;
         }
 
-        public DataField AddObjectField(string name, DataClass @class, int offset = 0)
+        public DataClass AddObjectField(string name, DataClass @class, int offset = 0)
         {
             var field = new DataField(name, Fields.Count, offset, new ObjectType(@class));
             AddField(field);
-            return field;
+            return this;
         }
     }
 
@@ -208,7 +223,7 @@ namespace RszTool
                     var value = instance.GetValue(Index);
                     if (value == null)
                     {
-                        value = new DataObject(Name, address, objectType.Class);
+                        value = new DataObject(Name, address, objectType.Class, handler);
                     }
                     if (value is DataObject dataObject)
                     {
@@ -225,7 +240,7 @@ namespace RszTool
                     var value = instance.GetValue(Index);
                     if (value == null)
                     {
-                        value = new DataArray(Name, address, arrayType);
+                        value = new DataArray(Name, address, arrayType, handler);
                     }
                     if (value is DataArray dataArray)
                     {
@@ -235,7 +250,12 @@ namespace RszTool
                     {
                         throw new ApplicationException("value is not a DataArray");
                     }
+                    return value;
                 }
+            }
+            else
+            {
+                throw new ApplicationException("handler is null");
             }
             return null;
         }
@@ -303,18 +323,23 @@ namespace RszTool
                     return true;
                 }
             }
+            else
+            {
+                throw new ApplicationException("handler is null");
+            }
             return false;
         }
     }
 
     public class DataObject : IDataContainer
     {
-        public DataObject(string? name, long start, DataClass cls, object[]? datas = null)
+        public DataObject(string? name, long start, DataClass cls, FileHandler handler, object[]? datas = null)
         {
             Name = name ?? cls.Name;
             Start = start;
             Class = cls ?? new DataClass(Name);
             Datas = datas ?? new object[Class.Fields.Count];
+            HandlerRef = new WeakReference<FileHandler>(handler);
         }
 
         public string Name { get; set; }
@@ -440,13 +465,13 @@ namespace RszTool
 
     public class DataArray : IDataContainer
     {
-        public DataArray(string name, long start, ArrayType arrayType, object[]? datas = null)
+        public DataArray(string name, long start, ArrayType arrayType, FileHandler handler, object[]? datas = null)
         {
             Name = name;
             Start = start;
             ArrayType = arrayType;
             Datas = datas ?? new object[ArrayType.Length];
-
+            HandlerRef = new WeakReference<FileHandler>(handler);
             tempField = new(name, 0, 0, arrayType.ElementType);
         }
 

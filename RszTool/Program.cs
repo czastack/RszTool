@@ -15,9 +15,46 @@ namespace RszTool
 
         private static void TestModel()
         {
-            string rszPath = @"C:\Users\An\Documents\Hack\Re\re4\RETool\re_chunk_000\natives\STM\_Chainsaw\Environment\Scene\Gimmick\st40\gimmick_st40_200_p100.scn.20";
+            // string rszPath = @"/home/SENSETIME/chenzhenan/Downloads/gimmick_st66_105.scn.20";
+            string rszPath = "test.bin";
+            {
+                using FileStream file = File.OpenWrite(rszPath);
+                using BinaryWriter bw = new(file);
+                bw.Write(1);
+                bw.Write(1024);
+                bw.Write(10.0f);
+            }
             FileHandler handler = new(rszPath);
-            DataClass cls = new();
+            DataClass clsTestItem = new DataClass("TestItem")
+                .AddField<bool>("bool")
+                .AddField<int>("int", align: 4)
+                .AddField<float>("float");
+            DataClass clsTest = new DataClass("Test")
+                .AddArrayField("array", new ObjectType(clsTestItem), 1);
+            var obj = new DataObject("test", 0, clsTest, handler);
+            obj.ReadValues();
+            // foreach (DataField field in cls.Fields)
+            // {
+            //     Console.WriteLine($"{field.Type} {field.Name} {field.Index} {field.Offset}");
+            // }
+            PrintDatas(obj);
+        }
+
+        const string Indent = "    ";
+        private static void PrintDatas(IDataContainer container, int indent = 0)
+        {
+            foreach (var (field, value) in container.IterData())
+            {
+                for (int i = 0; i < indent; i++)
+                {
+                    Console.Write(Indent);
+                }
+                Console.WriteLine($"{field.Index} {field.Type} {field.Name} {field.Offset}, {value}");
+                if (value is IDataContainer chlid)
+                {
+                    PrintDatas(chlid, indent + 1);
+                }
+            }
         }
 
         private static void TestRszParser()
