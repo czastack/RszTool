@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using RszTool.Common;
+using ImGuiNET;
 
 namespace RszTool
 {

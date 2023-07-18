@@ -6,12 +6,24 @@ namespace RszTool
 {
     public class RszParser
     {
+        public static Dictionary<string, RszParser> instanceDict = new();
+
+        public static RszParser GetInstance(string jsonPath)
+        {
+            if (!instanceDict.TryGetValue(jsonPath, out var rszParser))
+            {
+                rszParser = new RszParser(jsonPath);
+                instanceDict[jsonPath] = rszParser;
+            }
+            return rszParser;
+        }
+
         private Dictionary<uint, RszClass> classDict;
 
-        public RszParser(string path)
+        public RszParser(string jsonPath)
         {
             classDict = new();
-            using FileStream fileStream = File.OpenRead(path);
+            using FileStream fileStream = File.OpenRead(jsonPath);
             var dict = JsonSerializer.Deserialize<Dictionary<string, RszClass>>(fileStream);
             if (dict != null)
             {

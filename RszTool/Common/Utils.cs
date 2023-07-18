@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace RszTool
+namespace RszTool.Common
 {
     public struct TimerRecord
     {

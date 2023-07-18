@@ -6,10 +6,10 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// #if false
+#if true
 namespace RszTool
 {
-    public class RszFileHandler
+    public class RszFileHandler : FileHandler
     {
         // Game Extracted Path
         const string DMC5Path = "F:\\modmanager\\REtool\\DMC_chunk_000\\natives\\x64\\";
@@ -40,9 +40,6 @@ namespace RszTool
         bool   SeekByGameObject  = false; // Will automatically seek between detected GameObjects to fix reading errors
         bool   ReadNodeFullNames = true;  // Reads FSM Node names with the names of all their parents (may be taxing)
 
-        private FileStream fileStream;
-        private BinaryReader reader;
-        private BinaryWriter writer;
         private RszParser rszParser;
         private string filename;
         private string Local_Directory;
@@ -72,10 +69,7 @@ namespace RszTool
         Dictionary<int, uint>? sizes;
         uint RSZFileDivCounter;
 
-        public BinaryReader Reader => reader;
-        public BinaryWriter Writer => writer;
-
-        public RszFileHandler(string filename)
+        public RszFileHandler(string filename) : base(filename)
         {
             // variables:
             int i, j, k, m, n, o, h, temp;
@@ -83,9 +77,21 @@ namespace RszTool
             int hashesLen;
             int noRetry;
 
-            RSZOffset = FindFirst("RSZ", 1, 0, 0, 0.0, 1, 0, 0, 24);
-            BHVTStart = FindFirst("BHVT", 1, 0, 0, 0.0, 1, 0, 0, 24);
-            UVARStart = (int)BHVTStart;
+            /*
+            int64 FindFirst(
+                <datatype> data,
+                int matchcase=true,
+                int wholeword=false,
+                int method=0,
+                double tolerance=0.0,
+                int dir=1,
+                int64 start=0,
+                int64 size=0,
+                int wildcardMatchLength=24)
+            */
+            RSZOffset = (int)FindFirst("RSZ");
+            BHVTStart = (int)FindFirst("BHVT");
+            UVARStart = BHVTStart;
             // local uint headerStrings[1 + RSZOffset / 64] <hidden=true>;
             headerStrings = new();
 
@@ -118,12 +124,12 @@ namespace RszTool
 
             ushort maxLevels = 0;
             RSZAddresses = new();
-            h = FindFirst(5919570, 1, 0, 0, 0.0, 1, 0, 0, 24) + 4;
+            h = (int)FindFirst(5919570) + 4;
             while (h != 3)
             {
                 RSZAddresses[maxLevels] = h - 4;
                 maxLevels++;
-                h = FindFirst(5919570, 1, 0, 0, 0.0, 1, h, 0, 24) + 4;
+                h = (int)FindFirst(5919570, new() { start = h }) + 4;
             }
             int RSZFileMaxDivs = maxLevels / 100 + 1;
             // local uint RSZFileWaypoints[RSZFileMaxDivs] <hidden=true>;
@@ -255,10 +261,10 @@ namespace RszTool
 
         void CheckHashesForRT()
         {
-            int firstGameObj = FindFirst(3372393495, 1, 0, 0, 0.0, 1, 0, 0, 24); //via.GameObject
-            int firstFolder = FindFirst(2929908172, 1, 0, 0, 0.0, 1, 0, 0, 24);  //via.Folder
-            int firstFSM = FindFirst(4193703126, 1, 0, 0, 0.0, 1, 0, 0, 24);     //via.motion.Fsm2ActionPlayMotion
-            int firstRCOL = FindFirst(4150774079, 1, 0, 0, 0.0, 1, 0, 0, 24);     //via.physics.UserData
+            int firstGameObj = (int)FindFirst(3372393495); //via.GameObject
+            int firstFolder = (int)FindFirst(2929908172);  //via.Folder
+            int firstFSM = (int)FindFirst(4193703126);     //via.motion.Fsm2ActionPlayMotion
+            int firstRCOL = (int)FindFirst(4150774079);     //via.physics.UserData
 
             if (firstGameObj != -1)
             {
@@ -352,252 +358,6 @@ namespace RszTool
                 }
             }
             FSeek(0);
-        }
-
-        void align(uint alignment)
-        {
-            long delta = fileStream.Position % alignment;
-            if (delta != 0)
-            {
-                fileStream.Position += alignment - delta;
-            }
-        }
-
-        public long FileSize()
-        {
-            return fileStream.Length;
-        }
-
-        public void FSeek(int64 tell)
-        {
-            fileStream.Position = tell;
-        }
-
-        public float ReadFloat(int64 tell)
-        {
-            FSeek(tell);
-            return reader.ReadSingle();
-        }
-
-        public int ReadInt(int64 tell)
-        {
-            FSeek(tell);
-            return reader.ReadInt32();
-        }
-
-        public int ReadInt()
-        {
-            return reader.ReadInt32();
-        }
-
-        public uint ReadUInt(int64 tell)
-        {
-            FSeek(tell);
-            return reader.ReadUInt32();
-        }
-
-        public uint ReadUInt()
-        {
-            return reader.ReadUInt32();
-        }
-
-        public byte ReadUByte()
-        {
-            return reader.ReadByte();
-        }
-
-        public byte ReadUByte(int64 tell)
-        {
-            FSeek(tell);
-            return reader.ReadByte();
-        }
-
-        public sbyte ReadByte()
-        {
-            return reader.ReadSByte();
-        }
-
-        public sbyte ReadByte(int64 tell)
-        {
-            FSeek(tell);
-            return reader.ReadSByte();
-        }
-
-        public ushort ReadUShort()
-        {
-            return reader.ReadUInt16();
-        }
-
-        public ushort ReadUShort(int64 tell)
-        {
-            FSeek(tell);
-            return reader.ReadUInt16();
-        }
-
-        public long ReadInt64()
-        {
-            return reader.ReadInt64();
-        }
-
-        public long ReadInt64(int64 tell)
-        {
-            FSeek(tell);
-            return reader.ReadInt64();
-        }
-
-        public ulong ReadUInt64()
-        {
-            return reader.ReadUInt64();
-        }
-
-        public ulong ReadUInt64(int64 tell)
-        {
-            FSeek(tell);
-            return reader.ReadUInt64();
-        }
-
-        public void ReadBytes(byte[] buffer, int64 pos, int n)
-        {
-            FSeek((uint)pos);
-            fileStream.Read(buffer, 0, n);
-        }
-
-        public void WriteInt64(long value)
-        {
-            writer.Write(value);
-        }
-
-        public void WriteInt64(int64 tell, long value)
-        {
-            FSeek(tell);
-            writer.Write(value);
-        }
-
-        public void WriteUInt(uint value)
-        {
-            writer.Write(value);
-        }
-
-        public void WriteUInt(int64 tell, uint value)
-        {
-            FSeek(tell);
-            writer.Write(value);
-        }
-
-        public void WriteInt(int value)
-        {
-            writer.Write(value);
-        }
-
-        public void WriteInt(int64 tell, int value)
-        {
-            FSeek(tell);
-            writer.Write(value);
-        }
-
-        public void WriteUInt64(ulong value)
-        {
-            writer.Write(value);
-        }
-
-        public void WriteUInt64(int64 tell, ulong value)
-        {
-            FSeek(tell);
-            writer.Write(value);
-        }
-
-        public static string MarshalStringTrim(string text)
-        {
-            int n = text.IndexOf('\0');
-            if (n != -1)
-            {
-                text = text.Substring(0, n);
-            }
-            return text;
-        }
-
-        public string ReadWString(int64 pos, int maxLen=-1)
-        {
-            FSeek(pos);
-            string result = "";
-            Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
-            if (maxLen != -1)
-            {
-                byte[] buffer = new byte[maxLen * 2];
-                int readCount = fileStream.Read(buffer);
-                if (readCount != 0)
-                {
-                    int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
-                    result = System.Text.Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount);
-                }
-            }
-            else
-            {
-                StringBuilder sb = new();
-                byte[] buffer = new byte[256];
-                do
-                {
-                    int readCount = fileStream.Read(buffer);
-                    if (readCount != 0)
-                    {
-                        int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
-                        sb.Append(System.Text.Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount));
-                        if (n != -1) break;
-                    }
-                    if (readCount != buffer.Length)
-                    {
-                        break;
-                    }
-                } while (true);
-                result = sb.ToString();
-            }
-            return result;
-        }
-
-        public int ReadWStringLength(int64 pos, int maxLen=-1)
-        {
-            FSeek(pos);
-            int result = 0;
-            Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
-            if (maxLen != -1)
-            {
-                byte[] buffer = new byte[maxLen * 2];
-                int readCount = fileStream.Read(buffer);
-                if (readCount != 0)
-                {
-                    int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
-                    result = (n != -1 ? n : readCount) / 2;
-                }
-            }
-            else
-            {
-                byte[] buffer = new byte[256];
-                do
-                {
-                    int readCount = fileStream.Read(buffer);
-                    if (readCount != 0)
-                    {
-                        int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
-                        result += (n != -1 ? n : readCount) / 2;
-                        if (n != -1) break;
-                    }
-                    if (readCount != buffer.Length)
-                    {
-                        break;
-                    }
-                } while (true);
-            }
-            return result;
-        }
-
-        public long FTell()
-        {
-            return fileStream.Position;
-        }
-
-        public void FSkip(long skip)
-        {
-            fileStream.Seek(skip, SeekOrigin.Current);
         }
 
         bool detectedColorVector(int64 tell)
@@ -1362,10 +1122,10 @@ namespace RszTool
         private byte listSize;
         public int Count;
 
-        public BHVTCount(int listSize, RszFileHandler reader)
+        public BHVTCount(int listSize, RszFileHandler handler)
         {
             this.listSize = (byte)listSize;
-            Count = reader.ReadInt();
+            Count = handler.ReadInt();
         }
 
         public string ReadBHVTCount(BHVTCount c)
@@ -1373,7 +1133,7 @@ namespace RszTool
             return c.Count.ToString();
         }
 
-        public void WriteBHVTCount(ref BHVTCount c, string s, RszFileHandler reader)
+        public void WriteBHVTCount(ref BHVTCount c, string s, RszFileHandler handler)
         {
             int newCount = int.Parse(s);
             if (newCount - c.Count > 0)
@@ -1384,11 +1144,11 @@ namespace RszTool
                 if (((newCount - c.Count) * 4 * c.listSize) % 16 != 0)
                 {
                     padding = 0;
-                    while ((reader.RSZOffset + addedSz + padding) % 16 != reader.RSZOffset % 16)
+                    while ((handler.RSZOffset + addedSz + padding) % 16 != handler.RSZOffset % 16)
                         padding++;
                 }
 
-                FixBHVTOffsets(addedSz + padding, reader.RSZOffset);
+                FixBHVTOffsets(addedSz + padding, handler.RSZOffset);
                 int extraStateBytes = 0;
                 if (c.listSize == 6 && c.Count > 0) //states
                     extraStateBytes = ((startof(parentof(c)) + sizeof(parentof(c)) - (startof(c) + 4)) - (c.Count * 4 * c.listSize));
@@ -1399,8 +1159,8 @@ namespace RszTool
                     Console.WriteLine("inserting {0} bytes at {1} for +{2} new items", 4 * (newCount - c.Count), startof(c) + 4 + (c.Count * 4) * k, newCount - c.Count);
                 }
                 if (padding > 0)
-                    reader.InsertBytes(RSZOffset + addedSz, padding, 0);
-                reader.ShowRefreshMessage("");
+                    handler.InsertBytes(RSZOffset + addedSz, padding, 0);
+                handler.ShowRefreshMessage("");
             }
             c.Count = newCount;
         }
@@ -1475,4 +1235,4 @@ namespace RszTool
         public uint timeScale;
     }
 }
-// #endif
+#endif
