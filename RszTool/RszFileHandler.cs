@@ -25,20 +25,20 @@ namespace RszTool
         const string SF6Path = "F:\\modmanager\\REtool\\SF6Beta_chunk_000\\natives\\stm\\";
         const string GTrickPath = "F:\\modmanager\\REtool\\GT_chunk_000\\natives\\stm\\";
 
-        string RSZVersion        = "RE4"; // change between RE2, RE3, RE8, DMC5 or MHRise
-        bool   RTVersion         = true;  // Use Ray-Tracing Update file formats for RE7, RE2R and RE3R (subject to AutoDetectGame)
-        bool   Nesting           = true;  // Attempt to nest class instances inside eachother
-        bool   ShowAlignment     = false; // Show metadata for each variable
-        bool   ShowChildRSZs     = false; // Show all RSZs one after another, non-nested. Disabling hides nested RSZHeaders
-        bool   UseSpacers        = true;  // Show blank rows between some structs
-        bool   AutoDetectGame    = true;  // Automatically detect RSZVersion based on the name + ext of the file being viewed
-        bool   RedetectBHVT      = true;  // Will automatically redetect the next BHVT node if there is a problem
-        bool   HideRawData       = false; // Hides RawData struct
-        bool   HideRawNodes      = true;  // Hides RawNodes struct
-        bool   SortRequestSets   = true;  // Sorts RCOL RequestSets by their IDs
-        bool   ExposeUserDatas   = true;  // Makes RSZFiles that contain embedded userDatas start after the Userdatas, for ctrl+J jump
-        bool   SeekByGameObject  = false; // Will automatically seek between detected GameObjects to fix reading errors
-        bool   ReadNodeFullNames = true;  // Reads FSM Node names with the names of all their parents (may be taxing)
+        internal string RSZVersion        = "RE4"; // change between RE2, RE3, RE8, DMC5 or MHRise
+        internal bool   RTVersion         = true;  // Use Ray-Tracing Update file formats for RE7, RE2R and RE3R (subject to AutoDetectGame)
+        internal bool   Nesting           = true;  // Attempt to nest class instances inside eachother
+        internal bool   ShowAlignment     = false; // Show metadata for each variable
+        internal bool   ShowChildRSZs     = false; // Show all RSZs one after another, non-nested. Disabling hides nested RSZHeaders
+        internal bool   UseSpacers        = true;  // Show blank rows between some structs
+        internal bool   AutoDetectGame    = true;  // Automatically detect RSZVersion based on the name + ext of the file being viewed
+        internal bool   RedetectBHVT      = true;  // Will automatically redetect the next BHVT node if there is a problem
+        internal bool   HideRawData       = false; // Hides RawData struct
+        internal bool   HideRawNodes      = true;  // Hides RawNodes struct
+        internal bool   SortRequestSets   = true;  // Sorts RCOL RequestSets by their IDs
+        internal bool   ExposeUserDatas   = true;  // Makes RSZFiles that contain embedded userDatas start after the Userdatas, for ctrl+J jump
+        internal bool   SeekByGameObject  = false; // Will automatically seek between detected GameObjects to fix reading errors
+        internal bool   ReadNodeFullNames = true;  // Reads FSM Node names with the names of all their parents (may be taxing)
 
         private RszParser rszParser;
         private string filename;
@@ -50,24 +50,25 @@ namespace RszTool
         public int RSZOffset;
         public int BHVTStart;
         public int UVARStart;
-        int lastVarEnd;
-        int realStart = -1;
-        int level;
-        bool finished;
-        bool broken;
-        byte silenceMessages;
-        byte isAIFile;
-        byte[] magic = new byte[4];
-        ushort headerStringsCount;
-        Dictionary<int, uint> headerStrings;
-        uint[] dummyArr = new uint[1];
+        internal int lastVarEnd;
+        internal int realStart = -1;
+        internal int level;
+        internal bool finished;
+        internal bool broken;
+        internal byte silenceMessages;
+        internal byte isAIFile;
+        internal byte[] magic = new byte[4];
+        internal ushort headerStringsCount;
+        internal Dictionary<int, uint> headerStrings;
+        internal uint[] dummyArr = new uint[1];
         // byte[] PasteBuffer = new byte[100000]; // 100KB buffer
-        Dictionary<int, long> RSZAddresses;
-        Dictionary<int, uint> RSZFileWaypoints;
-        Dictionary<int, uint>? offs;
-        Dictionary<int, uint>? aligns;
-        Dictionary<int, uint>? sizes;
-        uint RSZFileDivCounter;
+        internal Dictionary<int, long> RSZAddresses;
+        internal Dictionary<int, uint> RSZFileWaypoints;
+        internal Dictionary<int, uint>? offs;
+        internal Dictionary<int, uint>? aligns;
+        internal Dictionary<int, uint>? sizes;
+        internal uint RSZFileDivCounter;
+        internal object? userDataPath;
 
         public RszFileHandler(string filename) : base(filename)
         {
@@ -248,10 +249,10 @@ namespace RszTool
                 JsonPath += "beta";
 
             JsonPath += ".json";
-            ParseJson(JsonPath);
+            rszParser = RszParser.GetInstance(JsonPath);
 
             if (RSZOffset > -1 && AutoDetectGame && !(RSZVersion == "RE7" && !RTVersion))
-                AutoDetectVersion();
+                AutoDetectVersion(dir);
 
             RTVersion = (RSZVersion == "RE2" || RSZVersion == "RE7" || RSZVersion == "RE3") ? RTVersion : false;
 
@@ -290,7 +291,7 @@ namespace RszTool
 
         }
 
-        void AutoDetectVersion() {
+        void AutoDetectVersion(string dir) {
             string hashName;
             uint checkedVersions, instanceCount = 0, objectCount, hash, zz, varsChecked = 0;
             bool origRTVersion = RTVersion;
@@ -338,7 +339,7 @@ namespace RszTool
                                 JsonPath = JsonPath + "rt";
                             JsonPath = JsonPath + ".json";
                             Local_Directory = dir + xFmt;
-                            ParseJson(JsonPath);
+                            rszParser = RszParser.GetInstance(JsonPath);
                             hashName = ReadHashName(hash);
                             checkedVersions++;
                         }
@@ -455,7 +456,7 @@ namespace RszTool
         bool detectedObject(long tell, int idx) {
             if (tell+4 <= FileSize()) {
                 int test = ReadInt(tell);
-                if (test < idx && test > 0 && (test > idx - 100 || exists(userDataPath))) // && test > 2
+                if (test < idx && test > 0 && (test > idx - 100 || userDataPath != null)) // && test > 2
                     return true;
             }
             return false;
@@ -588,7 +589,7 @@ namespace RszTool
             }
         }
 
-        long getAlignedOffset(long tell, uint alignment) {
+        public long getAlignedOffset(long tell, uint alignment) {
             long offset = tell;
             switch (alignment) {
                 case 2:  offset = tell + (tell % 2); break;  // 2-byte
@@ -600,7 +601,12 @@ namespace RszTool
             return offset;
         }
 
-        void ForceWriteString(uint tell, uint maxSize, string str) {
+        public void SeekOffsetAligned(int offset, int align = 4)
+        {
+            FSeek(getAlignedOffset(FTell() + offset, align));
+        }
+
+        public void ForceWriteString(uint tell, uint maxSize, string str) {
             OverwriteBytes(tell, maxSize, 0);
             if (str != " " && str != "")
                 WriteWString(tell, str);
@@ -611,7 +617,7 @@ namespace RszTool
             //     MessageBox( idOk, "Insert Data", "%sPress F5 to refresh the template and fix template results", extraMsg);
         }
 
-        void FixOffsets(long tell, long tellLimit, long insertPoint, long maxOffset, long addedSz, int doInt32)
+        public void FixOffsets(long tell, long tellLimit, long insertPoint, long maxOffset, long addedSz, int doInt32)
         {
             if (tell > tellLimit)
             {
@@ -683,7 +689,7 @@ namespace RszTool
                 quicksort( i, high, array, array2 );
         }
 
-        int getLevel(uint offset) {
+        public int getLevel(uint offset) {
             int L = 0;
             for (L=getRSZFileWaypointIndex(offset); L<level; L++) {
                 if (offset >= startof(RSZFile[L].Data) && offset < startof(RSZFile[L].Data) + Unsafe.SizeOf(RSZFile[L].Data))
@@ -692,7 +698,7 @@ namespace RszTool
             return L;
         }
 
-        int getLevelRSZ(uint offset) {
+        public int getLevelRSZ(uint offset) {
             int L;
             for (L=getRSZFileWaypointIndex(offset); L<level; L++) {
                 if (offset >= startof(RSZFile[L].RSZHeader) - 16 && offset <= startof(RSZFile[L].RSZHeader) + 16)
@@ -987,31 +993,6 @@ namespace RszTool
         // main typedef for RSZ chunks:
 
 
-        void ReadFakeGameObject(ref fakeGameObject obj)
-        {
-            FSeek(getAlignedOffset(FTell(), 4));
-            obj.size0 = ReadUInt();
-
-            if (obj.size0 != 0 && FTell() + obj.size0 * 2 <= FileSize())
-            {
-                byte[] nameBytes = new byte[obj.size0 * 2];
-                ReadBytes(nameBytes, 0, nameBytes.Length);
-                obj.name = Encoding.Unicode.GetString(nameBytes);
-            }
-
-            FSeek(getAlignedOffset(FTell(), 4));
-            obj.size1 = ReadUInt();
-
-            if (obj.size1 != 0 && FTell() + obj.size1 * 2 <= FileSize())
-            {
-                byte[] tagBytes = new byte[obj.size1 * 2];
-                ReadBytes(tagBytes, 0, tagBytes.Length);
-                obj.tag = Encoding.Unicode.GetString(tagBytes);
-            }
-
-            FSeek(getAlignedOffset(FTell() + 2, 4));
-            obj.timeScale = ReadUInt();
-        }
 
         //
         void fakeStateList() {
@@ -1090,149 +1071,6 @@ namespace RszTool
             } return 0;
         }
 
-        void ReadReadStruct(ref ReadStruct rs)
-        {
-            FSeek((long)(rs.offset + rs.addOffset));
-
-            switch (rs.structType)
-            {
-                case 0:
-                    RSZMagic RSZ_0 = ReadRSZMagic();
-                    break;
-
-                case 1:
-                    RSZInstance RSZ_1 = ReadRSZInstance();
-                    break;
-
-                default:
-                    break;
-            }
-
-            if (rs.structType == 0 && ReadUInt(startof(RSZ)) != 5919570)
-            {
-                Console.WriteLine($"RSZMagic not found at RSZ[{getLevelRSZ(startof(RSZ))}] in BHVT header");
-            }
-
-            FSeek(startof(rs.offset) + 8);
-        }
-    }
-
-    public struct BHVTCount
-    {
-        private byte listSize;
-        public int Count;
-
-        public BHVTCount(int listSize, RszFileHandler handler)
-        {
-            this.listSize = (byte)listSize;
-            Count = handler.ReadInt();
-        }
-
-        public string ReadBHVTCount(BHVTCount c)
-        {
-            return c.Count.ToString();
-        }
-
-        public void WriteBHVTCount(ref BHVTCount c, string s, RszFileHandler handler)
-        {
-            int newCount = int.Parse(s);
-            if (newCount - c.Count > 0)
-            {
-                int k, j, padding;
-                int addedSz = ((newCount - c.Count) * 4 * c.listSize);
-
-                if (((newCount - c.Count) * 4 * c.listSize) % 16 != 0)
-                {
-                    padding = 0;
-                    while ((handler.RSZOffset + addedSz + padding) % 16 != handler.RSZOffset % 16)
-                        padding++;
-                }
-
-                FixBHVTOffsets(addedSz + padding, handler.RSZOffset);
-                int extraStateBytes = 0;
-                if (c.listSize == 6 && c.Count > 0) //states
-                    extraStateBytes = ((startof(parentof(c)) + sizeof(parentof(c)) - (startof(c) + 4)) - (c.Count * 4 * c.listSize));
-
-                for (k = c.listSize; k > 0; k--)
-                {
-                    InsertBytes(startof(c) + 4 + ((c.Count * 4) * k) + (extraStateBytes), 4 * (newCount - c.Count), 0);
-                    Console.WriteLine("inserting {0} bytes at {1} for +{2} new items", 4 * (newCount - c.Count), startof(c) + 4 + (c.Count * 4) * k, newCount - c.Count);
-                }
-                if (padding > 0)
-                    handler.InsertBytes(RSZOffset + addedSz, padding, 0);
-                handler.ShowRefreshMessage("");
-            }
-            c.Count = newCount;
-        }
-    }
-
-    struct HashGenerator
-    {
-        [MarshalAs(UnmanagedType.U1)]
-        byte dummy;
-
-        [MarshalAs(UnmanagedType.LPStr)]
-        string String_Form;
-
-        [MarshalAs(UnmanagedType.I4)]
-        int Hash_Form;
-
-        [MarshalAs(UnmanagedType.U4)]
-        uint Hash_Form_unsigned;
-
-        public static string ReadStringToHash(ref HashGenerator h)
-        {
-            if (h.Hash_Form != 0)
-            {
-                string ss = string.Format("{0} ({1}) = {2}", h.Hash_Form, h.Hash_Form_unsigned, h.String_Form);
-                return ss;
-            }
-
-            return "      [Input a String here to turn it into a Murmur3 Hash]";
-        }
-
-        public static void WriteStringToHash(ref HashGenerator h, string s)
-        {
-            h.String_Form = s;
-            h.Hash_Form = (int)RszFileHandler.hash_wide(h.String_Form);
-            h.Hash_Form_unsigned = RszFileHandler.hash_wide(h.String_Form);
-        }
-
-        public static string readRCOLWarning(ref uint u)
-        {
-            string s = u.ToString();
-
-            // TODO
-            // if (sizeof(RSZFile[0]) != u)
-            //     SPrintf(s, "{0} -- Warning: Size does not match real size ({1})", s, sizeof(RSZFile[0]));
-
-            return s;
-        }
-    }
-
-    struct ReadStruct
-    {
-        [MarshalAs(UnmanagedType.I4)]
-        public int structType;
-
-        [MarshalAs(UnmanagedType.U8)]
-        public ulong addOffset;
-
-        [MarshalAs(UnmanagedType.U8)]
-        public ulong offset;
-    }
-
-    struct fakeGameObject
-    {
-        public uint size0;
-        [MarshalAs(UnmanagedType.ByValArray)]
-        public string name;
-
-        public uint size1;
-        [MarshalAs(UnmanagedType.ByValArray)]
-        public string tag;
-
-        public uint timeScale;
     }
 }
 #endif

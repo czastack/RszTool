@@ -149,6 +149,14 @@ namespace RszTool
         IEnumerable<(DataField, object)> IterData();
     }
 
+
+    public interface IValueFormater
+    {
+        string FormatRead(IDataContainer instance, object value);
+        object? FormatWrite(IDataContainer instance, string value);
+    }
+
+
     public class DataField
     {
         public DataField(string name, int index, int offset, DataType type)
@@ -163,6 +171,9 @@ namespace RszTool
         public int Index { get; set; }
         public int Offset { get; set; }
         public DataType Type { get; set; }
+
+        public IValueFormater? ValueFormater { get; set; }
+
         public int Size => Type.Size;
         public FieldType FieldType
         {
