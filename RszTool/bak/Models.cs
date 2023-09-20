@@ -108,7 +108,7 @@ namespace RszTool
             return this;
         }
 
-        public DataClass AddField<T>(string name, int offset = 0, int align = 0)
+        public DataClass AddField<T>(string name, int offset = 0, int align = 0, bool hidden = false)
         {
             var type = typeof(T);
             if (offset == 0)
@@ -120,6 +120,7 @@ namespace RszTool
                 }
             }
             var field = new DataField(name, Fields.Count, offset, new NativeType(type));
+            field.Hidden = hidden;
             AddField(field);
             return this;
         }
@@ -173,6 +174,7 @@ namespace RszTool
         public int Index { get; set; }
         public int Offset { get; set; }
         public DataType Type { get; set; }
+        public bool Hidden { get; set; }
 
         public IValueFormater? ValueFormater { get; set; }
 
@@ -237,7 +239,7 @@ namespace RszTool
                     var value = instance.GetValue(Index);
                     if (value == null)
                     {
-                        value = new DataObject(Name, address, objectType.Class, handler);
+                        value = new DataObject(handler, address, objectType.Class, Name);
                     }
                     if (value is DataObject dataObject)
                     {
@@ -347,7 +349,7 @@ namespace RszTool
 
     public class DataObject : IDataContainer
     {
-        public DataObject(string? name, long start, DataClass cls, FileHandler handler, object[]? datas = null)
+        public DataObject(FileHandler handler, long start, DataClass cls, string? name = null, object[]? datas = null)
         {
             Name = name ?? cls.Name;
             Start = start;
@@ -542,6 +544,79 @@ namespace RszTool
 
         public IEnumerable<(DataField, object)> IterData()
         {
+            var fields = Fields;
+            for (int i = 0; i < fields.Count; i++)
+            {
+                yield return (fields[i], Datas[i]);
+            }
+        }
+    }
+
+    public class DataArray : IDataContainer
+    {
+        public DataArray(string name, long start, ArrayType arrayType, FileHandler handler, object[]? datas = null)
+        {
+            Name = name;
+            Start = start;
+            ArrayType = arrayType;
+            Datas = datas ?? new object[ArrayType.Length];
+            HandlerRef = new WeakReference<FileHandler>(handler);
+            tempField = new(name, 0, 0, arrayType.ElementType);
+        }
+
+        public string Name { get; set; } = "";
+        public long Start { get; set; }
+        public ArrayType ArrayType { get; set; }
+        object[] Datas { get; set; }
+        public WeakReference<FileHandler>? HandlerRef { get; set; }
+        public FileHandler? Handler => HandlerRef?.GetTarget();
+
+        private DataField tempField;
+
+        public object GetValue(int index)
+        {
+            return Datas[index];
+        }
+
+        public void SetValue(int index, object value)
+        {
+            Datas[index] = value;
+        }
+
+        public void ReadValues()
+        {
+            tempField.Offset = 0;
+            for (int i = 0; i < ArrayType.Length; i++)
+            {
+                tempField.Index = i;
+                object? value = tempField.ReadValue(this);
+                if (value == null)
+                {
+                    throw new ApplicationException($"Read {Name}[{i}] failed");
+                }
+                Datas[i] = value;
+                tempField.Offset += ArrayType.Size;
+            }
+        }
+
+        public void WriteValues()
+        {
+            tempField.Offset = 0;
+            for (int i = 0; i < ArrayType.Length; i++)
+            {
+                var value = Datas[i];
+                if (value == null)
+                {
+                    throw new ApplicationException($"{Name}[{i}] is null");
+                }
+                tempField.Index = i;
+                tempField.WriteValue(this, value);
+                tempField.Offset += ArrayType.Size;
+            }
+        }
+
+        public IEnumerable<(DataField, object)> IterData()
+        {
             tempField.Offset = 0;
             for (int i = 0; i < ArrayType.Length; i++)
             {
@@ -572,7 +647,7 @@ namespace RszTool
                 .AddField<float>("float");
             DataClass clsTest = new DataClass("Test")
                 .AddArrayField("array", new ObjectType(clsTestItem), 1);
-            var obj = new DataObject("test", 0, clsTest, handler);
+            var obj = new DataObject(handler, 0, clsTest, "test");
             obj.ReadValues();
             // foreach (DataField field in cls.Fields)
             // {

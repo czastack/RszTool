@@ -606,11 +606,11 @@ namespace RszTool
             FSeek(getAlignedOffset(FTell() + offset, align));
         }
 
-        public void ForceWriteString(uint tell, uint maxSize, string str) {
-            OverwriteBytes(tell, maxSize, 0);
-            if (str != " " && str != "")
-                WriteWString(tell, str);
-        }
+        // public void ForceWriteString(uint tell, uint maxSize, string str) {
+        //     OverwriteBytes(tell, maxSize, 0);
+        //     if (str != " " && str != "")
+        //         WriteWString(tell, str);
+        // }
 
         public void ShowRefreshMessage(string extraMsg) {
             // if (!silenceMessages)

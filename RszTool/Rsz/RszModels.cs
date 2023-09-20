@@ -24,11 +24,48 @@ namespace RszTool.Rsz
         public static readonly AbsOffsetFormater Instance = new AbsOffsetFormater();
     }
 
-    public class RSZHeader
+    public class RSZMagic
     {
-        public RSZHeader(RszFileHandler handler)
+        public RSZMagic(RszFileHandler handler)
         {
+            if (handler.realStart != -1)
+            {
+                handler.FSeek(handler.realStart);
+                handler.realStart = -1;
+            }
 
+        }
+    }
+
+    public class RSZHeader : DataObject
+    {
+        private static DataClass BulidClass(bool RTVersion)
+        {
+            DataClass cls = new("RSZHeader");
+            cls.AddField<uint>("magic");
+            cls.AddField<uint>("version");
+            cls.AddField<int>("objectCount");
+            cls.AddField<int>("instanceCount");
+            if (RTVersion)
+            {
+                cls.AddField<int>("userdataCount");
+                cls.AddField<int>("reserved", hidden: true);
+            }
+            cls.AddField<long>("instanceOffset_Absolute");
+            cls.AddField<long>("dataOffset_Absolute");
+            if (RTVersion)
+            {
+                cls.AddField<long>("userdataOffset");
+            }
+            return cls;
+        }
+
+        private static DataClass DefaultClass = BulidClass(false);
+        private static DataClass RTVersionClass = BulidClass(true);
+
+        private RSZHeader(RszFileHandler handler, long start, string? name = null)
+            : base(handler, start, (handler.RSZVersion != "RE7" || handler.RTVersion) ? RTVersionClass : DefaultClass, name)
+        {
         }
     }
 
@@ -139,7 +176,7 @@ namespace RszTool.Rsz
             int newCount = int.Parse(s);
             if (newCount - c.Count > 0)
             {
-                int k, j, padding;
+                int k, j, padding = 0;
                 int addedSz = ((newCount - c.Count) * 4 * c.listSize);
 
                 if (((newCount - c.Count) * 4 * c.listSize) % 16 != 0)
@@ -156,7 +193,7 @@ namespace RszTool.Rsz
 
                 for (k = c.listSize; k > 0; k--)
                 {
-                    InsertBytes(startof(c) + 4 + ((c.Count * 4) * k) + (extraStateBytes), 4 * (newCount - c.Count), 0);
+                    handler.InsertBytes(startof(c) + 4 + ((c.Count * 4) * k) + (extraStateBytes), 4 * (newCount - c.Count), 0);
                     Console.WriteLine("inserting {0} bytes at {1} for +{2} new items", 4 * (newCount - c.Count), startof(c) + 4 + (c.Count * 4) * k, newCount - c.Count);
                 }
                 if (padding > 0)
