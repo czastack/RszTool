@@ -589,7 +589,7 @@ namespace RszTool
             }
         }
 
-        public long getAlignedOffset(long tell, uint alignment) {
+        public long getAlignedOffset(long tell, int alignment) {
             long offset = tell;
             switch (alignment) {
                 case 2:  offset = tell + (tell % 2); break;  // 2-byte

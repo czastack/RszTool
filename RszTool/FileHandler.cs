@@ -262,6 +262,19 @@ namespace RszTool
             return result;
         }
 
+        public T Read<T>() where T : struct
+        {
+            T value = default;
+            FileStream.Read(MemoryUtils.StructureAsBytes(ref value));
+            return value;
+        }
+
+        public T Write<T>(T value) where T : struct
+        {
+            FileStream.Write(MemoryUtils.StructureAsBytes(ref value));
+            return value;
+        }
+
         public long FTell()
         {
             return FileStream.Position;

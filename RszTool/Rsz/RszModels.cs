@@ -133,6 +133,7 @@ namespace RszTool.Rsz
             return c.Count.ToString();
         }
 
+#if false
         public void WriteBHVTCount(ref BHVTCount c, string s, RszFileHandler handler)
         {
             int newCount = int.Parse(s);
@@ -164,6 +165,7 @@ namespace RszTool.Rsz
             }
             c.Count = newCount;
         }
+#endif
     }
 
     struct HashGenerator
