@@ -269,10 +269,10 @@ namespace RszTool
             return value;
         }
 
-        public T Write<T>(T value) where T : struct
+        public bool Write<T>(T value) where T : struct
         {
             FileStream.Write(MemoryUtils.StructureAsBytes(ref value));
-            return value;
+            return true;
         }
 
         public long FTell()
