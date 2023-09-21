@@ -37,35 +37,39 @@ namespace RszTool.Rsz
         }
     }
 
-    public class RSZHeader : DataObject
+    public class RSZHeader : DynamicModel
     {
-        private static DataClass BulidClass(bool RTVersion)
+        DynamicField<uint> magic { get; set; } = new();
+        DynamicField<uint> version { get; set; } = new();
+        DynamicField<int> objectCount { get; set; } = new();
+        DynamicField<int> instanceCount { get; set; } = new();
+        DynamicField<int> userdataCount { get; set; } = new();
+        // hidden
+        DynamicField<int> reserved { get; set; } = new();
+        DynamicField<long> instanceOffset_Absolute { get; set; } = new();
+        DynamicField<long> dataOffset_Absolute { get; set; } = new();
+        DynamicField<long> userdataOffset { get; set; } = new();
+
+        private RSZHeader(RszFileHandler handler, long start)
         {
-            DataClass cls = new("RSZHeader");
-            cls.AddField<uint>("magic");
-            cls.AddField<uint>("version");
-            cls.AddField<int>("objectCount");
-            cls.AddField<int>("instanceCount");
+            handler.FSeek(start);
+            bool RTVersion = handler.RSZVersion != "RE7" || handler.RTVersion;
+            StartRead(handler);
+            ReadField(magic);
+            ReadField(version);
+            ReadField(objectCount);
+            ReadField(instanceCount);
             if (RTVersion)
             {
-                cls.AddField<int>("userdataCount");
-                cls.AddField<int>("reserved", hidden: true);
+                ReadField(userdataCount);
+                ReadField(reserved);
             }
-            cls.AddField<long>("instanceOffset_Absolute");
-            cls.AddField<long>("dataOffset_Absolute");
+            ReadField(instanceOffset_Absolute);
+            ReadField(dataOffset_Absolute);
             if (RTVersion)
             {
-                cls.AddField<long>("userdataOffset");
+                ReadField(userdataOffset);
             }
-            return cls;
-        }
-
-        private static DataClass DefaultClass = BulidClass(false);
-        private static DataClass RTVersionClass = BulidClass(true);
-
-        private RSZHeader(RszFileHandler handler, long start, string? name = null)
-            : base(handler, start, (handler.RSZVersion != "RE7" || handler.RTVersion) ? RTVersionClass : DefaultClass, name)
-        {
         }
     }
 

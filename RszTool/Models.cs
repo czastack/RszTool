@@ -66,14 +66,14 @@ namespace RszTool
     }
 
 
-    public struct DynamicField<T> where T : struct
+    public class DynamicField<T> where T : struct
     {
-        public T Value;
+        public T Value { get; set; }
         public int Offset { get; set; }
 
         public static implicit operator T(DynamicField<T> field) => field.Value;
 
-        public readonly bool Write(FileHandler handler)
+        public bool Write(FileHandler handler)
         {
             return handler.Write(Value);
         }
