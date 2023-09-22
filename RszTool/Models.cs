@@ -20,36 +20,36 @@ namespace RszTool
             FileHandlers.Pop();
         }
 
-        protected bool ReadField<T>(DynamicField<T> field) where T : struct
+        protected bool ReadField<T>(ref DynamicField<T> field) where T : struct
         {
-            return ReadField(FileHandlers.Peek(), field);
+            return ReadField(FileHandlers.Peek(), ref field);
         }
 
-        protected bool ReadField<T>(FileHandler handler, DynamicField<T> field) where T : struct
+        protected bool ReadField<T>(FileHandler handler, ref DynamicField<T> field) where T : struct
         {
             field.Offset = (int)(handler.FTell() - Start);
             field.Value = handler.Read<T>();
             return true;
         }
 
-        protected bool WriteField<T>(FileHandler handler, DynamicField<T> field) where T : struct
+        protected bool WriteField<T>(FileHandler handler, in DynamicField<T> field) where T : struct
         {
             field.Write(handler);
             return true;
         }
 
-        public bool WriteAll(FileHandler handler)
+        public bool Write(FileHandler handler)
         {
             long start = handler.FTell();
-            foreach (var propertyInfo in GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (var fieldInfo in GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
-                var value = propertyInfo.GetValue(this);
+                var value = fieldInfo.GetValue(this);
                 if (value is IDynamicField field)
                 {
                     handler.FSeek(start + field.Offset);
                     if (!field.Write(handler))
                     {
-                        Console.Error.WriteLine($"{this} Write {propertyInfo.Name} failed");
+                        Console.Error.WriteLine($"{this} Write {fieldInfo.Name} failed");
                         return false;
                     }
                 }
@@ -66,7 +66,7 @@ namespace RszTool
     }
 
 
-    public class DynamicField<T> where T : struct
+    public struct DynamicField<T> where T : struct
     {
         public T Value { get; set; }
         public int Offset { get; set; }

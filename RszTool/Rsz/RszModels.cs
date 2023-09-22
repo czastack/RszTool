@@ -39,38 +39,49 @@ namespace RszTool.Rsz
 
     public class RSZHeader : DynamicModel
     {
-        DynamicField<uint> magic { get; set; } = new();
-        DynamicField<uint> version { get; set; } = new();
-        DynamicField<int> objectCount { get; set; } = new();
-        DynamicField<int> instanceCount { get; set; } = new();
-        DynamicField<int> userdataCount { get; set; } = new();
+        DynamicField<uint> magic;
+        DynamicField<uint> version;
+        DynamicField<int> objectCount;
+        DynamicField<int> instanceCount;
+        DynamicField<int> userdataCount;
         // hidden
-        DynamicField<int> reserved { get; set; } = new();
-        DynamicField<long> instanceOffset_Absolute { get; set; } = new();
-        DynamicField<long> dataOffset_Absolute { get; set; } = new();
-        DynamicField<long> userdataOffset { get; set; } = new();
+        DynamicField<int> reserved;
+        DynamicField<long> instanceOffset;
+        DynamicField<long> dataOffset;
+        DynamicField<long> userdataOffset;
 
-        private RSZHeader(RszFileHandler handler, long start)
+        public void Read(RszFileHandler handler, long start)
         {
             handler.FSeek(start);
             bool RTVersion = handler.RSZVersion != "RE7" || handler.RTVersion;
             StartRead(handler);
-            ReadField(magic);
-            ReadField(version);
-            ReadField(objectCount);
-            ReadField(instanceCount);
+            ReadField(ref magic);
+            ReadField(ref version);
+            ReadField(ref objectCount);
+            ReadField(ref instanceCount);
             if (RTVersion)
             {
-                ReadField(userdataCount);
-                ReadField(reserved);
+                ReadField(ref userdataCount);
+                ReadField(ref reserved);
             }
-            ReadField(instanceOffset_Absolute);
-            ReadField(dataOffset_Absolute);
+            ReadField(ref instanceOffset);
+            ReadField(ref dataOffset);
             if (RTVersion)
             {
-                ReadField(userdataOffset);
+                ReadField(ref userdataOffset);
             }
+            EndRead();
         }
+
+        public uint Magic { get => magic.Value; set => magic.Value = value; }
+        public uint Version { get => version.Value; set => version.Value = value; }
+        public int ObjectCount { get => objectCount.Value; set => objectCount.Value = value; }
+        public int InstanceCount { get => instanceCount.Value; set => instanceCount.Value = value; }
+        public int UserdataCount { get => userdataCount.Value; set => userdataCount.Value = value; }
+        public int Reserved { get => reserved.Value; set => reserved.Value = value; }
+        public long InstanceOffset { get => instanceOffset.Value; set => instanceOffset.Value = value; }
+        public long DataOffset { get => dataOffset.Value; set => dataOffset.Value = value; }
+        public long UserdataOffset { get => userdataOffset.Value; set => userdataOffset.Value = value; }
     }
 
     struct ReadStruct
