@@ -3,27 +3,6 @@ using System.Text;
 
 namespace RszTool.Rsz
 {
-
-    public class AbsOffsetFormater : IValueFormater
-    {
-        public string FormatRead(IDataContainer instance, object value)
-        {
-            return (instance.Start + (long)value).ToString();
-        }
-
-        public object? FormatWrite(IDataContainer instance, string value)
-        {
-            long offset = long.Parse(value);
-            if (offset > instance.Start)
-            {
-                return offset;
-            }
-            return null;
-        }
-
-        public static readonly AbsOffsetFormater Instance = new AbsOffsetFormater();
-    }
-
     public class RSZMagic
     {
         public RSZMagic(RszFileHandler handler)
@@ -37,20 +16,20 @@ namespace RszTool.Rsz
         }
     }
 
-    public class RSZHeader : DynamicModel
+    public class RSZHeader : AdaptiveModel
     {
-        DynamicField<uint> magic;
-        DynamicField<uint> version;
-        DynamicField<int> objectCount;
-        DynamicField<int> instanceCount;
-        DynamicField<int> userdataCount;
+        OffsetField<uint> magic;
+        OffsetField<uint> version;
+        OffsetField<int> objectCount;
+        OffsetField<int> instanceCount;
+        OffsetField<int> userdataCount;
         // hidden
-        DynamicField<int> reserved;
-        DynamicField<long> instanceOffset;
-        DynamicField<long> dataOffset;
-        DynamicField<long> userdataOffset;
+        OffsetField<int> reserved;
+        OffsetField<long> instanceOffset;
+        OffsetField<long> dataOffset;
+        OffsetField<long> userdataOffset;
 
-        public void Read(RszFileHandler handler, long start)
+        public override bool Read(RszFileHandler handler, long start)
         {
             handler.FSeek(start);
             bool RTVersion = handler.RSZVersion != "RE7" || handler.RTVersion;
@@ -71,6 +50,7 @@ namespace RszTool.Rsz
                 ReadField(ref userdataOffset);
             }
             EndRead();
+            return true;
         }
 
         public uint Magic { get => magic.Value; set => magic.Value = value; }

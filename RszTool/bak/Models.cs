@@ -673,5 +673,26 @@ namespace RszTool
             }
         }
     }
+
+
+    public class AbsOffsetFormater : IValueFormater
+    {
+        public string FormatRead(IDataContainer instance, object value)
+        {
+            return (instance.Start + (long)value).ToString();
+        }
+
+        public object? FormatWrite(IDataContainer instance, string value)
+        {
+            long offset = long.Parse(value);
+            if (offset > instance.Start)
+            {
+                return offset;
+            }
+            return null;
+        }
+
+        public static readonly AbsOffsetFormater Instance = new AbsOffsetFormater();
+    }
 }
 #endif
