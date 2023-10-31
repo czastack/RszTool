@@ -46,15 +46,16 @@ namespace RszTool
     public abstract class AdaptiveModel : IModel
     {
         public long Start { get; private set; }
-        protected static Stack<FileHandler> FileHandlers = new();
+        protected static readonly Stack<FileHandler> FileHandlers = new();
+        public SortedDictionary<string, IOffsetField> Fields { get; set; } = new();
 
         protected void StartRead(FileHandler handler)
         {
             Start = handler.FTell();
-            FileHandlers.Append(handler);
+            FileHandlers.Push(handler);
         }
 
-        protected void EndRead()
+        protected static void EndRead()
         {
             FileHandlers.Pop();
         }
