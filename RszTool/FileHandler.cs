@@ -269,7 +269,18 @@ namespace RszTool
             return value;
         }
 
+        public int Read<T>(ref T value) where T : struct
+        {
+            return FileStream.Read(MemoryUtils.StructureAsBytes(ref value));
+        }
+
         public bool Write<T>(T value) where T : struct
+        {
+            FileStream.Write(MemoryUtils.StructureAsBytes(ref value));
+            return true;
+        }
+
+        public bool Write<T>(ref T value) where T : struct
         {
             FileStream.Write(MemoryUtils.StructureAsBytes(ref value));
             return true;

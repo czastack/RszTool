@@ -16,7 +16,30 @@ namespace RszTool.Rsz
         }
     }
 
-    public class RSZHeader : AdaptiveModel
+    public struct RSZHeader
+    {
+        public uint magic;
+        public uint version;
+        public int objectCount;
+        public int instanceCount;
+        public int userdataCount;
+        private readonly int reserved;
+        public long instanceOffset;
+        public long dataOffset;
+        public long userdataOffset;
+    }
+
+    public struct RTVersionRSZHeader
+    {
+        public uint magic;
+        public uint version;
+        public int objectCount;
+        public int instanceCount;
+        public long instanceOffset;
+        public long dataOffset;
+    }
+
+    /* public class RSZHeader : AdaptiveModel
     {
         OffsetField<uint> magic;
         OffsetField<uint> version;
@@ -62,7 +85,7 @@ namespace RszTool.Rsz
         public long InstanceOffset { get => instanceOffset.Value; set => instanceOffset.Value = value; }
         public long DataOffset { get => dataOffset.Value; set => dataOffset.Value = value; }
         public long UserdataOffset { get => userdataOffset.Value; set => userdataOffset.Value = value; }
-    }
+    } */
 
     struct ReadStruct
     {

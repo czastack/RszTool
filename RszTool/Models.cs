@@ -16,8 +16,12 @@ namespace RszTool
 
     public struct OffsetField<T> : IOffsetField where T : struct
     {
+        public OffsetField()
+        {
+        }
+
         public T Value { get; set; }
-        public int Offset { get; set; }
+        public int Offset { get; set; } = -1;
 
         public readonly object ObejctValue => Value;
         public static implicit operator T(OffsetField<T> field) => field.Value;
@@ -45,9 +49,15 @@ namespace RszTool
 
     public abstract class AdaptiveModel : IModel
     {
-        public long Start { get; private set; }
+        public long Start { get; private set; } = -1;
         protected static readonly Stack<FileHandler> FileHandlers = new();
-        public SortedDictionary<string, IOffsetField> Fields { get; set; } = new();
+
+        protected KeyValuePair<string, IOffsetField>[]? fields;
+        public KeyValuePair<string, IOffsetField>[] Fields =>
+            fields ??= (from fieldInfo in GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                        let field = fieldInfo.GetValue(this)
+                        where field is IOffsetField
+                        select new KeyValuePair<string, IOffsetField>(fieldInfo.Name, (IOffsetField)field)).ToArray();
 
         protected void StartRead(FileHandler handler)
         {
@@ -74,6 +84,9 @@ namespace RszTool
 
         protected bool WriteField<T>(FileHandler handler, in OffsetField<T> field) where T : struct
         {
+            if (field.Offset == -1) return false;
+            long start = Start != -1 ? Start : handler.FTell();
+            handler.FSeek(start + field.Offset);
             field.Write(handler);
             return true;
         }
@@ -82,18 +95,15 @@ namespace RszTool
 
         public bool Write(FileHandler handler)
         {
-            long start = handler.FTell();
-            foreach (var fieldInfo in GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            long start = Start != -1 ? Start : handler.FTell();
+            foreach (var (name, field) in Fields)
             {
-                var value = fieldInfo.GetValue(this);
-                if (value is IOffsetField field)
+                if (field.Offset == -1) continue;
+                handler.FSeek(start + field.Offset);
+                if (!field.Write(handler))
                 {
-                    handler.FSeek(start + field.Offset);
-                    if (!field.Write(handler))
-                    {
-                        Console.Error.WriteLine($"{this} Write {fieldInfo.Name} failed");
-                        return false;
-                    }
+                    Console.Error.WriteLine($"{this} Write {name} failed");
+                    return false;
                 }
             }
             return true;
@@ -116,7 +126,7 @@ namespace RszTool
 
     public class DynamicModel : IModel
     {
-        public long Start { get; private set; }
+        public long Start { get; private set; } = -1;
         public List<NamedOffsetField>? Fields { get; }
 
         public bool Read(RszFileHandler handler, long start)
@@ -137,7 +147,7 @@ namespace RszTool
         public bool Write(FileHandler handler)
         {
             if (Fields == null) return false;
-            long start = handler.FTell();
+            long start = Start != -1 ? Start : handler.FTell();
             foreach (var item in Fields)
             {
                 handler.FSeek(start + item.Field.Offset);
@@ -148,6 +158,38 @@ namespace RszTool
                 }
             }
             return true;
+        }
+    }
+
+
+    public class StructModel<T> : IModel where T : struct
+    {
+        public T Data = default;
+        public long Start { get; private set; } = -1;
+
+        public bool Read(RszFileHandler handler, long start = -1)
+        {
+            if (start != -1)
+            {
+                handler.FSeek(start);
+                Start = start;
+            }
+            else
+            {
+                Start = handler.FTell();
+            }
+            handler.Read(ref Data);
+            return true;
+
+        }
+
+        public bool Write(FileHandler handler)
+        {
+            if (Start != -1)
+            {
+                handler.FSeek(Start);
+            }
+            return handler.Write(ref Data);
         }
     }
 }
