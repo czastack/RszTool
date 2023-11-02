@@ -47,6 +47,11 @@ namespace RszTool
     }
 
 
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    public class ModelAutoOffsetFieldAttribute : Attribute
+    {
+    }
+
     public abstract class AdaptiveModel : IModel
     {
         public long Start { get; private set; } = -1;

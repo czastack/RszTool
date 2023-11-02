@@ -39,7 +39,8 @@ namespace RszTool.Rsz
         public long dataOffset;
     }
 
-    /* public class RSZHeader : AdaptiveModel
+    /* [ModelAutoOffsetField]
+    public partial class RSZHeader : AdaptiveModel
     {
         OffsetField<uint> magic;
         OffsetField<uint> version;
@@ -75,16 +76,6 @@ namespace RszTool.Rsz
             EndRead();
             return true;
         }
-
-        public uint Magic { get => magic.Value; set => magic.Value = value; }
-        public uint Version { get => version.Value; set => version.Value = value; }
-        public int ObjectCount { get => objectCount.Value; set => objectCount.Value = value; }
-        public int InstanceCount { get => instanceCount.Value; set => instanceCount.Value = value; }
-        public int UserdataCount { get => userdataCount.Value; set => userdataCount.Value = value; }
-        public int Reserved { get => reserved.Value; set => reserved.Value = value; }
-        public long InstanceOffset { get => instanceOffset.Value; set => instanceOffset.Value = value; }
-        public long DataOffset { get => dataOffset.Value; set => dataOffset.Value = value; }
-        public long UserdataOffset { get => userdataOffset.Value; set => userdataOffset.Value = value; }
     } */
 
     struct ReadStruct

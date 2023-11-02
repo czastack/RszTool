@@ -413,14 +413,14 @@ namespace RszTool
             return false;
         }
 
-        bool detectedNode(int64 tell)
+        /* bool detectedNode(int64 tell)
         {
             if (tell + 12 < FileSize() && ReadInt(tell - 4) == 0 && ReadInt(tell) != -1 &&
                 detectedHash(tell) && ReadInt(tell + 8) != 0 &&
                 detectedStringSm(startof(Header.BHVT.mNamePool) + 4 + (ReadUInt(tell + 8) * 2)))
                 return true;
             return false;
-        }
+        } */
 
         bool detectedBools(int64 tell) {
             uint nonBoolTotal = 0;
@@ -689,7 +689,7 @@ namespace RszTool
                 quicksort( i, high, array, array2 );
         }
 
-        public int getLevel(uint offset) {
+        /* public int getLevel(uint offset) {
             int L = 0;
             for (L=getRSZFileWaypointIndex(offset); L<level; L++) {
                 if (offset >= startof(RSZFile[L].Data) && offset < startof(RSZFile[L].Data) + Unsafe.SizeOf(RSZFile[L].Data))
@@ -705,7 +705,7 @@ namespace RszTool
                     break;
             }
             return L;
-        }
+        } */
 
         /*
         struct rGUID
