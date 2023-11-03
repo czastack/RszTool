@@ -22,21 +22,21 @@ namespace RszTool.Rsz
         public uint version;
         public int objectCount;
         public int instanceCount;
-        public int userdataCount;
-        private readonly int reserved;
         public long instanceOffset;
         public long dataOffset;
-        public long userdataOffset;
     }
 
-    public struct RTVersionRSZHeader
+    public struct RSZHeaderRTVersion
     {
         public uint magic;
         public uint version;
         public int objectCount;
         public int instanceCount;
+        public int userdataCount;
+        private readonly int reserved;
         public long instanceOffset;
         public long dataOffset;
+        public long userdataOffset;
     }
 
     /* [ModelAutoOffsetField]

@@ -6,42 +6,78 @@ namespace RszTool
 {
     public class FileHandler : IDisposable
     {
-        public FileStream FileStream { get; private set; }
-        public BinaryReader Reader { get; private set; }
-        public BinaryWriter Writer { get; private set; }
+        public string FilePath { get; }
+        public Stream Stream { get; }
+        public BinaryReader Reader { get; }
+        public BinaryWriter Writer { get; }
+        public bool IsMemory { get; }
 
-        private Sunday searcher = new Sunday();
+        private readonly Sunday searcher = new();
 
-        public FileHandler(string path)
+        public FileHandler(string path, bool isMemory = false)
         {
-            FileStream = new FileStream(path, FileMode.Open);
-            Reader = new BinaryReader(FileStream);
-            Writer = new BinaryWriter(FileStream);
+            FilePath = path;
+            IsMemory = isMemory;
+            FileStream fileStream = new(path, FileMode.Open);
+            if (isMemory) {
+                Stream = new MemoryStream();
+                fileStream.CopyTo(Stream);
+                fileStream.Dispose();
+                Stream.Position = 0;
+            } else {
+                Stream = fileStream;
+            }
+            Reader = new BinaryReader(Stream);
+            Writer = new BinaryWriter(Stream);
         }
 
         public void Dispose()
         {
-            Reader.Dispose();
-            Writer.Dispose();
-            FileStream.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Reader.Dispose();
+                Writer.Dispose();
+                Stream.Dispose();
+            }
+        }
+
+        public void Save(string? path = null)
+        {
+            if ((path == null || path == FilePath) && !IsMemory)
+            {
+                Stream.Flush();
+            }
+            else
+            {
+                using FileStream fileStream = File.Create(path ?? FilePath);
+                long pos = Stream.Position;
+                Stream.CopyTo(fileStream);
+                Stream.Position = pos;
+            }
         }
 
         public long FileSize()
         {
-            return FileStream.Length;
+            return Stream.Length;
         }
 
         public void FSeek(long tell)
         {
-            FileStream.Position = tell;
+            Stream.Position = tell;
         }
 
-        void align(uint alignment)
+        void Align(int alignment)
         {
-            long delta = FileStream.Position % alignment;
+            long delta = Stream.Position % alignment;
             if (delta != 0)
             {
-                FileStream.Position += alignment - delta;
+                Stream.Position += alignment - delta;
             }
         }
 
@@ -131,7 +167,7 @@ namespace RszTool
         public int ReadBytes(byte[] buffer, int64 pos, int n)
         {
             FSeek((uint)pos);
-            return FileStream.Read(buffer, 0, n);
+            return Stream.Read(buffer, 0, n);
         }
 
         public void WriteInt64(long value)
@@ -196,7 +232,7 @@ namespace RszTool
             if (maxLen != -1)
             {
                 byte[] buffer = new byte[maxLen * 2];
-                int readCount = FileStream.Read(buffer);
+                int readCount = Stream.Read(buffer);
                 if (readCount != 0)
                 {
                     int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
@@ -209,7 +245,7 @@ namespace RszTool
                 byte[] buffer = new byte[256];
                 do
                 {
-                    int readCount = FileStream.Read(buffer);
+                    int readCount = Stream.Read(buffer);
                     if (readCount != 0)
                     {
                         int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
@@ -234,7 +270,7 @@ namespace RszTool
             if (maxLen != -1)
             {
                 byte[] buffer = new byte[maxLen * 2];
-                int readCount = FileStream.Read(buffer);
+                int readCount = Stream.Read(buffer);
                 if (readCount != 0)
                 {
                     int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
@@ -246,7 +282,7 @@ namespace RszTool
                 byte[] buffer = new byte[256];
                 do
                 {
-                    int readCount = FileStream.Read(buffer);
+                    int readCount = Stream.Read(buffer);
                     if (readCount != 0)
                     {
                         int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
@@ -265,35 +301,35 @@ namespace RszTool
         public T Read<T>() where T : struct
         {
             T value = default;
-            FileStream.Read(MemoryUtils.StructureAsBytes(ref value));
+            Stream.Read(MemoryUtils.StructureAsBytes(ref value));
             return value;
         }
 
         public int Read<T>(ref T value) where T : struct
         {
-            return FileStream.Read(MemoryUtils.StructureAsBytes(ref value));
+            return Stream.Read(MemoryUtils.StructureAsBytes(ref value));
         }
 
         public bool Write<T>(T value) where T : struct
         {
-            FileStream.Write(MemoryUtils.StructureAsBytes(ref value));
+            Stream.Write(MemoryUtils.StructureAsBytes(ref value));
             return true;
         }
 
         public bool Write<T>(ref T value) where T : struct
         {
-            FileStream.Write(MemoryUtils.StructureAsBytes(ref value));
+            Stream.Write(MemoryUtils.StructureAsBytes(ref value));
             return true;
         }
 
         public long FTell()
         {
-            return FileStream.Position;
+            return Stream.Position;
         }
 
         public void FSkip(long skip)
         {
-            FileStream.Seek(skip, SeekOrigin.Current);
+            Stream.Seek(skip, SeekOrigin.Current);
         }
 
         /// <summary>查找字节数组</summary>
@@ -348,6 +384,30 @@ namespace RszTool
         public long FindFirst<T>(T pattern, in SearchParam param = default) where T : struct
         {
             return FindBytes(MemoryUtils.StructureRefToBytes(ref pattern), param);
+        }
+
+        void InsertBytes(Span<byte> buffer, int64 position)
+        {
+            var stream = Stream;
+            // 将当前位置保存到临时变量中
+            long currentPosition = stream.Position;
+
+            // 将流的位置设置为插入点
+            stream.Position = position;
+
+            // 将后续数据读取到临时缓冲区
+            byte[] tempBuffer = new byte[stream.Length - position];
+            int bytesRead = stream.Read(tempBuffer, 0, tempBuffer.Length);
+
+            // 将插入数据写入到流中
+            stream.Position = position;
+            stream.Write(buffer);
+
+            // 将后续数据写入到流中
+            stream.Write(tempBuffer, 0, bytesRead);
+
+            // 将流的位置恢复到原始位置
+            stream.Position = currentPosition;
         }
     }
 }
