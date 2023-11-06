@@ -106,7 +106,7 @@ namespace RszTool
 
         public bool IsClassNative(uint classHash)
         {
-            return classDict.TryGetValue(classHash, out var rszClass) ? rszClass.native : false;
+            return classDict.TryGetValue(classHash, out var rszClass) && rszClass.native;
         }
 
         public bool IsFieldNative(uint classHash, uint fieldIndex)
