@@ -1,20 +1,6 @@
-using System.Runtime.InteropServices;
-using System.Text;
-
+#if OLD
 namespace RszTool.Rsz
 {
-    public class RSZMagic
-    {
-        public RSZMagic(RszFileHandler handler)
-        {
-            if (handler.realStart != -1)
-            {
-                handler.FSeek(handler.realStart);
-                handler.realStart = -1;
-            }
-
-        }
-    }
 
     public struct RSZHeader
     {
@@ -26,6 +12,9 @@ namespace RszTool.Rsz
         public long dataOffset;
     }
 
+    /// <summary>
+    /// RT应该是指光线追踪(ray tracing)
+    /// </summary>
     public struct RSZHeaderRTVersion
     {
         public uint magic;
@@ -53,7 +42,7 @@ namespace RszTool.Rsz
         OffsetField<long> dataOffset;
         OffsetField<long> userdataOffset;
 
-        public override bool Read(RszFileHandler handler, long start)
+        public override bool Read(FileHandler handler, long start)
         {
             handler.FSeek(start);
             bool RTVersion = handler.RSZVersion != "RE7" || handler.RTVersion;
@@ -78,6 +67,19 @@ namespace RszTool.Rsz
         }
     } */
 
+    public class RSZMagic
+    {
+        public RSZMagic(FileHandler handler)
+        {
+            if (handler.realStart != -1)
+            {
+                handler.FSeek(handler.realStart);
+                handler.realStart = -1;
+            }
+
+        }
+    }
+
     struct ReadStruct
     {
         [MarshalAs(UnmanagedType.I4)]
@@ -92,7 +94,7 @@ namespace RszTool.Rsz
 
     public static class ReadStructExtensions
     {
-        /* public static void ReadReadStruct(this RszFileHandler handler, ref ReadStruct rs)
+        /* public static void ReadReadStruct(this FileHandler handler, ref ReadStruct rs)
         {
             handler.FSeek((long)(rs.offset + rs.addOffset));
 
@@ -135,7 +137,7 @@ namespace RszTool.Rsz
 
     public static class fakeGameObjectExtensions
     {
-        public static void ReadFakeGameObject(this RszFileHandler handler, ref FakeGameObject obj)
+        public static void ReadFakeGameObject(this FileHandler handler, ref FakeGameObject obj)
         {
             handler.SeekOffsetAligned(0);
             obj.size0 = handler.ReadUInt();
@@ -168,7 +170,7 @@ namespace RszTool.Rsz
         private byte listSize;
         public int Count;
 
-        public BHVTCount(int listSize, RszFileHandler handler)
+        public BHVTCount(int listSize, FileHandler handler)
         {
             this.listSize = (byte)listSize;
             Count = handler.ReadInt();
@@ -180,7 +182,7 @@ namespace RszTool.Rsz
         }
 
 #if false
-        public void WriteBHVTCount(ref BHVTCount c, string s, RszFileHandler handler)
+        public void WriteBHVTCount(ref BHVTCount c, string s, FileHandler handler)
         {
             int newCount = int.Parse(s);
             if (newCount - c.Count > 0)
@@ -242,8 +244,8 @@ namespace RszTool.Rsz
         public static void WriteStringToHash(ref HashGenerator h, string s)
         {
             h.String_Form = s;
-            h.Hash_Form = (int)RszFileHandler.hash_wide(h.String_Form);
-            h.Hash_Form_unsigned = RszFileHandler.hash_wide(h.String_Form);
+            h.Hash_Form = (int)FileHandler.hash_wide(h.String_Form);
+            h.Hash_Form_unsigned = FileHandler.hash_wide(h.String_Form);
         }
 
         public static string readRCOLWarning(ref uint u)
@@ -258,3 +260,4 @@ namespace RszTool.Rsz
         }
     }
 }
+#endif

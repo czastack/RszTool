@@ -1,3 +1,4 @@
+#if OLD
 using System.Text.RegularExpressions;
 using uint64 = System.UInt64;
 using int64 = System.Int64;
@@ -1073,4 +1074,5 @@ namespace RszTool
 
     }
 }
+#endif
 #endif

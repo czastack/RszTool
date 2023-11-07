@@ -44,6 +44,11 @@ namespace RszTool
             return classDict.TryGetValue(classHash, out var rszClass) ? rszClass.name : "Unknown Class!";
         }
 
+        public RszClass? GetRSZClass(uint classHash)
+        {
+            return classDict.TryGetValue(classHash, out var rszClass) ? rszClass : null;
+        }
+
         public int GetFieldCount(uint classHash)
         {
             return classDict.TryGetValue(classHash, out var rszClass) ? rszClass.fields.Length : -1;

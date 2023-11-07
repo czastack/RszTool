@@ -6,7 +6,7 @@ namespace RszTool
 {
     public class FileHandler : IDisposable
     {
-        public string FilePath { get; }
+        public string? FilePath { get; }
         public Stream Stream { get; }
         public BinaryReader Reader { get; }
         public BinaryWriter Writer { get; }
@@ -27,6 +27,14 @@ namespace RszTool
             } else {
                 Stream = fileStream;
             }
+            Reader = new BinaryReader(Stream);
+            Writer = new BinaryWriter(Stream);
+        }
+
+        public FileHandler(Stream stream, bool isMemory = false)
+        {
+            IsMemory = isMemory;
+            Stream = stream;
             Reader = new BinaryReader(Stream);
             Writer = new BinaryWriter(Stream);
         }
@@ -55,7 +63,9 @@ namespace RszTool
             }
             else
             {
-                using FileStream fileStream = File.Create(path ?? FilePath);
+                path ??= FilePath;
+                if (path == null) return;
+                using FileStream fileStream = File.Create(path);
                 long pos = Stream.Position;
                 Stream.CopyTo(fileStream);
                 Stream.Position = pos;
@@ -72,13 +82,18 @@ namespace RszTool
             Stream.Position = tell;
         }
 
-        void Align(int alignment)
+        public void Align(int alignment)
         {
             long delta = Stream.Position % alignment;
             if (delta != 0)
             {
                 Stream.Position += alignment - delta;
             }
+        }
+
+        public void SeekOffsetAligned(int offset, int align = 4)
+        {
+            FSeek(Utils.AlignSize(FTell() + offset, align));
         }
 
         public float ReadFloat(int64 tell)
@@ -224,8 +239,9 @@ namespace RszTool
             return text;
         }
 
-        public string ReadWString(int64 pos, int maxLen=-1)
+        public string ReadWString(int64 pos, int maxLen=-1, bool backPos = true)
         {
+            long originPos = FTell();
             FSeek(pos);
             string result = "";
             Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
@@ -236,7 +252,7 @@ namespace RszTool
                 if (readCount != 0)
                 {
                     int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
-                    result = System.Text.Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount);
+                    result = Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount);
                 }
             }
             else
@@ -249,7 +265,7 @@ namespace RszTool
                     if (readCount != 0)
                     {
                         int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
-                        sb.Append(System.Text.Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount));
+                        sb.Append(Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount));
                         if (n != -1) break;
                     }
                     if (readCount != buffer.Length)
@@ -259,11 +275,13 @@ namespace RszTool
                 } while (true);
                 result = sb.ToString();
             }
+            if (backPos) FSeek(originPos);
             return result;
         }
 
-        public int ReadWStringLength(int64 pos, int maxLen=-1)
+        public int ReadWStringLength(int64 pos, int maxLen=-1, bool backPos = true)
         {
+            long originPos = FTell();
             FSeek(pos);
             int result = 0;
             Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
@@ -295,6 +313,7 @@ namespace RszTool
                     }
                 } while (true);
             }
+            if (backPos) FSeek(originPos);
             return result;
         }
 

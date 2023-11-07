@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using RszTool.Common;
@@ -42,8 +43,22 @@ namespace RszTool
     public interface IModel
     {
         long Start { get; }
-        bool Read(RszFileHandler handler, long start);
+        long Size { get; }
+        bool Read(FileHandler handler);
         bool Write(FileHandler handler);
+    }
+
+
+    public static class IModelExtensions
+    {
+        public static bool Read(this IModel model, FileHandler handler, long start)
+        {
+            if (start != -1)
+            {
+                handler.FSeek(start);
+            }
+            return model.Read(handler);
+        }
     }
 
 
@@ -55,6 +70,7 @@ namespace RszTool
     public abstract class AdaptiveModel : IModel
     {
         public long Start { get; private set; } = -1;
+        public long Size { get; private set; }
         protected static readonly Stack<FileHandler> FileHandlers = new();
 
         protected KeyValuePair<string, IOffsetField>[]? fields;
@@ -70,8 +86,9 @@ namespace RszTool
             FileHandlers.Push(handler);
         }
 
-        protected static void EndRead()
+        protected void EndRead()
         {
+            Size = FileHandlers.Peek().FTell() - Start;
             FileHandlers.Pop();
         }
 
@@ -96,7 +113,7 @@ namespace RszTool
             return true;
         }
 
-        public abstract bool Read(RszFileHandler handler, long start);
+        public abstract bool Read(FileHandler handler);
 
         public bool Write(FileHandler handler)
         {
@@ -132,12 +149,13 @@ namespace RszTool
     public class DynamicModel : IModel
     {
         public long Start { get; private set; } = -1;
+        public long Size { get; private set; }
         public List<NamedOffsetField>? Fields { get; }
 
-        public bool Read(RszFileHandler handler, long start)
+        public bool Read(FileHandler handler)
         {
             if (Fields == null) return false;
-            Start = start;
+            Start = handler.FTell();
             foreach (var item in Fields)
             {
                 if (!item.Field.Write(handler))
@@ -146,6 +164,7 @@ namespace RszTool
                     item.Field.Read(handler);
                 }
             }
+            Size = handler.FTell() - Start;
             return true;
         }
 
@@ -171,21 +190,14 @@ namespace RszTool
     {
         public T Data = default;
         public long Start { get; private set; } = -1;
+        public long Size { get; private set; }
 
-        public bool Read(RszFileHandler handler, long start = -1)
+        public bool Read(FileHandler handler)
         {
-            if (start != -1)
-            {
-                handler.FSeek(start);
-                Start = start;
-            }
-            else
-            {
-                Start = handler.FTell();
-            }
+            Start = handler.FTell();
             handler.Read(ref Data);
+            Size = handler.FTell() - Start;
             return true;
-
         }
 
         public bool Write(FileHandler handler)
@@ -195,6 +207,30 @@ namespace RszTool
                 handler.FSeek(Start);
             }
             return handler.Write(ref Data);
+        }
+    }
+
+
+    public abstract class BaseModel : IModel
+    {
+        public long Start { get; protected set; }
+        public long Size { get; protected set; }
+
+        public virtual bool Read(FileHandler handler)
+        {
+            Start = handler.FTell();
+            return true;
+        }
+
+        protected void EndRead(FileHandler handler)
+        {
+            Size = handler.FTell() - Start;
+        }
+
+        public virtual bool Write(FileHandler handler)
+        {
+            if (Start != -1) handler.FSeek(Start);
+            return true;
         }
     }
 }
