@@ -22,8 +22,9 @@ namespace RszTool
         public StructModel<Header> dataHeader = new();
         public List<StructModel<ObjectTable>> dataObjectTable = new();
         public List<InstanceInfo> dataInstanceInfo = new();
-        public List<RSZUserDataInfo>? dataRSZUserDataInfo;
-        public List<RSZUserDataInfo_TDB_LE_67>? dataRSZUserDataInfo_TDB_LE_67;
+        public List<IRSZUserDataInfo> dataRSZUserDataInfo = new();
+
+        public readonly List<RszInstance> instanceData = new();
 
         public RSZFile(RszHandler rszHandler) : base(rszHandler)
         {
@@ -55,23 +56,21 @@ namespace RszTool
             Dictionary<uint, int> distanceIdToIndex = new();
             if (RszHandler.TdbVersion < 67)
             {
-                dataRSZUserDataInfo_TDB_LE_67 = new();
                 for (int i = 0; i < (int)dataHeader.Data.userdataCount; i++)
                 {
                     RSZUserDataInfo_TDB_LE_67 rszUserDataInfo = new();
                     rszUserDataInfo.Read(handler);
                     rszUserDataInfo.ReadClassName(rszParser);
-                    dataRSZUserDataInfo_TDB_LE_67.Add(rszUserDataInfo);
+                    dataRSZUserDataInfo.Add(rszUserDataInfo);
                     distanceIdToIndex[rszUserDataInfo.instanceId] = i;
                 }
-                foreach (var item in dataRSZUserDataInfo_TDB_LE_67)
+                foreach (var item in dataRSZUserDataInfo)
                 {
-                    item.ReadEmbeddedRSZFile(RszHandler);
+                    ((RSZUserDataInfo_TDB_LE_67)item).ReadEmbeddedRSZFile(RszHandler);
                 }
             }
             else
             {
-                dataRSZUserDataInfo ??= new();
                 for (int i = 0; i < (int)dataHeader.Data.userdataCount; i++)
                 {
                     RSZUserDataInfo rszUserDataInfo = new();
@@ -90,16 +89,14 @@ namespace RszTool
                     Console.Error.WriteLine($"RszClass {dataInstanceInfo[i].typeId} not found!");
                     continue;
                 }
-                int userDataIdx = -1;
-                distanceIdToIndex.TryGetValue((uint)i, out userDataIdx);
+                distanceIdToIndex.TryGetValue((uint)i, out int userDataIdx);
                 RszInstance instance = new(rszClass, i, userDataIdx);
+                instance.Read(handler);
                 if (userDataIdx != -1)
                 {
-                    if (dataRSZUserDataInfo != null)
-                        instance.RSZUserData = dataRSZUserDataInfo[userDataIdx];
-                    else if (dataRSZUserDataInfo_TDB_LE_67 != null)
-                        instance.RSZUserData = dataRSZUserDataInfo_TDB_LE_67[userDataIdx];
+                    instance.RSZUserData = dataRSZUserDataInfo[userDataIdx];
                 }
+                instanceData.Add(instance);
             }
             return true;
         }
@@ -109,9 +106,9 @@ namespace RszTool
             var handler = FileHandler;
             if (!dataHeader.Write(handler)) return false;
             if (!dataObjectTable.Write(handler)) return false;
+            // TODO write strings
             if (!dataInstanceInfo.Write(handler)) return false;
-            if (dataRSZUserDataInfo != null && !dataRSZUserDataInfo.Write(handler)) return false;
-            if (dataRSZUserDataInfo_TDB_LE_67 != null && !dataRSZUserDataInfo_TDB_LE_67.Write(handler)) return false;
+            if (!dataRSZUserDataInfo.Write(handler)) return false;
             return true;
         }
     }
@@ -146,7 +143,7 @@ namespace RszTool
         }
     }
 
-    public interface IRSZUserDataInfo
+    public interface IRSZUserDataInfo : IModel
     {
         uint InstanceId { get; }
         uint TypeId { get; }
@@ -171,7 +168,7 @@ namespace RszTool
             handler.Read(ref instanceId);
             handler.Read(ref typeId);
             handler.Read(ref pathOffset);
-            path = handler.ReadWString((int)pathOffset);
+            path = handler.ReadWString((long)pathOffset);
             EndRead(handler);
             return true;
         }

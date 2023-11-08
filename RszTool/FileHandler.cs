@@ -1,6 +1,7 @@
 using int64 = System.Int64;
 using System.Text;
 using RszTool.Common;
+using System.Runtime.InteropServices;
 
 namespace RszTool
 {
@@ -239,10 +240,10 @@ namespace RszTool
             return text;
         }
 
-        public string ReadWString(int64 pos, int maxLen=-1, bool backPos = true)
+        public string ReadWString(int64 pos = -1, int maxLen=-1, bool backPos = true)
         {
             long originPos = FTell();
-            FSeek(pos);
+            if (pos != -1) FSeek(pos);
             string result = "";
             Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
             if (maxLen != -1)
@@ -279,10 +280,10 @@ namespace RszTool
             return result;
         }
 
-        public int ReadWStringLength(int64 pos, int maxLen=-1, bool backPos = true)
+        public int ReadWStringLength(int64 pos = -1, int maxLen=-1, bool backPos = true)
         {
             long originPos = FTell();
-            FSeek(pos);
+            if (pos != -1) FSeek(pos);
             int result = 0;
             Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
             if (maxLen != -1)
@@ -317,6 +318,11 @@ namespace RszTool
             return result;
         }
 
+        public bool WriteWString(string text)
+        {
+            return WriteSpan((ReadOnlySpan<char>)text) && Write<ushort>(0);
+        }
+
         public T Read<T>() where T : struct
         {
             T value = default;
@@ -338,6 +344,77 @@ namespace RszTool
         public bool Write<T>(ref T value) where T : struct
         {
             Stream.Write(MemoryUtils.StructureAsBytes(ref value));
+            return true;
+        }
+
+        public byte[] ReadBytes(int length)
+        {
+            byte[] buffer = new byte[length];
+            Stream.Read(buffer);
+            return buffer;
+        }
+
+        public bool WriteBytes(byte[] buffer)
+        {
+            Stream.Write(buffer);
+            return true;
+        }
+
+        /// <summary>读取数组</summary>
+        public T[] ReadArray<T>(int length) where T : struct
+        {
+            T[] array = new T[length];
+            Stream.Read(MemoryMarshal.AsBytes((Span<T>)array));
+            return array;
+        }
+
+        /// <summary>读取数组</summary>
+        public bool ReadArray<T>(T[] array) where T : struct
+        {
+            Stream.Read(MemoryMarshal.AsBytes((Span<T>)array));
+            return true;
+        }
+
+        /// <summary>读取数组</summary>
+        public bool ReadArray<T>(T[] array, int start=0, int length=-1) where T : struct
+        {
+            if (length == -1 || length > array.Length - start)
+            {
+                length = array.Length - start;
+            }
+            Stream.Read(MemoryMarshal.AsBytes(array.AsSpan(start, length)));
+            return true;
+        }
+
+        /// <summary>写入数组</summary>
+        public bool WriteArray<T>(T[] array) where T : struct
+        {
+            Stream.Write(MemoryMarshal.AsBytes((ReadOnlySpan<T>)array));
+            return true;
+        }
+
+        /// <summary>写入数组</summary>
+        public bool WriteArray<T>(T[] array, int start=0, int length=-1) where T : struct
+        {
+            if (length == -1 || length > array.Length - start)
+            {
+                length = array.Length - start;
+            }
+            Stream.Write(MemoryMarshal.AsBytes(new ReadOnlySpan<T>(array, start, length)));
+            return true;
+        }
+
+        /// <summary>读取数组</summary>
+        public bool ReadSpan<T>(Span<T> span) where T : struct
+        {
+            Stream.Write(MemoryMarshal.AsBytes(span));
+            return true;
+        }
+
+        /// <summary>写入数组</summary>
+        public bool WriteSpan<T>(ReadOnlySpan<T> span) where T : struct
+        {
+            Stream.Write(MemoryMarshal.AsBytes(span));
             return true;
         }
 

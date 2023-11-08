@@ -27,7 +27,25 @@ namespace RszTool.Common
         public static Span<T> CreateSpan<T>(ref T reference, int length) => MemoryMarshal.CreateSpan(ref reference, length);
 #endif
 
-            /// <summary>
+        public static object? BytesToStruct(byte[] buffer, Type type)
+        {
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(buffer, 0);
+            return Marshal.PtrToStructure(ptr, type);
+        }
+
+        /// <summary>
+        /// bytes转结构体引用
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T BytesAsStructure<T>(Span<byte> buffer) where T : struct
+        {
+            return ref AsRef<T>(buffer);
+        }
+
+        /// <summary>
         /// 结构体转bytes，对bytes的改动会影响原数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -60,6 +78,21 @@ namespace RszTool.Common
         public static byte[] StructureToBytes<T>(T value, byte[]? buffer = null) where T : struct
         {
             return StructureRefToBytes(ref value, buffer);
+        }
+
+        /// <summary>
+        /// 结构体转byte[]
+        /// </summary>
+        public static byte[] StructureToBytes(object value, byte[]? buffer = null)
+        {
+            int size = Marshal.SizeOf(value);
+            if (buffer == null || buffer.Length < size)
+            {
+                buffer = new byte[size];
+            }
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(buffer, 0);
+            Marshal.StructureToPtr(value, ptr, false);
+            return buffer;
         }
     }
 }

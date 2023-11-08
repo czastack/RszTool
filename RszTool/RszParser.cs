@@ -6,7 +6,7 @@ namespace RszTool
 {
     public class RszParser
     {
-        public static Dictionary<string, RszParser> instanceDict = new();
+        private static readonly Dictionary<string, RszParser> instanceDict = new();
 
         public static RszParser GetInstance(string jsonPath)
         {
@@ -18,7 +18,7 @@ namespace RszTool
             return rszParser;
         }
 
-        private Dictionary<uint, RszClass> classDict;
+        private readonly Dictionary<uint, RszClass> classDict;
 
         public RszParser(string jsonPath)
         {

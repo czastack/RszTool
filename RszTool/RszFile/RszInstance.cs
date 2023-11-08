@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Numerics;
 
 namespace RszTool
@@ -8,7 +9,7 @@ namespace RszTool
     public class RszInstance : BaseModel
     {
         public RszClass RszClass { get; set; }
-        public object[] Value { get; set; }
+        public object[] Values { get; set; }
         public int Index { get; set; }
         public int RSZUserDataIdx { get; set; }
         public string Name { get; set; }
@@ -17,16 +18,36 @@ namespace RszTool
         public RszInstance(RszClass rszClass, int index, int rszUserDataIdx)
         {
             RszClass = rszClass;
-            Value = new object[rszClass.fields.Length];
+            Values = new object[rszClass.fields.Length];
             Index = index;
             RSZUserDataIdx = rszUserDataIdx;
             Name = $"{rszClass.name}[{index}]";
         }
 
-        public object ReadRszFile(FileHandler handler, int index)
+        /// <summary>
+        /// 读取字段
+        /// </summary>
+        /// <param name="handler"></param>
+        /// <returns></returns>
+        public override bool Read(FileHandler handler)
+        {
+            if (!base.Read(handler)) return false;
+            for (int i = 0; i < RszClass.fields.Length; i++)
+            {
+                Values[i] = ReadRszField(handler, i);
+            }
+            EndRead(handler);
+            return true;
+        }
+
+        public object ReadRszField(FileHandler handler, int index)
         {
             RszField field = RszClass.fields[index];
             handler.Align(field.array ? 4 : field.align);
+            if (index == 0)
+            {
+                Start = handler.FTell();
+            }
             if (field.array)
             {
                 int count = handler.ReadInt();
@@ -35,31 +56,34 @@ namespace RszTool
                     throw new InvalidDataException($"{field.name} count {count} too large");
                 }
                 List<object> arrayItems = new(count);
-                Value[index] = arrayItems;
                 for (int i = 0; i < count; i++)
                 {
-                    arrayItems.Add(ReadRszFile(handler, index));
+                    arrayItems.Add(ReadNormalField(handler, field));
                 }
                 return arrayItems;
             }
-            return null;
+            else
+            {
+                return ReadNormalField(handler, field);
+            }
         }
 
-        public object ReadArrayItem(FileHandler handler, RszField listField)
+        public static object ReadNormalField(FileHandler handler, RszField field)
         {
-            if (listField.type == "String" || listField.type == "Resource")
+            if (field.type == "String" || field.type == "Resource")
             {
                 int charCount = handler.ReadInt();
                 long stringStart = handler.FTell();
                 string value = handler.ReadWString(charCount);
                 handler.FSeek(stringStart + charCount * 2);
+                // TODO checkOpenResource
                 return value;
             }
             else
             {
                 BinaryReader reader = handler.Reader;
                 long startPos = handler.FTell();
-                object value = listField.type switch
+                object value = field.type switch
                 {
                     "Object" or "UserData" or "U32" => reader.ReadUInt32(),
                     "S32" => reader.ReadInt32(),
@@ -73,10 +97,64 @@ namespace RszTool
                     "Vec4" => handler.Read<Vector4>(),
                     "OBB" => handler.ReadArray<float>(20),
                     "Guid" => handler.Read<Guid>(),
-                    _ => throw new InvalidDataException($"Not support type {listField.type}"),
+                    "Color" => handler.Read<Color>(),
+                    "Data" => handler.ReadBytes(field.size),
+                    _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
-                handler.FSeek(startPos + listField.size);
+                handler.FSeek(startPos + field.size);
                 return value;
+            }
+        }
+
+        public bool WriteRszField(FileHandler handler, int index)
+        {
+            RszField field = RszClass.fields[index];
+            handler.Align(field.array ? 4 : field.align);
+            if (field.array)
+            {
+                foreach (var item in (object[])Values[index])
+                {
+                    WriteNormalField(handler, field, item);
+                }
+                return true;
+            }
+            else
+            {
+                return WriteNormalField(handler, field, Values[index]);
+            }
+        }
+
+        public static bool WriteNormalField(FileHandler handler, RszField field, object value)
+        {
+            if (field.type == "String" || field.type == "Resource")
+            {
+                string valueStr = (string)value;
+                int charCount = valueStr.Length;
+                return handler.Write(charCount * 2) && handler.WriteWString(valueStr);
+            }
+            else
+            {
+                long startPos = handler.FTell();
+                _ = field.type switch
+                {
+                    "Object" or "UserData" or "U32" => handler.Write((uint)value),
+                    "S32" => handler.Write((int)value),
+                    "U64" => handler.Write((ulong)value),
+                    "S64" => handler.Write((long)value),
+                    "Bool" => handler.Write((bool)value),
+                    "F32" => handler.Write((float)value),
+                    "F64" => handler.Write((double)value),
+                    "Vec2" => handler.Write((Vector2)value),
+                    "Vec3" => handler.Write((Vector3)value),
+                    "Vec4" => handler.Write((Vector4)value),
+                    "OBB" => handler.WriteArray((float[])value),
+                    "Guid" => handler.Write((Guid)value),
+                    "Color" => handler.Write((Color)value),
+                    "Data" => handler.WriteBytes((byte[])value),
+                    _ => throw new InvalidDataException($"Not support type {field.type}"),
+                };
+                handler.FSeek(startPos + field.size);
+                return true;
             }
         }
     }

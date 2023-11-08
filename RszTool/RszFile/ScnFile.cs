@@ -44,7 +44,7 @@ namespace RszTool
                 handler.Read(ref pathOffset);
                 handler.Read(ref parentId);
                 EndRead(handler);
-                prefabPath = handler.ReadWString((int)pathOffset);
+                prefabPath = handler.ReadWString((long)pathOffset);
                 return true;
             }
 

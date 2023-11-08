@@ -10,7 +10,7 @@ namespace RszTool
             if (!base.Read(handler)) return false;
             handler.Read(ref pathOffset);
             EndRead(handler);
-            resourcePath = handler.ReadWString((int)pathOffset);
+            resourcePath = handler.ReadWString((long)pathOffset);
             return true;
         }
 
@@ -37,7 +37,7 @@ namespace RszTool
             handler.Read(ref CRC);
             handler.Read(ref pathOffset);
             EndRead(handler);
-            userdataPath = handler.ReadWString((int)pathOffset);
+            userdataPath = handler.ReadWString((long)pathOffset);
             return true;
         }
 
@@ -63,4 +63,12 @@ namespace RszTool
             return true;
         }
     }
+
+
+    /// <summary>
+    /// 待写入的字符串
+    /// </summary>
+    /// <param name="OffsetStart">字符串偏移的地址</param>
+    /// <param name="Text">待写入文本</param>
+    public record StringToWrite(long OffsetStart, string Text);
 }
