@@ -23,18 +23,18 @@ namespace RszTool
 
         public virtual bool Read()
         {
-            Start = FileHandler.FTell();
+            Start = FileHandler.Tell();
             return true;
         }
 
         protected void EndRead()
         {
-            Size = FileHandler.FTell() - Start;
+            Size = FileHandler.Tell() - Start;
         }
 
         public virtual bool Write()
         {
-            if (Start != -1) FileHandler.FSeek(Start);
+            if (Start != -1) FileHandler.Seek(Start);
             return true;
         }
     }

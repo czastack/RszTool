@@ -204,7 +204,7 @@ namespace RszTool
             if (handler != null)
             {
                 long address = GetAddress(instance);
-                handler.FSeek(address);
+                handler.Seek(address);
                 if (Type is NativeType nativeType)
                 {
                     Type dataType = nativeType.Type;
@@ -281,7 +281,7 @@ namespace RszTool
             var handler = instance.Handler;
             if (handler != null)
             {
-                handler.FSeek(GetAddress(instance));
+                handler.Seek(GetAddress(instance));
                 if (Type is NativeType nativeType)
                 {
                     Type dataType = nativeType.Type;

@@ -55,7 +55,7 @@ namespace RszTool
         {
             if (start != -1)
             {
-                handler.FSeek(start);
+                handler.Seek(start);
             }
             return model.Read(handler);
         }
@@ -82,13 +82,13 @@ namespace RszTool
 
         protected void StartRead(FileHandler handler)
         {
-            Start = handler.FTell();
+            Start = handler.Tell();
             FileHandlers.Push(handler);
         }
 
         protected void EndRead()
         {
-            Size = FileHandlers.Peek().FTell() - Start;
+            Size = FileHandlers.Peek().Tell() - Start;
             FileHandlers.Pop();
         }
 
@@ -99,7 +99,7 @@ namespace RszTool
 
         protected bool ReadField<T>(FileHandler handler, ref OffsetField<T> field) where T : struct
         {
-            field.Offset = (int)(handler.FTell() - Start);
+            field.Offset = (int)(handler.Tell() - Start);
             field.Value = handler.Read<T>();
             return true;
         }
@@ -107,8 +107,8 @@ namespace RszTool
         protected bool WriteField<T>(FileHandler handler, in OffsetField<T> field) where T : struct
         {
             if (field.Offset == -1) return false;
-            long start = Start != -1 ? Start : handler.FTell();
-            handler.FSeek(start + field.Offset);
+            long start = Start != -1 ? Start : handler.Tell();
+            handler.Seek(start + field.Offset);
             field.Write(handler);
             return true;
         }
@@ -117,11 +117,11 @@ namespace RszTool
 
         public bool Write(FileHandler handler)
         {
-            long start = Start != -1 ? Start : handler.FTell();
+            long start = Start != -1 ? Start : handler.Tell();
             foreach (var (name, field) in Fields)
             {
                 if (field.Offset == -1) continue;
-                handler.FSeek(start + field.Offset);
+                handler.Seek(start + field.Offset);
                 if (!field.Write(handler))
                 {
                     Console.Error.WriteLine($"{this} Write {name} failed");
@@ -155,26 +155,26 @@ namespace RszTool
         public bool Read(FileHandler handler)
         {
             if (Fields == null) return false;
-            Start = handler.FTell();
+            Start = handler.Tell();
             foreach (var item in Fields)
             {
                 if (!item.Field.Write(handler))
                 {
-                    item.Field.Offset = (int)(handler.FTell() - Start);
+                    item.Field.Offset = (int)(handler.Tell() - Start);
                     item.Field.Read(handler);
                 }
             }
-            Size = handler.FTell() - Start;
+            Size = handler.Tell() - Start;
             return true;
         }
 
         public bool Write(FileHandler handler)
         {
             if (Fields == null) return false;
-            long start = Start != -1 ? Start : handler.FTell();
+            long start = Start != -1 ? Start : handler.Tell();
             foreach (var item in Fields)
             {
-                handler.FSeek(start + item.Field.Offset);
+                handler.Seek(start + item.Field.Offset);
                 if (!item.Field.Write(handler))
                 {
                     Console.Error.WriteLine($"{this} Write {item.Name} failed");
@@ -194,9 +194,9 @@ namespace RszTool
 
         public bool Read(FileHandler handler)
         {
-            Start = handler.FTell();
+            Start = handler.Tell();
             handler.Read(ref Data);
-            Size = handler.FTell() - Start;
+            Size = handler.Tell() - Start;
             return true;
         }
 
@@ -204,7 +204,7 @@ namespace RszTool
         {
             if (Start != -1)
             {
-                handler.FSeek(Start);
+                handler.Seek(Start);
             }
             return handler.Write(ref Data);
         }
@@ -218,18 +218,18 @@ namespace RszTool
 
         public virtual bool Read(FileHandler handler)
         {
-            Start = handler.FTell();
+            Start = handler.Tell();
             return true;
         }
 
         protected void EndRead(FileHandler handler)
         {
-            Size = handler.FTell() - Start;
+            Size = handler.Tell() - Start;
         }
 
         public virtual bool Write(FileHandler handler)
         {
-            if (Start != -1) handler.FSeek(Start);
+            if (Start != -1) handler.Seek(Start);
             return true;
         }
     }

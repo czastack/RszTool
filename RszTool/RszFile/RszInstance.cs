@@ -46,7 +46,7 @@ namespace RszTool
             handler.Align(field.array ? 4 : field.align);
             if (index == 0)
             {
-                Start = handler.FTell();
+                Start = handler.Tell();
             }
             if (field.array)
             {
@@ -73,16 +73,16 @@ namespace RszTool
             if (field.type == "String" || field.type == "Resource")
             {
                 int charCount = handler.ReadInt();
-                long stringStart = handler.FTell();
+                long stringStart = handler.Tell();
                 string value = handler.ReadWString(charCount);
-                handler.FSeek(stringStart + charCount * 2);
+                handler.Seek(stringStart + charCount * 2);
                 // TODO checkOpenResource
                 return value;
             }
             else
             {
                 BinaryReader reader = handler.Reader;
-                long startPos = handler.FTell();
+                long startPos = handler.Tell();
                 object value = field.type switch
                 {
                     "Object" or "UserData" or "U32" => reader.ReadUInt32(),
@@ -101,7 +101,7 @@ namespace RszTool
                     "Data" => handler.ReadBytes(field.size),
                     _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
-                handler.FSeek(startPos + field.size);
+                handler.Seek(startPos + field.size);
                 return value;
             }
         }
@@ -134,7 +134,7 @@ namespace RszTool
             }
             else
             {
-                long startPos = handler.FTell();
+                long startPos = handler.Tell();
                 _ = field.type switch
                 {
                     "Object" or "UserData" or "U32" => handler.Write((uint)value),
@@ -153,7 +153,7 @@ namespace RszTool
                     "Data" => handler.WriteBytes((byte[])value),
                     _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
-                handler.FSeek(startPos + field.size);
+                handler.Seek(startPos + field.size);
                 return true;
             }
         }

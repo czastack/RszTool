@@ -44,7 +44,7 @@ namespace RszTool.Rsz
 
         public override bool Read(FileHandler handler, long start)
         {
-            handler.FSeek(start);
+            handler.Seek(start);
             bool RTVersion = handler.RSZVersion != "RE7" || handler.RTVersion;
             StartRead(handler);
             ReadField(ref magic);
@@ -73,7 +73,7 @@ namespace RszTool.Rsz
         {
             if (handler.realStart != -1)
             {
-                handler.FSeek(handler.realStart);
+                handler.Seek(handler.realStart);
                 handler.realStart = -1;
             }
 
@@ -96,7 +96,7 @@ namespace RszTool.Rsz
     {
         /* public static void ReadReadStruct(this FileHandler handler, ref ReadStruct rs)
         {
-            handler.FSeek((long)(rs.offset + rs.addOffset));
+            handler.Seek((long)(rs.offset + rs.addOffset));
 
             switch (rs.structType)
             {
@@ -117,7 +117,7 @@ namespace RszTool.Rsz
                 Console.WriteLine($"RSZMagic not found at RSZ[{handler.getLevelRSZ(startof(RSZ))}] in BHVT header");
             }
 
-            handler.FSeek(startof(rs.offset) + 8);
+            handler.Seek(startof(rs.offset) + 8);
         } */
     }
 
@@ -142,7 +142,7 @@ namespace RszTool.Rsz
             handler.SeekOffsetAligned(0);
             obj.size0 = handler.ReadUInt();
 
-            if (obj.size0 != 0 && handler.FTell() + obj.size0 * 2 <= handler.FileSize())
+            if (obj.size0 != 0 && handler.Tell() + obj.size0 * 2 <= handler.FileSize())
             {
                 byte[] nameBytes = new byte[obj.size0 * 2];
                 handler.ReadBytes(nameBytes, 0, nameBytes.Length);
@@ -152,7 +152,7 @@ namespace RszTool.Rsz
             handler.SeekOffsetAligned(0);
             obj.size1 = handler.ReadUInt();
 
-            if (obj.size1 != 0 && handler.FTell() + obj.size1 * 2 <= handler.FileSize())
+            if (obj.size1 != 0 && handler.Tell() + obj.size1 * 2 <= handler.FileSize())
             {
                 byte[] tagBytes = new byte[obj.size1 * 2];
                 handler.ReadBytes(tagBytes, 0, tagBytes.Length);

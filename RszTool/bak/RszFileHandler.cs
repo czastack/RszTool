@@ -300,14 +300,14 @@ namespace RszTool
             string origVersion = RSZVersion, origExtractedDir = (string)extractedDir, origXFmt = xFmt,
                 origLocal_Directory = Local_Directory, origJsonPath = JsonPath;
 
-            FSeek(RSZOffset);
-            if (FTell() + 12 < FileSize())
+            Seek(RSZOffset);
+            if (Tell() + 12 < FileSize())
             {
-                instanceCount = ReadUInt(FTell() + 12);
-                objectCount = ReadUInt(FTell() + 8);
+                instanceCount = ReadUInt(Tell() + 12);
+                objectCount = ReadUInt(Tell() + 8);
             }
             if (instanceCount != 0) {
-                FSeek(ReadUInt(RSZOffset+24) + RSZOffset + 8);
+                Seek(ReadUInt(RSZOffset+24) + RSZOffset + 8);
                 //if (ReadUInt64() != 0) {
                 //    if (RSZVersion != "RE7")
                 //        Printf("RSZVersion auto detected to RE7\n");
@@ -322,7 +322,7 @@ namespace RszTool
                     hashName = ReadHashName(hash);
                     checkedVersions = 0;
                     if (hash != 0 && (hashName == "Unknown Class!") && hashName != "via.physics.UserData" && hashName != "via.physics.RequestSetColliderUserData") {
-                        //Printf("%s %i %i\n", hashName, zz, FTell());
+                        //Printf("%s %i %i\n", hashName, zz, Tell());
                         while (checkedVersions <= 6 && (hashName == "Unknown Class!")) { //|| (RSZVersion == "RE3" && (hashName == "via.physics.UserData" || hashName == "via.physics.RequestSetColliderUserData"))
                             switch (checkedVersions) {
                                 case 0: RSZVersion = "DMC5"; extractedDir = DMC5Path; xFmt = "x64\\"; break;
@@ -354,12 +354,12 @@ namespace RszTool
                     } //else
                     //  Printf("%s\n", hashName);
                     varsChecked++;
-                    FSkip(8);
+                    Skip(8);
                     if (varsChecked > 15)
                         break;
                 }
             }
-            FSeek(0);
+            Seek(0);
         }
 
         bool detectedColorVector(int64 tell)
@@ -449,7 +449,7 @@ namespace RszTool
         int detectedGuid(long tell) {
             int zerosCount = 0;
             for (int o=0; o<16; o++) {
-                if (ReadUByte(FTell()+o) == 0) zerosCount++;
+                if (ReadUByte(Tell()+o) == 0) zerosCount++;
             }
             return zerosCount;
         }
@@ -465,56 +465,56 @@ namespace RszTool
 
         void redetectObject(int idx) {
             if (!finished && broken) {
-                long pos = FTell();
-                while(FTell() <= FileSize() - 4) {
-                    if (detectedObject(FTell(), idx)) {
+                long pos = Tell();
+                while(Tell() <= FileSize() - 4) {
+                    if (detectedObject(Tell(), idx)) {
                         // SetForeColor(cYellow);
-                        Console.WriteLine($"Redetected object from {pos} to {FTell()}");
+                        Console.WriteLine($"Redetected object from {pos} to {Tell()}");
                         break;
-                    } else FSkip(4);
+                    } else Skip(4);
                 }
             }
         }
 
         void setAsBroken() {
-            FSkip(-1);
+            Skip(-1);
             broken = true;
             // SetForeColor(cNone);
             // ubyte blank <hidden=true, bgcolor=cRed>;
         }
 
         void redetectFloat() {
-            if (broken && FTell() + 4 <= FileSize() && (broken && !finished)) {
-                long pos = FTell();
-                while(FTell() <= FileSize() - 4 && detectedFloat(FTell()))
-                    FSkip(4);
+            if (broken && Tell() + 4 <= FileSize() && (broken && !finished)) {
+                long pos = Tell();
+                while(Tell() <= FileSize() - 4 && detectedFloat(Tell()))
+                    Skip(4);
 
-                if (FTell() != pos && FTell() < pos + 16) {
+                if (Tell() != pos && Tell() < pos + 16) {
                     broken = false;
                     // SetForeColor(cYellow);
-                    Console.WriteLine($"Redetected float from {pos} to {FTell()}");
-                } else FSeek(pos);
+                    Console.WriteLine($"Redetected float from {pos} to {Tell()}");
+                } else Seek(pos);
             }
-            if (!detectedFloat(FTell()) && ReadFloat(FTell()) != 0) {
+            if (!detectedFloat(Tell()) && ReadFloat(Tell()) != 0) {
                 broken = false;
                 // SetForeColor(cNone);
             }
         }
 
         void redetectGuid() {
-            if (FTell() + 16 <= FileSize() && !finished && (detectedGuid(FTell()) >= 4)) { // && broken
-                long pos = FTell();
+            if (Tell() + 16 <= FileSize() && !finished && (detectedGuid(Tell()) >= 4)) { // && broken
+                long pos = Tell();
                 //if (broken)
-                //    FSkip(-12);
-                while(FTell() <= FileSize() - 16) {
-                    if (detectedGuid(FTell()) == 16 || (detectedGuid(FTell()) < 4 && (detectedGuid(FTell()) <= detectedGuid(FTell() + 8)))) {
-                        if (pos != FTell()) {
+                //    Skip(-12);
+                while(Tell() <= FileSize() - 16) {
+                    if (detectedGuid(Tell()) == 16 || (detectedGuid(Tell()) < 4 && (detectedGuid(Tell()) <= detectedGuid(Tell() + 8)))) {
+                        if (pos != Tell()) {
                             broken = false;
                             // SetForeColor(cYellow);
-                            Console.WriteLine($"Redetected GUID from {pos} to {FTell()}");
+                            Console.WriteLine($"Redetected GUID from {pos} to {Tell()}");
                         }
                         break;
-                    } else FSkip(8);
+                    } else Skip(8);
                 }
             }
         }
@@ -541,51 +541,51 @@ namespace RszTool
         }
 
         void redetectStringBehind() {
-            long pos = FTell();
-            if (detectedString(FTell())) {
-                while (detectedString(FTell()) && ReadUInt(FTell()-4) != ReadWStringLength(FTell()) / 2)
-                    FSkip(-2);
-                FSkip(-4);
-                if (pos == FTell() || !isValidString(FTell()) || (ReadWStringLength(FTell()+4) + FTell() <= pos) ) {
-                    //Printf("Aborting string redetection from %u to %u\n",  pos, FTell());
-                    FSeek(pos);
+            long pos = Tell();
+            if (detectedString(Tell())) {
+                while (detectedString(Tell()) && ReadUInt(Tell()-4) != ReadWStringLength(Tell()) / 2)
+                    Skip(-2);
+                Skip(-4);
+                if (pos == Tell() || !isValidString(Tell()) || (ReadWStringLength(Tell()+4) + Tell() <= pos) ) {
+                    //Printf("Aborting string redetection from %u to %u\n",  pos, Tell());
+                    Seek(pos);
                     setAsBroken();
-                } else if (FTell() < pos) {
-                    long newPos = FTell();
-                    FSeek(pos);
+                } else if (Tell() < pos) {
+                    long newPos = Tell();
+                    Seek(pos);
                     // BLANK blank <read=ReadErrorNotice, bgcolor=cRed>;
-                    FSeek(newPos);
+                    Seek(newPos);
                     // SetForeColor(cYellow);
                     broken = false;
-                    Console.WriteLine($"Redetected string from {pos} back to {FTell()}");
+                    Console.WriteLine($"Redetected string from {pos} back to {Tell()}");
                 }
             }
         }
 
         void redetectString() {
-            if (!broken && !isValidString(FTell()+4))
+            if (!broken && !isValidString(Tell()+4))
                 return;
-            if  (FTell() + 4 <= FileSize() && ( !finished && (broken || !isValidString(FTell()) ) ) ) {
-                long pos = FTell();
-                while(FTell() <= FileSize() - 4 && FTell() - 24 < pos) {
-                    if (((detectedString(FTell()) && isValidString(FTell()-4)))) {
-                        FSkip(-4);
+            if  (Tell() + 4 <= FileSize() && ( !finished && (broken || !isValidString(Tell()) ) ) ) {
+                long pos = Tell();
+                while(Tell() <= FileSize() - 4 && Tell() - 24 < pos) {
+                    if (((detectedString(Tell()) && isValidString(Tell()-4)))) {
+                        Skip(-4);
                         break;
                     } else {
                         // uint skip <hidden=true>; //fgcolor=cRed,
                     }
                 }
-                if (FTell() - pos > 16 && broken) {
-                    FSeek(pos); //abort
-                } else if (FTell() - pos > 8 && !broken) {
-                    FSeek(pos); //abort
+                if (Tell() - pos > 16 && broken) {
+                    Seek(pos); //abort
+                } else if (Tell() - pos > 8 && !broken) {
+                    Seek(pos); //abort
                 } else {
-                    long newPos = FTell();
-                    FSeek(pos);
-                    // BLANK blank <read=ReadErrorNotice, bgcolor=cRed>; FSeek(newPos);
+                    long newPos = Tell();
+                    Seek(pos);
+                    // BLANK blank <read=ReadErrorNotice, bgcolor=cRed>; Seek(newPos);
                     // SetForeColor(cYellow);
                     broken = false;
-                    Console.WriteLine($"Redetected string from {pos} to {FTell()}");
+                    Console.WriteLine($"Redetected string from {pos} to {Tell()}");
                 }
             }
         }
@@ -604,7 +604,7 @@ namespace RszTool
 
         public void SeekOffsetAligned(int offset, int align = 4)
         {
-            FSeek(getAlignedOffset(FTell() + offset, align));
+            Seek(getAlignedOffset(Tell() + offset, align));
         }
 
         // public void ForceWriteString(uint tell, uint maxSize, string str) {
@@ -628,33 +628,33 @@ namespace RszTool
 
             Console.WriteLine("Fixing Offsets greater than {0} and less than {1} from positions {2} to {3}:\n\n", insertPoint, maxOffset, tell, tellLimit);
 
-            long pos = FTell();
+            long pos = Tell();
             long tmp;
             int varSize = 8 + -4 * ((doInt32 > 0) ? 1 : 0);
 
-            FSeek(tell);
+            Seek(tell);
 
-            while (FTell() + varSize <= tellLimit)
+            while (Tell() + varSize <= tellLimit)
             {
-                if (FTell() + varSize > FileSize())
+                if (Tell() + varSize > FileSize())
                     break;
 
                 if (doInt32 != 0)
-                    tmp = ReadInt(FTell());
+                    tmp = ReadInt(Tell());
                 else
-                    tmp = ReadInt64(FTell());
+                    tmp = ReadInt64(Tell());
 
                 if (tmp >= insertPoint && tmp <= maxOffset)
                 {
-                    Console.WriteLine("@ position {0}: {1} >= {2} (limit {3}) added +{4}", FTell(), tmp, insertPoint, maxOffset, addedSz);
+                    Console.WriteLine("@ position {0}: {1} >= {2} (limit {3}) added +{4}", Tell(), tmp, insertPoint, maxOffset, addedSz);
 
                     if (doInt32 != 0)
-                        WriteUInt(FTell(), (uint)(tmp + addedSz));
+                        WriteUInt(Tell(), (uint)(tmp + addedSz));
                     else
-                        WriteInt64(FTell(), tmp + addedSz);
+                        WriteInt64(Tell(), tmp + addedSz);
                 }
 
-                FSkip(varSize);
+                Skip(varSize);
             }
         }
 
@@ -733,7 +733,7 @@ namespace RszTool
                 if (FindFirst(guid.firstFourBytes) != startof(guid.uuid) || FindFirst(guid.firstFourBytes, 1, 0, 0, 0.0, 1, startof(guid.uuid) + 16, 0, 24) != -1)
                 {
                     string translatedGuid = TranslateGUID(guid.uuid);
-                    FSkip(-4);
+                    Skip(-4);
                     SAMEGUIDS sameGuids = new SAMEGUIDS(translatedGuid);
                 }
             }
@@ -998,9 +998,9 @@ namespace RszTool
         //
         void fakeStateList() {
             int count = ReadInt();
-            FSkip(4);
-            if (count != 0 && FTell() + count * 4 < FileSize()) {
-                FSkip(count * 4);
+            Skip(4);
+            if (count != 0 && Tell() + count * 4 < FileSize()) {
+                Skip(count * 4);
             }
         }
 

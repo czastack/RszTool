@@ -78,7 +78,7 @@ namespace RszTool
             return Stream.Length;
         }
 
-        public void FSeek(long tell)
+        public void Seek(long tell)
         {
             Stream.Position = tell;
         }
@@ -94,18 +94,18 @@ namespace RszTool
 
         public void SeekOffsetAligned(int offset, int align = 4)
         {
-            FSeek(Utils.AlignSize(FTell() + offset, align));
+            Seek(Utils.AlignSize(Tell() + offset, align));
         }
 
         public float ReadFloat(int64 tell)
         {
-            FSeek(tell);
+            Seek(tell);
             return Reader.ReadSingle();
         }
 
         public int ReadInt(int64 tell)
         {
-            FSeek(tell);
+            Seek(tell);
             return Reader.ReadInt32();
         }
 
@@ -116,7 +116,7 @@ namespace RszTool
 
         public uint ReadUInt(int64 tell)
         {
-            FSeek(tell);
+            Seek(tell);
             return Reader.ReadUInt32();
         }
 
@@ -132,7 +132,7 @@ namespace RszTool
 
         public byte ReadUByte(int64 tell)
         {
-            FSeek(tell);
+            Seek(tell);
             return Reader.ReadByte();
         }
 
@@ -143,7 +143,7 @@ namespace RszTool
 
         public sbyte ReadByte(int64 tell)
         {
-            FSeek(tell);
+            Seek(tell);
             return Reader.ReadSByte();
         }
 
@@ -154,7 +154,7 @@ namespace RszTool
 
         public ushort ReadUShort(int64 tell)
         {
-            FSeek(tell);
+            Seek(tell);
             return Reader.ReadUInt16();
         }
 
@@ -165,7 +165,7 @@ namespace RszTool
 
         public long ReadInt64(int64 tell)
         {
-            FSeek(tell);
+            Seek(tell);
             return Reader.ReadInt64();
         }
 
@@ -176,13 +176,13 @@ namespace RszTool
 
         public ulong ReadUInt64(int64 tell)
         {
-            FSeek(tell);
+            Seek(tell);
             return Reader.ReadUInt64();
         }
 
         public int ReadBytes(byte[] buffer, int64 pos, int n)
         {
-            FSeek((uint)pos);
+            Seek((uint)pos);
             return Stream.Read(buffer, 0, n);
         }
 
@@ -193,7 +193,7 @@ namespace RszTool
 
         public void WriteInt64(int64 tell, long value)
         {
-            FSeek(tell);
+            Seek(tell);
             Writer.Write(value);
         }
 
@@ -204,7 +204,7 @@ namespace RszTool
 
         public void WriteUInt(int64 tell, uint value)
         {
-            FSeek(tell);
+            Seek(tell);
             Writer.Write(value);
         }
 
@@ -215,7 +215,7 @@ namespace RszTool
 
         public void WriteInt(int64 tell, int value)
         {
-            FSeek(tell);
+            Seek(tell);
             Writer.Write(value);
         }
 
@@ -226,7 +226,7 @@ namespace RszTool
 
         public void WriteUInt64(int64 tell, ulong value)
         {
-            FSeek(tell);
+            Seek(tell);
             Writer.Write(value);
         }
 
@@ -242,8 +242,8 @@ namespace RszTool
 
         public string ReadWString(int64 pos = -1, int maxLen=-1, bool backPos = true)
         {
-            long originPos = FTell();
-            if (pos != -1) FSeek(pos);
+            long originPos = Tell();
+            if (pos != -1) Seek(pos);
             string result = "";
             Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
             if (maxLen != -1)
@@ -276,14 +276,14 @@ namespace RszTool
                 } while (true);
                 result = sb.ToString();
             }
-            if (backPos) FSeek(originPos);
+            if (backPos) Seek(originPos);
             return result;
         }
 
         public int ReadWStringLength(int64 pos = -1, int maxLen=-1, bool backPos = true)
         {
-            long originPos = FTell();
-            if (pos != -1) FSeek(pos);
+            long originPos = Tell();
+            if (pos != -1) Seek(pos);
             int result = 0;
             Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
             if (maxLen != -1)
@@ -314,7 +314,7 @@ namespace RszTool
                     }
                 } while (true);
             }
-            if (backPos) FSeek(originPos);
+            if (backPos) Seek(originPos);
             return result;
         }
 
@@ -418,12 +418,12 @@ namespace RszTool
             return true;
         }
 
-        public long FTell()
+        public long Tell()
         {
             return Stream.Position;
         }
 
-        public void FSkip(long skip)
+        public void Skip(long skip)
         {
             Stream.Seek(skip, SeekOrigin.Current);
         }

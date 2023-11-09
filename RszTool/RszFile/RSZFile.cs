@@ -43,7 +43,7 @@ namespace RszTool
                 dataObjectTable.Add(objectTable);
             }
 
-            handler.FSeek((long)dataHeader.Data.instanceOffset);
+            handler.Seek((long)dataHeader.Data.instanceOffset);
             for (int i = 0; i < dataHeader.Data.instanceCount; i++)
             {
                 InstanceInfo instanceInfo = new();
@@ -52,7 +52,7 @@ namespace RszTool
                 dataInstanceInfo.Add(instanceInfo);
             }
 
-            handler.FSeek((long)dataHeader.Data.userdataOffset);
+            handler.Seek((long)dataHeader.Data.userdataOffset);
             Dictionary<uint, int> distanceIdToIndex = new();
             if (RszHandler.TdbVersion < 67)
             {
@@ -231,7 +231,7 @@ namespace RszTool
 
         public void ReadEmbeddedRSZFile(RszHandler rszHandler)
         {
-            rszHandler.FileHandler.FSeek((long)RSZOffset);
+            rszHandler.FileHandler.Seek((long)RSZOffset);
             EmbeddedRSZFile = new RSZFile(rszHandler);
             EmbeddedRSZFile.Read();
         }
