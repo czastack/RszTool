@@ -2,16 +2,17 @@ namespace RszTool
 {
     public abstract class BaseRszFile
     {
-        public RszHandler RszHandler { get; set; }
+        public RszFileOption Option { get; set; }
         public long Start { get; set; }
         public long Size { get; protected set; }
 
-        public FileHandler FileHandler => RszHandler.FileHandler;
-        public RszParser RszParser => RszHandler.RszParser;
+        public FileHandler FileHandler { get; set; }
+        public RszParser RszParser => Option.RszParser;
 
-        public BaseRszFile(RszHandler rszHandler)
+        public BaseRszFile(RszFileOption option, FileHandler fileHandler)
         {
-            RszHandler = rszHandler;
+            Option = option;
+            FileHandler = fileHandler;
         }
 
         public bool Read()

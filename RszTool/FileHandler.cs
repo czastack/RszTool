@@ -1,4 +1,3 @@
-using int64 = System.Int64;
 using System.Text;
 using RszTool.Common;
 using System.Runtime.InteropServices;
@@ -9,19 +8,16 @@ namespace RszTool
     {
         public string? FilePath { get; }
         public Stream Stream { get; }
-        public BinaryReader Reader { get; }
-        public BinaryWriter Writer { get; }
         public bool IsMemory { get; }
-
-        public List<StringToWrite> StringToWrites = new();
-
-        private readonly Sunday searcher = new();
+        public long Offset { get; set; }
+        private List<StringToWrite>? StringToWrites;
+        private Sunday? searcher = new();
 
         public FileHandler(string path, bool isMemory = false)
         {
             FilePath = path;
             IsMemory = isMemory;
-            FileStream fileStream = new(path, FileMode.Open);
+            FileStream fileStream = new(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
             if (isMemory) {
                 Stream = new MemoryStream();
                 fileStream.CopyTo(Stream);
@@ -30,16 +26,17 @@ namespace RszTool
             } else {
                 Stream = fileStream;
             }
-            Reader = new BinaryReader(Stream);
-            Writer = new BinaryWriter(Stream);
         }
 
         public FileHandler(Stream stream, bool isMemory = false)
         {
             IsMemory = isMemory;
             Stream = stream;
-            Reader = new BinaryReader(Stream);
-            Writer = new BinaryWriter(Stream);
+        }
+
+        public FileHandler WithOffset(long offset)
+        {
+            return new FileHandler(Stream, IsMemory) { Offset = offset };
         }
 
         public void Dispose()
@@ -52,8 +49,6 @@ namespace RszTool
         {
             if (disposing)
             {
-                Reader.Dispose();
-                Writer.Dispose();
                 Stream.Dispose();
             }
         }
@@ -82,7 +77,7 @@ namespace RszTool
 
         public void Seek(long tell)
         {
-            Stream.Position = tell;
+            Stream.Position = tell + Offset;
         }
 
         public void Align(int alignment)
@@ -99,90 +94,116 @@ namespace RszTool
             Seek(Utils.AlignSize(Tell() + offset, align));
         }
 
-        public float ReadFloat(int64 tell)
+        public long Tell()
         {
-            Seek(tell);
-            return Reader.ReadSingle();
+            return Stream.Position - Offset;
         }
 
-        public int ReadInt(int64 tell)
+        public void Skip(long skip)
+        {
+            Stream.Seek(skip, SeekOrigin.Current);
+        }
+
+        public int ReadInt(long tell)
         {
             Seek(tell);
-            return Reader.ReadInt32();
+            return Read<int>();
         }
 
         public int ReadInt()
         {
-            return Reader.ReadInt32();
+            return Read<int>();
         }
 
-        public uint ReadUInt(int64 tell)
+        public uint ReadUInt(long tell)
         {
             Seek(tell);
-            return Reader.ReadUInt32();
+            return Read<uint>();
         }
 
         public uint ReadUInt()
         {
-            return Reader.ReadUInt32();
+            return Read<uint>();
         }
 
-        public byte ReadUByte()
+        public byte ReadByte()
         {
-            return Reader.ReadByte();
+            return (byte)Stream.ReadByte();
         }
 
-        public byte ReadUByte(int64 tell)
-        {
-            Seek(tell);
-            return Reader.ReadByte();
-        }
-
-        public sbyte ReadByte()
-        {
-            return Reader.ReadSByte();
-        }
-
-        public sbyte ReadByte(int64 tell)
+        public byte ReadByte(long tell)
         {
             Seek(tell);
-            return Reader.ReadSByte();
+            return (byte)Stream.ReadByte();
+        }
+
+        public bool ReadBoolean()
+        {
+            return Stream.ReadByte() != 0;
+        }
+
+        public bool ReadBoolean(long tell)
+        {
+            Seek(tell);
+            return Stream.ReadByte() != 0;
         }
 
         public ushort ReadUShort()
         {
-            return Reader.ReadUInt16();
+            return Read<ushort>();
         }
 
-        public ushort ReadUShort(int64 tell)
+        public ushort ReadUShort(long tell)
         {
             Seek(tell);
-            return Reader.ReadUInt16();
+            return Read<ushort>();
         }
 
         public long ReadInt64()
         {
-            return Reader.ReadInt64();
+            return Read<long>();
         }
 
-        public long ReadInt64(int64 tell)
+        public long ReadInt64(long tell)
         {
             Seek(tell);
-            return Reader.ReadInt64();
+            return Read<long>();
         }
 
         public ulong ReadUInt64()
         {
-            return Reader.ReadUInt64();
+            return Read<ulong>();
         }
 
-        public ulong ReadUInt64(int64 tell)
+        public ulong ReadUInt64(long tell)
         {
             Seek(tell);
-            return Reader.ReadUInt64();
+            return Read<ulong>();
         }
 
-        public int ReadBytes(byte[] buffer, int64 pos, int n)
+        public float ReadFloat(long tell)
+        {
+            Seek(tell);
+            return Read<float>();
+        }
+
+        public float ReadFloat()
+        {
+            return Read<float>();
+        }
+
+        public double ReadDouble(long tell)
+        {
+            Seek(tell);
+            return Read<double>();
+        }
+
+        public double ReadDouble()
+        {
+            return Read<double>();
+        }
+
+        public int ReadBytes(byte[] buffer, long pos, int n)
         {
             Seek((uint)pos);
             return Stream.Read(buffer, 0, n);
@@ -190,46 +211,46 @@ namespace RszTool
 
         public void WriteInt64(long value)
         {
-            Writer.Write(value);
+            Write(value);
         }
 
-        public void WriteInt64(int64 tell, long value)
+        public void WriteInt64(long tell, long value)
         {
             Seek(tell);
-            Writer.Write(value);
+            Write(value);
         }
 
         public void WriteUInt(uint value)
         {
-            Writer.Write(value);
+            Write(value);
         }
 
-        public void WriteUInt(int64 tell, uint value)
+        public void WriteUInt(long tell, uint value)
         {
             Seek(tell);
-            Writer.Write(value);
+            Write(value);
         }
 
         public void WriteInt(int value)
         {
-            Writer.Write(value);
+            Write(value);
         }
 
-        public void WriteInt(int64 tell, int value)
+        public void WriteInt(long tell, int value)
         {
             Seek(tell);
-            Writer.Write(value);
+            Write(value);
         }
 
         public void WriteUInt64(ulong value)
         {
-            Writer.Write(value);
+            Write(value);
         }
 
-        public void WriteUInt64(int64 tell, ulong value)
+        public void WriteUInt64(long tell, ulong value)
         {
             Seek(tell);
-            Writer.Write(value);
+            Write(value);
         }
 
         public static string MarshalStringTrim(string text)
@@ -242,7 +263,7 @@ namespace RszTool
             return text;
         }
 
-        public string ReadWString(int64 pos = -1, int maxLen=-1, bool jumpBack = true)
+        public string ReadWString(long pos = -1, int maxLen=-1, bool jumpBack = true)
         {
             long originPos = Tell();
             if (pos != -1) Seek(pos);
@@ -282,7 +303,7 @@ namespace RszTool
             return result;
         }
 
-        public int ReadWStringLength(int64 pos = -1, int maxLen=-1, bool jumpBack = true)
+        public int ReadWStringLength(long pos = -1, int maxLen=-1, bool jumpBack = true)
         {
             long originPos = Tell();
             if (pos != -1) Seek(pos);
@@ -420,16 +441,6 @@ namespace RszTool
             return true;
         }
 
-        public long Tell()
-        {
-            return Stream.Position;
-        }
-
-        public void Skip(long skip)
-        {
-            Stream.Seek(skip, SeekOrigin.Current);
-        }
-
         /// <summary>查找字节数组</summary>
         public long FindBytes(byte[] pattern, in SearchParam param = default)
         {
@@ -449,6 +460,7 @@ namespace RszTool
                 end = FileSize();
             }
 
+            searcher ??= new();
             searcher.Update(pattern, param.wildcard);
 
             while (addr < end)
@@ -484,7 +496,7 @@ namespace RszTool
             return FindBytes(MemoryUtils.StructureRefToBytes(ref pattern), param);
         }
 
-        public void InsertBytes(Span<byte> buffer, int64 position)
+        public void InsertBytes(Span<byte> buffer, long position)
         {
             var stream = Stream;
             // 将当前位置保存到临时变量中
@@ -512,12 +524,14 @@ namespace RszTool
         {
             if (text != null)
             {
+                StringToWrites ??= new();
                 StringToWrites.Add(new(Tell(), text));
             }
         }
 
         public void FlushStringToWrite()
         {
+            if (StringToWrites == null) return;
             foreach (var item in StringToWrites)
             {
                 long pos = Tell();

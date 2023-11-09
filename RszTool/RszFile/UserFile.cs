@@ -18,7 +18,7 @@ namespace RszTool
         public RSZFile? RSZ { get; private set; }
 
 
-        public UserFile(RszHandler rszHandler) : base(rszHandler)
+        public UserFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
         }
 
@@ -42,8 +42,7 @@ namespace RszTool
                 UserdataInfoList.Add(userdataInfo);
             }
 
-            handler.Seek(Header.Data.dataOffset);
-            RSZ = new RSZFile(RszHandler);
+            RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
             RSZ.Read();
             return true;
         }

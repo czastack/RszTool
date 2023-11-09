@@ -40,7 +40,7 @@ namespace RszTool
         public List<UserdataInfo> UserdataInfoList = new();
         public RSZFile? RSZ { get; private set; }
 
-        public PfbFile(RszHandler rszHandler) : base(rszHandler)
+        public PfbFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
         }
 
@@ -49,13 +49,13 @@ namespace RszTool
 
         public string? GetExtension()
         {
-            return RszHandler.GameName switch
+            return Option.GameName switch
             {
-                "re2" => RszHandler.TdbVersion == 66 ? ".16" : ".17",
+                "re2" => Option.TdbVersion == 66 ? ".16" : ".17",
                 "re3" => ".17",
                 "re4" => ".17",
                 "re8" => ".17",
-                "re7" => RszHandler.TdbVersion == 49 ? ".16" : ".17",
+                "re7" => Option.TdbVersion == 49 ? ".16" : ".17",
                 "dmc5" =>".16",
                 "mhrise" => ".17",
                 "sf6" => ".17",
@@ -65,7 +65,7 @@ namespace RszTool
 
         protected override bool DoRead()
         {
-            FileHandler handler = RszHandler.FileHandler;
+            FileHandler handler = FileHandler;
 
             if (!Header.Read(handler)) return false;
             for (int i = 0; i < Header.Data.infoCount; i++)
@@ -99,8 +99,7 @@ namespace RszTool
                 UserdataInfoList.Add(userdataInfo);
             }
 
-            handler.Seek(Header.Data.dataOffset);
-            RSZ = new RSZFile(RszHandler);
+            RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
             RSZ.Read();
             if (RSZ.ObjectTableList.Count > 0)
             {
@@ -111,7 +110,7 @@ namespace RszTool
 
         protected override bool DoWrite()
         {
-            FileHandler handler = RszHandler.FileHandler;
+            FileHandler handler = FileHandler;
 
             handler.Seek(Header.Size);
             handler.Align(16);

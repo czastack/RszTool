@@ -7,6 +7,7 @@ namespace RszTool
     {
         static void Main(string[] args)
         {
+            TestParseUser();
             // ImGuiSetup setup = new();
             // setup.SubmitUI += SubmitUI;
             // setup.Loop();
@@ -20,6 +21,16 @@ namespace RszTool
             record.End();
             Console.WriteLine(parser.GetRSZClassName(0x1001342f));
             Console.WriteLine(parser.GetFieldName(0x1004b6b4, 1));
+        }
+
+        static void TestParseUser()
+        {
+            string path = @"C:\Users\An\Documents\Hack\Re\re4\RETool\effect\re_chunk_000\natives\STM\_Chainsaw\AppSystem\UI\UserData\AccessoryEffectSettingUserdata.user.2";
+            RszFileOption option = new("re4");
+            UserFile userFile = new(option, new FileHandler(path));
+            userFile.Read();
+            Console.WriteLine(userFile.Header.Data.magic.ToString("X"));
+            Console.WriteLine(userFile.Header.Data.dataOffset);
         }
 
         private static void SubmitUI()

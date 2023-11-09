@@ -80,17 +80,16 @@ namespace RszTool
             }
             else
             {
-                BinaryReader reader = handler.Reader;
                 long startPos = handler.Tell();
                 object value = field.type switch
                 {
-                    "Object" or "UserData" or "U32" => reader.ReadUInt32(),
-                    "S32" => reader.ReadInt32(),
-                    "U64" => reader.ReadUInt64(),
-                    "S64" => reader.ReadInt64(),
-                    "Bool" => reader.ReadBoolean(),
-                    "F32" => reader.ReadSingle(),
-                    "F64" => reader.ReadDouble(),
+                    "Object" or "UserData" or "U32" => handler.ReadUInt(),
+                    "S32" => handler.ReadInt(),
+                    "U64" => handler.ReadUInt64(),
+                    "S64" => handler.ReadInt64(),
+                    "Bool" => handler.ReadBoolean(),
+                    "F32" => handler.ReadFloat(),
+                    "F64" => handler.ReadDouble(),
                     "Vec2" => handler.Read<Vector2>(),
                     "Vec3" => handler.Read<Vector3>(),
                     "Vec4" => handler.Read<Vector4>(),

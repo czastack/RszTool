@@ -87,7 +87,7 @@ namespace RszTool
         public List<FolderData>? FolderDatas { get; set; }
         public List<GameObjectData>? GameObjectDatas { get; set; }
 
-        public ScnFile(RszHandler rszHandler) : base(rszHandler)
+        public ScnFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
         }
 
@@ -96,13 +96,13 @@ namespace RszTool
 
         public string? GetExtension()
         {
-            return RszHandler.GameName switch
+            return Option.GameName switch
             {
-                "re2" => RszHandler.TdbVersion == 66 ? ".19" : ".20",
+                "re2" => Option.TdbVersion == 66 ? ".19" : ".20",
                 "re3" => ".20",
                 "re4" => ".20",
                 "re8" => ".20",
-                "re7" => RszHandler.TdbVersion == 49 ? ".18" : ".20",
+                "re7" => Option.TdbVersion == 49 ? ".18" : ".20",
                 "dmc5" =>".19",
                 "mhrise" => ".20",
                 "sf6" => ".20",
@@ -112,7 +112,7 @@ namespace RszTool
 
         protected override bool DoRead()
         {
-            FileHandler handler = RszHandler.FileHandler;
+            FileHandler handler = FileHandler;
             if (!Header.Read(handler)) return false;
 
             for (int i = 0; i < Header.Data.infoCount; i++)
@@ -154,8 +154,7 @@ namespace RszTool
                 UserdataInfoList.Add(userdataInfo);
             }
 
-            handler.Seek(Header.Data.dataOffset);
-            RSZ = new RSZFile(RszHandler);
+            RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
             RSZ.Read();
             if (RSZ.ObjectTableList.Count > 0)
             {
@@ -167,7 +166,7 @@ namespace RszTool
 
         protected override bool DoWrite()
         {
-            FileHandler handler = RszHandler.FileHandler;
+            FileHandler handler = FileHandler;
 
             handler.Seek(Header.Size);
             handler.Align(16);

@@ -27,7 +27,7 @@ namespace RszTool
         public List<RszInstance> InstanceList { get; } = new();
         public List<RSZFile>? EmbeddedRSZFileList { get; private set; }
 
-        public RSZFile(RszHandler rszHandler) : base(rszHandler)
+        public RSZFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
         }
 
@@ -55,7 +55,7 @@ namespace RszTool
 
             handler.Seek(Header.Data.userdataOffset);
             Dictionary<uint, int> distanceIdToIndex = new();
-            if (RszHandler.TdbVersion < 67)
+            if (Option.TdbVersion < 67)
             {
                 if (Header.Data.userdataCount > 0)
                 {
@@ -68,8 +68,8 @@ namespace RszTool
                         RSZUserDataInfoList.Add(rszUserDataInfo);
                         distanceIdToIndex[rszUserDataInfo.instanceId] = i;
 
-                        RSZFile embeddedRSZFile = new(RszHandler);
-                        embeddedRSZFile.Read(rszUserDataInfo.RSZOffset);
+                        RSZFile embeddedRSZFile = new(Option, handler.WithOffset(rszUserDataInfo.RSZOffset));
+                        embeddedRSZFile.Read();
                         EmbeddedRSZFileList.Add(embeddedRSZFile);
                     }
                 }
@@ -124,7 +124,7 @@ namespace RszTool
             handler.FlushStringToWrite();
 
             // embedded userdata
-            if (RszHandler.TdbVersion <= 67 && EmbeddedRSZFileList != null)
+            if (Option.TdbVersion <= 67 && EmbeddedRSZFileList != null)
             {
                 for (int i = 0; i < RSZUserDataInfoList.Count; i++)
                 {
@@ -254,7 +254,6 @@ namespace RszTool
         public uint InstanceId => instanceId;
         public uint TypeId => typeId;
         public string? ClassName { get; set; }
-        public RSZFile? EmbeddedRSZFile { get; set; }
 
         protected override bool DoRead(FileHandler handler)
         {
@@ -279,13 +278,6 @@ namespace RszTool
         public void ReadClassName(RszParser parser)
         {
             ClassName = parser.GetRSZClassName(typeId);
-        }
-
-        public void ReadEmbeddedRSZFile(RszHandler rszHandler)
-        {
-            rszHandler.FileHandler.Seek((long)RSZOffset);
-            EmbeddedRSZFile = new RSZFile(rszHandler);
-            EmbeddedRSZFile.Read();
         }
     }
 }
