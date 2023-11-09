@@ -19,10 +19,12 @@ namespace RszTool
         }
 
         private readonly Dictionary<uint, RszClass> classDict;
+        private readonly Dictionary<string, RszClass> classNameDict;
 
         public RszParser(string jsonPath)
         {
             classDict = new();
+            classNameDict = new();
             using FileStream fileStream = File.OpenRead(jsonPath);
             var dict = JsonSerializer.Deserialize<Dictionary<string, RszClass>>(fileStream);
             if (dict != null)
@@ -30,6 +32,7 @@ namespace RszTool
                 foreach (var item in dict)
                 {
                     classDict[uint.Parse(item.Key, NumberStyles.HexNumber)] = item.Value;
+                    classNameDict[item.Value.name] = item.Value;
                 }
             }
         }
@@ -47,6 +50,11 @@ namespace RszTool
         public RszClass? GetRSZClass(uint classHash)
         {
             return classDict.TryGetValue(classHash, out var rszClass) ? rszClass : null;
+        }
+
+        public RszClass? GetRSZClass(string className)
+        {
+            return classNameDict.TryGetValue(className, out var rszClass) ? rszClass : null;
         }
 
         public int GetFieldCount(uint classHash)

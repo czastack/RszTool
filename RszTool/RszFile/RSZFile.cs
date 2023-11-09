@@ -155,6 +155,22 @@ namespace RszTool
         {
             return InstanceList[ObjectTableList[objectIndex].Data.instanceId];
         }
+
+        public RszInstance? CreateInstance(string className, int index = -1)
+        {
+            RszClass? rszClass = RszParser.GetRSZClass(className);
+            if (index == -1)
+            {
+                index = InstanceList.Count;
+            }
+            if (rszClass == null) return null;
+            RszInstance instance = new(rszClass, index, -1)
+            {
+                Start = Start + Size
+            };
+            // TODO Values
+            return instance;
+        }
     }
 
 
