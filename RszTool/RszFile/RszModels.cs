@@ -5,18 +5,16 @@ namespace RszTool
         public ulong pathOffset;
         public string? resourcePath;
 
-        public override bool Read(FileHandler handler)
+        protected override bool DoRead(FileHandler handler)
         {
-            if (!base.Read(handler)) return false;
             handler.Read(ref pathOffset);
-            EndRead(handler);
             resourcePath = handler.ReadWString((long)pathOffset);
             return true;
         }
 
-        public override bool Write(FileHandler handler)
+        protected override bool DoWrite(FileHandler handler)
         {
-            if (!base.Write(handler)) return false;
+            handler.AddStringToWrite(resourcePath);
             handler.Write(pathOffset);
             return true;
         }
@@ -30,36 +28,21 @@ namespace RszTool
         public ulong pathOffset;
         public string? userdataPath;
 
-        public override bool Read(FileHandler handler)
+        protected override bool DoRead(FileHandler handler)
         {
-            if (!base.Read(handler)) return false;
             handler.Read(ref typeId);
             handler.Read(ref CRC);
             handler.Read(ref pathOffset);
-            EndRead(handler);
             userdataPath = handler.ReadWString((long)pathOffset);
             return true;
         }
 
-        public override bool Write(FileHandler handler)
+        protected override bool DoWrite(FileHandler handler)
         {
-            if (!base.Write(handler)) return false;
             handler.Write(ref typeId);
             handler.Write(ref CRC);
+            handler.AddStringToWrite(userdataPath);
             handler.Write(ref pathOffset);
-            return true;
-        }
-    }
-
-
-    public static class RszExtensions
-    {
-        public static bool Write(this IEnumerable<IModel> list, FileHandler handler)
-        {
-            foreach (var item in list)
-            {
-                if (!item.Write(handler)) return false;
-            }
             return true;
         }
     }

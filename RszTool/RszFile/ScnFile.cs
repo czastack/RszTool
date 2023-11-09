@@ -1,20 +1,22 @@
 namespace RszTool
 {
-    public class ScnFile
-    {
+    using GameObjectInfoModel = StructModel<ScnFile.GameObjectInfo>;
+    using FolderInfoModel = StructModel<ScnFile.FolderInfo>;
 
-        public struct Header {
+    public class ScnFile : BaseRszFile
+    {
+        public struct HeaderStruct {
             public uint magic;
-            public uint infoCount;
-            public uint resourceCount;
-            public uint folderCount;
-            public uint prefabCount;
-            public uint userdataCount;
-            public ulong folderInfoOffset;
-            public ulong resourceInfoOffset;
-            public ulong prefabInfoOffset;
-            public ulong userdataInfoOffset;
-            public ulong dataOffset;
+            public int infoCount;
+            public int resourceCount;
+            public int folderCount;
+            public int prefabCount;
+            public int userdataCount;
+            public long folderInfoOffset;
+            public long resourceInfoOffset;
+            public long prefabInfoOffset;
+            public long userdataInfoOffset;
+            public long dataOffset;
         }
 
         public struct GameObjectInfo {
@@ -38,56 +40,244 @@ namespace RszTool
             public string? prefabPath;
             public int parentId;
 
-            public override bool Read(FileHandler handler)
+            protected override bool DoRead(FileHandler handler)
             {
-                if (!base.Read(handler)) return false;
                 handler.Read(ref pathOffset);
                 handler.Read(ref parentId);
-                EndRead(handler);
                 prefabPath = handler.ReadWString((long)pathOffset);
                 return true;
             }
 
-            public override bool Write(FileHandler handler)
+            protected override bool DoWrite(FileHandler handler)
             {
-                if (!base.Write(handler)) return false;
+                handler.AddStringToWrite(prefabPath);
                 handler.Write(ref pathOffset);
                 handler.Write(ref parentId);
                 return true;
             }
         }
 
-        public StructModel<Header> dataHeader = new();
-        public StructModel<GameObjectInfo> dataGameObjectInfo = new();
-        public StructModel<FolderInfo> dataFolderInfo = new();
-        public ResourceInfo dataRSZUserDataInfo = new();
-        public PrefabInfo dataPrefabInfo = new();
-        public UserdataInfo dataUserdataInfo = new();
+        public class FolderData
+        {
+            public FolderInfoModel? Info;
+            public List<FolderData> Chidren = new();
+            public List<GameObjectData> GameObjects = new();
+            public RszInstance? RszInstance;
+        }
 
-        public ScnFile()
+
+        public class GameObjectData
+        {
+            public GameObjectInfoModel? Info;
+            public List<RszInstance> Components = new();
+            public List<GameObjectData> Chidren = new();
+            public RszInstance? GameObject;
+            public PrefabInfo? Prefab;
+        }
+
+        public StructModel<HeaderStruct> Header { get; } = new();
+        public List<GameObjectInfoModel> GameObjectInfoList = new();
+        // public Dictionary<int, GameObjectInfoModel> GameObjectInfoIdMap = new();
+        public List<FolderInfoModel> FolderInfoList = new();
+        public List<ResourceInfo> ResourceInfoList = new();
+        public List<PrefabInfo> PrefabInfoList = new();
+        public List<UserdataInfo> UserdataInfoList = new();
+        public RSZFile? RSZ { get; private set; }
+
+        public List<FolderData>? FolderDatas { get; set; }
+        public List<GameObjectData>? GameObjectDatas { get; set; }
+
+        public ScnFile(RszHandler rszHandler) : base(rszHandler)
         {
         }
 
-        public bool Read(FileHandler handler)
+        public const uint Magic = 5129043;
+        public const string Extension2 = ".scn";
+
+        public string? GetExtension()
         {
-            if (!dataHeader.Read(handler)) return false;
-            if (!dataGameObjectInfo.Read(handler)) return false;
-            if (!dataFolderInfo.Read(handler)) return false;
-            if (!dataRSZUserDataInfo.Read(handler)) return false;
-            if (!dataPrefabInfo.Read(handler)) return false;
-            if (!dataUserdataInfo.Read(handler)) return false;
+            return RszHandler.GameName switch
+            {
+                "re2" => RszHandler.TdbVersion == 66 ? ".19" : ".20",
+                "re3" => ".20",
+                "re4" => ".20",
+                "re8" => ".20",
+                "re7" => RszHandler.TdbVersion == 49 ? ".18" : ".20",
+                "dmc5" =>".19",
+                "mhrise" => ".20",
+                "sf6" => ".20",
+                _ => null
+            };
+        }
+
+        protected override bool DoRead()
+        {
+            FileHandler handler = RszHandler.FileHandler;
+            if (!Header.Read(handler)) return false;
+
+            for (int i = 0; i < Header.Data.infoCount; i++)
+            {
+                GameObjectInfoModel gameObjectInfo = new();
+                gameObjectInfo.Read(handler);
+                GameObjectInfoList.Add(gameObjectInfo);
+                // GameObjectInfoIdMap[gameObjectInfo.Data.objectId] = gameObjectInfo;
+            }
+
+            handler.Seek(Header.Data.folderInfoOffset);
+            for (int i = 0; i < Header.Data.folderCount; i++)
+            {
+                FolderInfoModel folderInfo = new();
+                folderInfo.Read(handler);
+                FolderInfoList.Add(folderInfo);
+            }
+
+            handler.Seek(Header.Data.resourceInfoOffset);
+            for (int i = 0; i < Header.Data.resourceCount; i++)
+            {
+                ResourceInfo resourceInfo = new();
+                resourceInfo.Read(handler);
+                ResourceInfoList.Add(resourceInfo);
+            }
+
+            handler.Seek(Header.Data.prefabInfoOffset);
+            for (int i = 0; i < Header.Data.prefabCount; i++)
+            {
+                PrefabInfo prefabInfo = new();
+                prefabInfo.Read(handler);
+            }
+
+            handler.Seek(Header.Data.userdataInfoOffset);
+            for (int i = 0; i < Header.Data.userdataCount; i++)
+            {
+                UserdataInfo userdataInfo = new();
+                userdataInfo.Read(handler);
+                UserdataInfoList.Add(userdataInfo);
+            }
+
+            handler.Seek(Header.Data.dataOffset);
+            RSZ = new RSZFile(RszHandler);
+            RSZ.Read();
+            if (RSZ.ObjectTableList.Count > 0)
+            {
+                // SetupGameObjects();
+            }
+
             return true;
         }
 
-        public bool Write(FileHandler handler)
+        protected override bool DoWrite()
         {
-            if (!dataHeader.Write(handler)) return false;
-            if (!dataGameObjectInfo.Write(handler)) return false;
-            if (!dataFolderInfo.Write(handler)) return false;
-            if (!dataRSZUserDataInfo.Write(handler)) return false;
-            if (!dataPrefabInfo.Write(handler)) return false;
-            if (!dataUserdataInfo.Write(handler)) return false;
+            FileHandler handler = RszHandler.FileHandler;
+
+            handler.Seek(Header.Size);
+            handler.Align(16);
+            GameObjectInfoList.Write(handler);
+
+            if (FolderInfoList.Count > 0)
+            {
+                handler.Align(16);
+                Header.Data.folderInfoOffset = handler.Tell();
+                FolderInfoList.Write(handler);
+            }
+
+            handler.Align(16);
+            Header.Data.resourceInfoOffset = handler.Tell();
+            ResourceInfoList.Write(handler);
+
+            if (PrefabInfoList.Count > 0)
+            {
+                handler.Align(16);
+                Header.Data.prefabInfoOffset = handler.Tell();
+                PrefabInfoList.Write(handler);
+            }
+
+            handler.Align(16);
+            Header.Data.userdataInfoOffset = handler.Tell();
+            UserdataInfoList.Write(handler);
+
+            handler.FlushStringToWrite();
+
+            handler.Align(16);
+            Header.Data.dataOffset = handler.Tell();
+            RSZ!.Write(Header.Data.dataOffset);
+
+            handler.Seek(0);
+            Header.Data.infoCount = GameObjectInfoList.Count;
+            Header.Data.folderCount = FolderInfoList.Count;
+            Header.Data.resourceCount = ResourceInfoList.Count;
+            Header.Data.prefabCount = PrefabInfoList.Count;
+            Header.Data.userdataCount = UserdataInfoList.Count;
+            Header.Write(handler);
+
             return true;
+        }
+
+        public void SaveAsPfb(string path)
+        {
+
+        }
+
+        /// <summary>
+        /// 解析关联的关系，形成树状结构
+        /// </summary>
+        private void SetupGameObjects()
+        {
+            Dictionary<int, FolderData> folderIdxMap = new();
+            if (FolderInfoList.Count > 0)
+            {
+                FolderDatas ??= new();
+                foreach (var info in FolderInfoList)
+                {
+                    FolderData folderData = new()
+                    {
+                        Info = info,
+                        RszInstance = RSZ!.GetGameObject(info.Data.objectId),
+                    };
+                    FolderDatas.Add(folderData);
+                    folderIdxMap[info.Data.objectId] = folderData;
+                }
+            }
+
+            Dictionary<int, GameObjectData> gameObjParentMap = new();
+            GameObjectDatas ??= new();
+            foreach (var info in GameObjectInfoList)
+            {
+                GameObjectData gameObjectData = new()
+                {
+                    Info = info,
+                    GameObject = RSZ!.GetGameObject(info.Data.objectId),
+                };
+                for (int i = info.Data.objectId + 1; i < info.Data.objectId + info.Data.componentCount; i++)
+                {
+                    gameObjectData.Components.Add(RSZ!.GetGameObject(i));
+                }
+                if (info.Data.prefabId >= 0 && info.Data.prefabId < PrefabInfoList.Count)
+                {
+                    gameObjectData.Prefab = PrefabInfoList[info.Data.prefabId];
+                }
+                gameObjParentMap[info.Data.objectId] = gameObjectData;
+                GameObjectDatas.Add(gameObjectData);
+            }
+
+            foreach (var info in GameObjectInfoList)
+            {
+                if (gameObjParentMap.TryGetValue(info.Data.parentId, out var parent))
+                {
+                    parent.Chidren.Add(gameObjParentMap[info.Data.objectId]);
+                }
+                if (folderIdxMap.TryGetValue(info.Data.parentId, out var folder))
+                {
+                    folder.GameObjects.Add(gameObjParentMap[info.Data.objectId]);
+                }
+            }
+
+            foreach (var info in FolderInfoList)
+            {
+                if (folderIdxMap.TryGetValue(info.Data.parentId, out var folder))
+                {
+                    folder.Chidren.Add(folderIdxMap[info.Data.objectId]);
+                }
+            }
         }
     }
 }

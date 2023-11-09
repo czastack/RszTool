@@ -42,7 +42,7 @@ namespace RszTool
 
     public interface IModel
     {
-        long Start { get; }
+        long Start { get; set; }
         long Size { get; }
         bool Read(FileHandler handler);
         bool Write(FileHandler handler);
@@ -51,13 +51,51 @@ namespace RszTool
 
     public static class IModelExtensions
     {
-        public static bool Read(this IModel model, FileHandler handler, long start)
+        public static bool Read(this IModel model, FileHandler handler, long start, bool jumpBack = true)
         {
+            long pos = handler.Tell();
             if (start != -1)
             {
                 handler.Seek(start);
             }
-            return model.Read(handler);
+            bool result = model.Read(handler);
+            if (jumpBack) handler.Seek(pos);
+            return result;
+        }
+
+        public static bool Write(this IModel model, FileHandler handler, long start, bool jumpBack = true)
+        {
+            long pos = handler.Tell();
+            if (start != -1)
+            {
+                handler.Seek(start);
+            }
+            bool result = model.Write(handler);
+            if (jumpBack) handler.Seek(pos);
+            return result;
+        }
+
+        public static bool Rewrite(this IModel model, FileHandler handler, bool jumpBack = true)
+        {
+            return Write(model, handler, model.Start, jumpBack);
+        }
+
+        public static bool Write(this IEnumerable<IModel> list, FileHandler handler)
+        {
+            foreach (var item in list)
+            {
+                if (!item.Write(handler)) return false;
+            }
+            return true;
+        }
+
+        public static bool Rewrite(this IEnumerable<IModel> list, FileHandler handler)
+        {
+            foreach (var item in list)
+            {
+                if (!item.Rewrite(handler)) return false;
+            }
+            return true;
         }
     }
 
@@ -69,7 +107,7 @@ namespace RszTool
 
     public abstract class AdaptiveModel : IModel
     {
-        public long Start { get; private set; } = -1;
+        public long Start { get; set; } = -1;
         public long Size { get; private set; }
         protected static readonly Stack<FileHandler> FileHandlers = new();
 
@@ -107,7 +145,7 @@ namespace RszTool
         protected bool WriteField<T>(FileHandler handler, in OffsetField<T> field) where T : struct
         {
             if (field.Offset == -1) return false;
-            long start = Start != -1 ? Start : handler.Tell();
+            long start = handler.Tell();
             handler.Seek(start + field.Offset);
             field.Write(handler);
             return true;
@@ -117,17 +155,18 @@ namespace RszTool
 
         public bool Write(FileHandler handler)
         {
-            long start = Start != -1 ? Start : handler.Tell();
+            Start = handler.Tell();
             foreach (var (name, field) in Fields)
             {
                 if (field.Offset == -1) continue;
-                handler.Seek(start + field.Offset);
+                handler.Seek(Start + field.Offset);
                 if (!field.Write(handler))
                 {
                     Console.Error.WriteLine($"{this} Write {name} failed");
                     return false;
                 }
             }
+            Size = handler.Tell() - Start;
             return true;
         }
     }
@@ -148,7 +187,7 @@ namespace RszTool
 
     public class DynamicModel : IModel
     {
-        public long Start { get; private set; } = -1;
+        public long Start { get; set; } = -1;
         public long Size { get; private set; }
         public List<NamedOffsetField>? Fields { get; }
 
@@ -171,16 +210,17 @@ namespace RszTool
         public bool Write(FileHandler handler)
         {
             if (Fields == null) return false;
-            long start = Start != -1 ? Start : handler.Tell();
+            Start = handler.Tell();
             foreach (var item in Fields)
             {
-                handler.Seek(start + item.Field.Offset);
+                handler.Seek(Start + item.Field.Offset);
                 if (!item.Field.Write(handler))
                 {
                     Console.Error.WriteLine($"{this} Write {item.Name} failed");
                     return false;
                 }
             }
+            Size = handler.Tell() - Start;
             return true;
         }
     }
@@ -189,23 +229,19 @@ namespace RszTool
     public class StructModel<T> : IModel where T : struct
     {
         public T Data = default;
-        public long Start { get; private set; } = -1;
-        public long Size { get; private set; }
+        public long Start { get; set; } = -1;
+        public long Size => Unsafe.SizeOf<T>();
 
         public bool Read(FileHandler handler)
         {
             Start = handler.Tell();
             handler.Read(ref Data);
-            Size = handler.Tell() - Start;
             return true;
         }
 
         public bool Write(FileHandler handler)
         {
-            if (Start != -1)
-            {
-                handler.Seek(Start);
-            }
+            Start = handler.Tell();
             return handler.Write(ref Data);
         }
     }
@@ -213,24 +249,27 @@ namespace RszTool
 
     public abstract class BaseModel : IModel
     {
-        public long Start { get; protected set; }
+        public long Start { get; set; }
         public long Size { get; protected set; }
 
-        public virtual bool Read(FileHandler handler)
+        public bool Read(FileHandler handler)
         {
             Start = handler.Tell();
-            return true;
-        }
-
-        protected void EndRead(FileHandler handler)
-        {
+            bool result = DoRead(handler);
             Size = handler.Tell() - Start;
+            return result;
         }
 
-        public virtual bool Write(FileHandler handler)
+        public bool Write(FileHandler handler)
         {
-            if (Start != -1) handler.Seek(Start);
-            return true;
+            Start = handler.Tell();
+            bool result = DoWrite(handler);
+            Size = handler.Tell() - Start;
+            return result;
         }
+
+        protected abstract bool DoRead(FileHandler handler);
+
+        protected abstract bool DoWrite(FileHandler handler);
     }
 }

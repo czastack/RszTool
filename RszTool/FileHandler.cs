@@ -13,6 +13,8 @@ namespace RszTool
         public BinaryWriter Writer { get; }
         public bool IsMemory { get; }
 
+        public List<StringToWrite> StringToWrites = new();
+
         private readonly Sunday searcher = new();
 
         public FileHandler(string path, bool isMemory = false)
@@ -240,7 +242,7 @@ namespace RszTool
             return text;
         }
 
-        public string ReadWString(int64 pos = -1, int maxLen=-1, bool backPos = true)
+        public string ReadWString(int64 pos = -1, int maxLen=-1, bool jumpBack = true)
         {
             long originPos = Tell();
             if (pos != -1) Seek(pos);
@@ -276,11 +278,11 @@ namespace RszTool
                 } while (true);
                 result = sb.ToString();
             }
-            if (backPos) Seek(originPos);
+            if (jumpBack) Seek(originPos);
             return result;
         }
 
-        public int ReadWStringLength(int64 pos = -1, int maxLen=-1, bool backPos = true)
+        public int ReadWStringLength(int64 pos = -1, int maxLen=-1, bool jumpBack = true)
         {
             long originPos = Tell();
             if (pos != -1) Seek(pos);
@@ -314,7 +316,7 @@ namespace RszTool
                     }
                 } while (true);
             }
-            if (backPos) Seek(originPos);
+            if (jumpBack) Seek(originPos);
             return result;
         }
 
@@ -482,7 +484,7 @@ namespace RszTool
             return FindBytes(MemoryUtils.StructureRefToBytes(ref pattern), param);
         }
 
-        void InsertBytes(Span<byte> buffer, int64 position)
+        public void InsertBytes(Span<byte> buffer, int64 position)
         {
             var stream = Stream;
             // 将当前位置保存到临时变量中
@@ -504,6 +506,26 @@ namespace RszTool
 
             // 将流的位置恢复到原始位置
             stream.Position = currentPosition;
+        }
+
+        public void AddStringToWrite(string? text)
+        {
+            if (text != null)
+            {
+                StringToWrites.Add(new(Tell(), text));
+            }
+        }
+
+        public void FlushStringToWrite()
+        {
+            foreach (var item in StringToWrites)
+            {
+                long pos = Tell();
+                WriteInt64(item.OffsetStart, pos);
+                Seek(pos);
+                WriteWString(item.Text);
+            }
+            StringToWrites.Clear();
         }
     }
 }

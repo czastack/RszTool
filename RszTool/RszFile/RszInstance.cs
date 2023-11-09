@@ -29,14 +29,12 @@ namespace RszTool
         /// </summary>
         /// <param name="handler"></param>
         /// <returns></returns>
-        public override bool Read(FileHandler handler)
+        protected override bool DoRead(FileHandler handler)
         {
-            if (!base.Read(handler)) return false;
             for (int i = 0; i < RszClass.fields.Length; i++)
             {
                 Values[i] = ReadRszField(handler, i);
             }
-            EndRead(handler);
             return true;
         }
 
@@ -46,6 +44,7 @@ namespace RszTool
             handler.Align(field.array ? 4 : field.align);
             if (index == 0)
             {
+                // after align
                 Start = handler.Tell();
             }
             if (field.array)
@@ -104,6 +103,15 @@ namespace RszTool
                 handler.Seek(startPos + field.size);
                 return value;
             }
+        }
+
+        protected override bool DoWrite(FileHandler handler)
+        {
+            for (int i = 0; i < RszClass.fields.Length; i++)
+            {
+                WriteRszField(handler, i);
+            }
+            return true;
         }
 
         public bool WriteRszField(FileHandler handler, int index)
