@@ -115,44 +115,19 @@ namespace RszTool
             FileHandler handler = FileHandler;
             if (!Header.Read(handler)) return false;
 
-            for (int i = 0; i < Header.Data.infoCount; i++)
-            {
-                GameObjectInfoModel gameObjectInfo = new();
-                gameObjectInfo.Read(handler);
-                GameObjectInfoList.Add(gameObjectInfo);
-                // GameObjectInfoIdMap[gameObjectInfo.Data.objectId] = gameObjectInfo;
-            }
+            GameObjectInfoList.Read(handler, Header.Data.infoCount);
 
             handler.Seek(Header.Data.folderInfoOffset);
-            for (int i = 0; i < Header.Data.folderCount; i++)
-            {
-                FolderInfoModel folderInfo = new();
-                folderInfo.Read(handler);
-                FolderInfoList.Add(folderInfo);
-            }
+            FolderInfoList.Read(handler, Header.Data.folderCount);
 
             handler.Seek(Header.Data.resourceInfoOffset);
-            for (int i = 0; i < Header.Data.resourceCount; i++)
-            {
-                ResourceInfo resourceInfo = new();
-                resourceInfo.Read(handler);
-                ResourceInfoList.Add(resourceInfo);
-            }
+            ResourceInfoList.Read(handler, Header.Data.resourceCount);
 
             handler.Seek(Header.Data.prefabInfoOffset);
-            for (int i = 0; i < Header.Data.prefabCount; i++)
-            {
-                PrefabInfo prefabInfo = new();
-                prefabInfo.Read(handler);
-            }
+            PrefabInfoList.Read(handler, Header.Data.prefabCount);
 
             handler.Seek(Header.Data.userdataInfoOffset);
-            for (int i = 0; i < Header.Data.userdataCount; i++)
-            {
-                UserdataInfo userdataInfo = new();
-                userdataInfo.Read(handler);
-                UserdataInfoList.Add(userdataInfo);
-            }
+            UserdataInfoList.Read(handler, Header.Data.userdataCount);
 
             RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
             RSZ.Read();

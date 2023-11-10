@@ -37,12 +37,7 @@ namespace RszTool
             if (!Header.Read(handler)) return false;
             var rszParser = RszParser;
 
-            for (int i = 0; i < Header.Data.objectCount; i++)
-            {
-                StructModel<ObjectTable> objectTable = new();
-                objectTable.Read(handler);
-                ObjectTableList.Add(objectTable);
-            }
+            ObjectTableList.Read(handler, Header.Data.objectCount);
 
             handler.Seek(Header.Data.instanceOffset);
             for (int i = 0; i < Header.Data.instanceCount; i++)

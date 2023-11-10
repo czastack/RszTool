@@ -68,36 +68,16 @@ namespace RszTool
             FileHandler handler = FileHandler;
 
             if (!Header.Read(handler)) return false;
-            for (int i = 0; i < Header.Data.infoCount; i++)
-            {
-                GameObjectInfoModel gameObjectInfo = new();
-                gameObjectInfo.Read(handler);
-                GameObjectInfoList.Add(gameObjectInfo);
-            }
+            GameObjectInfoList.Read(handler, Header.Data.infoCount);
 
             handler.Seek(Header.Data.gameObjectRefInfoOffset);
-            for (int i = 0; i < Header.Data.gameObjectRefInfoCount; i++)
-            {
-                GameObjectRefInfoModel gameObjectRefInfo = new();
-                gameObjectRefInfo.Read(handler);
-                GameObjectRefInfoList.Add(gameObjectRefInfo);
-            }
+            GameObjectRefInfoList.Read(handler, Header.Data.gameObjectRefInfoCount);
 
             handler.Seek(Header.Data.resourceInfoOffset);
-            for (int i = 0; i < Header.Data.resourceCount; i++)
-            {
-                ResourceInfo resourceInfo = new();
-                resourceInfo.Read(handler);
-                ResourceInfoList.Add(resourceInfo);
-            }
+            ResourceInfoList.Read(handler, Header.Data.resourceCount);
 
             handler.Seek(Header.Data.userdataInfoOffset);
-            for (int i = 0; i < Header.Data.userdataCount; i++)
-            {
-                UserdataInfo userdataInfo = new();
-                userdataInfo.Read(handler);
-                UserdataInfoList.Add(userdataInfo);
-            }
+            UserdataInfoList.Read(handler, (int)Header.Data.userdataCount);
 
             RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
             RSZ.Read();

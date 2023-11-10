@@ -27,20 +27,10 @@ namespace RszTool
             var handler = FileHandler;
             if (!Header.Read(handler)) return false;
             handler.Seek(Header.Data.dataOffset);
-            for (int i = 0; i < Header.Data.resourceCount; i++)
-            {
-                ResourceInfo resourceInfo = new();
-                resourceInfo.Read(handler);
-                ResourceInfoList.Add(resourceInfo);
-            }
+            ResourceInfoList.Read(handler, Header.Data.resourceCount);
 
             handler.Seek(Header.Data.userdataInfoOffset);
-            for (int i = 0; i < Header.Data.userdataCount; i++)
-            {
-                UserdataInfo userdataInfo = new();
-                userdataInfo.Read(handler);
-                UserdataInfoList.Add(userdataInfo);
-            }
+            UserdataInfoList.Read(handler, Header.Data.userdataCount);
 
             RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
             RSZ.Read();
