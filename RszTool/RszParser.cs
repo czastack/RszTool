@@ -137,6 +137,18 @@ namespace RszTool
         public RszField[] fields { get; set; } = EmptyFiedls;
 
         public static RszField[] EmptyFiedls = Array.Empty<RszField>();
+
+        public int IndexOfField(string name)
+        {
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i].name == name)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 
     public class RszField

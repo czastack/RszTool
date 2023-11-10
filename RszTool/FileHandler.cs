@@ -131,6 +131,61 @@ namespace RszTool
             Stream.Seek(skip, SeekOrigin.Current);
         }
 
+        public byte ReadByte()
+        {
+            return (byte)Stream.ReadByte();
+        }
+
+        public byte ReadByte(long tell)
+        {
+            Seek(tell);
+            return (byte)Stream.ReadByte();
+        }
+
+        public sbyte ReadSByte()
+        {
+            return (sbyte)Stream.ReadByte();
+        }
+
+        public sbyte ReadSByte(long tell)
+        {
+            Seek(tell);
+            return (sbyte)Stream.ReadByte();
+        }
+
+        public bool ReadBoolean()
+        {
+            return Stream.ReadByte() != 0;
+        }
+
+        public bool ReadBoolean(long tell)
+        {
+            Seek(tell);
+            return Stream.ReadByte() != 0;
+        }
+
+        public short ReadShort()
+        {
+            return Read<short>();
+        }
+
+        public short ReadShort(long tell)
+        {
+            Seek(tell);
+            return Read<short>();
+        }
+
+        public ushort ReadUShort()
+        {
+            return Read<ushort>();
+        }
+
+        public ushort ReadUShort(long tell)
+        {
+            Seek(tell);
+            return Read<ushort>();
+        }
+
         public int ReadInt(long tell)
         {
             Seek(tell);
@@ -151,39 +206,6 @@ namespace RszTool
         public uint ReadUInt()
         {
             return Read<uint>();
-        }
-
-        public byte ReadByte()
-        {
-            return (byte)Stream.ReadByte();
-        }
-
-        public byte ReadByte(long tell)
-        {
-            Seek(tell);
-            return (byte)Stream.ReadByte();
-        }
-
-        public bool ReadBoolean()
-        {
-            return Stream.ReadByte() != 0;
-        }
-
-        public bool ReadBoolean(long tell)
-        {
-            Seek(tell);
-            return Stream.ReadByte() != 0;
-        }
-
-        public ushort ReadUShort()
-        {
-            return Read<ushort>();
-        }
-
-        public ushort ReadUShort(long tell)
-        {
-            Seek(tell);
-            return Read<ushort>();
         }
 
         public long ReadInt64()
@@ -230,29 +252,67 @@ namespace RszTool
             return Read<double>();
         }
 
-        public int ReadBytes(byte[] buffer, long pos, int n)
+        public int ReadBytes(byte[] buffer, int length = -1)
         {
-            Seek((uint)pos);
-            return Stream.Read(buffer, 0, n);
+            return Stream.Read(buffer, 0, length == -1 ? buffer.Length : length);
         }
 
-        public void WriteInt64(long value)
+        public int ReadBytes(byte[] buffer, long tell, int length = -1)
+        {
+            Seek(tell);
+            return Stream.Read(buffer, 0, length == -1 ? buffer.Length : length);
+        }
+
+        public void WriteByte(byte value)
+        {
+            Stream.WriteByte(value);
+        }
+
+        public void WriteByte(long tell, byte value)
+        {
+            Seek(tell);
+            Stream.WriteByte(value);
+        }
+
+        public void WriteSByte(sbyte value)
+        {
+            Stream.WriteByte((byte)value);
+        }
+
+        public void WriteSByte(long tell, sbyte value)
+        {
+            Seek(tell);
+            Stream.WriteByte((byte)value);
+        }
+
+        public void WriteBoolean(bool value)
+        {
+            Stream.WriteByte(value ? (byte)1 : (byte)0);
+        }
+
+        public void WriteBoolean(long tell, bool value)
+        {
+            Seek(tell);
+            Stream.WriteByte(value ? (byte)1 : (byte)0);
+        }
+
+        public void WriteShort(short value)
         {
             Write(value);
         }
 
-        public void WriteInt64(long tell, long value)
+        public void WriteShort(long tell, short value)
         {
             Seek(tell);
             Write(value);
         }
 
-        public void WriteUInt(uint value)
+        public void WriteUShort(ushort value)
         {
             Write(value);
         }
 
-        public void WriteUInt(long tell, uint value)
+        public void WriteUShort(long tell, ushort value)
         {
             Seek(tell);
             Write(value);
@@ -269,6 +329,28 @@ namespace RszTool
             Write(value);
         }
 
+        public void WriteUInt(uint value)
+        {
+            Write(value);
+        }
+
+        public void WriteUInt(long tell, uint value)
+        {
+            Seek(tell);
+            Write(value);
+        }
+
+        public void WriteInt64(long value)
+        {
+            Write(value);
+        }
+
+        public void WriteInt64(long tell, long value)
+        {
+            Seek(tell);
+            Write(value);
+        }
+
         public void WriteUInt64(ulong value)
         {
             Write(value);
@@ -278,6 +360,17 @@ namespace RszTool
         {
             Seek(tell);
             Write(value);
+        }
+
+        public void WriteBytes(byte[] buffer, int length = -1)
+        {
+            Stream.Write(buffer, 0, length == -1 ? buffer.Length : length);
+        }
+
+        public void WriteBytes(byte[] buffer, long tell, int length = -1)
+        {
+            Seek(tell);
+            Stream.Write(buffer, 0, length == -1 ? buffer.Length : length);
         }
 
         public static string MarshalStringTrim(string text)

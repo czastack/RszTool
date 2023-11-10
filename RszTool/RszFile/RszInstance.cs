@@ -84,13 +84,17 @@ namespace RszTool
                 long startPos = handler.Tell();
                 object value = field.type switch
                 {
-                    "Object" or "UserData" or "U32" => handler.ReadUInt(),
                     "S32" => handler.ReadInt(),
-                    "U64" => handler.ReadUInt64(),
+                    "Object" or "UserData" or "U32" => handler.ReadUInt(),
                     "S64" => handler.ReadInt64(),
-                    "Bool" => handler.ReadBoolean(),
+                    "U64" => handler.ReadUInt64(),
                     "F32" => handler.ReadFloat(),
                     "F64" => handler.ReadDouble(),
+                    "Bool" => handler.ReadBoolean(),
+                    "S8" => handler.ReadSByte(),
+                    "U8" => handler.ReadByte(),
+                    "S16" => handler.ReadShort(),
+                    "U16" => handler.ReadUShort(),
                     "Vec2" => handler.Read<Vector2>(),
                     "Vec3" => handler.Read<Vector3>(),
                     "Vec4" => handler.Read<Vector4>(),
@@ -147,13 +151,17 @@ namespace RszTool
                 long startPos = handler.Tell();
                 _ = field.type switch
                 {
-                    "Object" or "UserData" or "U32" => handler.Write((uint)value),
                     "S32" => handler.Write((int)value),
-                    "U64" => handler.Write((ulong)value),
+                    "Object" or "UserData" or "U32" => handler.Write((uint)value),
                     "S64" => handler.Write((long)value),
-                    "Bool" => handler.Write((bool)value),
+                    "U64" => handler.Write((ulong)value),
                     "F32" => handler.Write((float)value),
                     "F64" => handler.Write((double)value),
+                    "Bool" => handler.Write((bool)value),
+                    "S8" => handler.Write((sbyte)value),
+                    "U8" => handler.Write((byte)value),
+                    "S16" => handler.Write((short)value),
+                    "U16" => handler.Write((ushort)value),
                     "Vec2" => handler.Write((Vector2)value),
                     "Vec3" => handler.Write((Vector3)value),
                     "Vec4" => handler.Write((Vector4)value),
@@ -166,6 +174,57 @@ namespace RszTool
                 handler.Seek(startPos + field.size);
                 return true;
             }
+        }
+
+        public static Type FieldTypeToSharpType(RszField field)
+        {
+            return field.type switch
+            {
+                "S32" => typeof(int),
+                "Object" or "UserData" or "U32" => typeof(uint),
+                "S64" => typeof(long),
+                "U64" => typeof(ulong),
+                "F32" => typeof(float),
+                "F64" => typeof(double),
+                "Bool" => typeof(bool),
+                "S8" => typeof(sbyte),
+                "U8" => typeof(byte),
+                "S16" => typeof(short),
+                "U16" => typeof(ushort),
+                "Vec2" => typeof(Vector2),
+                "Vec3" => typeof(Vector3),
+                "Vec4" => typeof(Vector4),
+                "OBB" => typeof(float[]),
+                "Guid" => typeof(Guid),
+                "Color" => typeof(Color),
+                "Data" => typeof(byte[]),
+                "String" or "Resource" => typeof(string),
+                _ => throw new InvalidDataException($"Not support type {field.type}"),
+            };
+        }
+
+        /// <summary>
+        /// 获取字段值
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public object? GetFieldValue(string name)
+        {
+            int index = RszClass.IndexOfField(name);
+            if (index == -1) return null;
+            return Values[index];
+        }
+
+        /// <summary>
+        /// 设置字段值
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        public void SetFieldValue(string name, object value)
+        {
+            int index = RszClass.IndexOfField(name);
+            if (index == -1) return;
+            Values[index] = value;
         }
 
         public void Stringify(StringBuilder sb)
