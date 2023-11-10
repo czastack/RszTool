@@ -9,6 +9,11 @@ namespace RszTool
         public RszFileOption(string gameName)
         {
             GameName = gameName;
+            TdbVersion = gameName switch
+            {
+                "re4" => 71,
+                _ => 71,
+            };
             RszParser = RszParser.GetInstance($"rsz{gameName}.json");
         }
     }

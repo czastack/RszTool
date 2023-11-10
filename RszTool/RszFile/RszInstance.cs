@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Numerics;
+using System.Text;
 
 namespace RszTool
 {
@@ -119,7 +120,9 @@ namespace RszTool
             handler.Align(field.array ? 4 : field.align);
             if (field.array)
             {
-                foreach (var item in (object[])Values[index])
+                List<object> list = (List<object>)Values[index];
+                handler.Write(list.Count);
+                foreach (var item in list)
                 {
                     WriteNormalField(handler, field, item);
                 }
@@ -163,6 +166,47 @@ namespace RszTool
                 handler.Seek(startPos + field.size);
                 return true;
             }
+        }
+
+        public void Stringify(StringBuilder sb)
+        {
+            if (RszClass.crc == 0)
+            {
+                sb.Append("NULL");
+                return;
+            }
+            sb.Append(Name);
+            sb.AppendLine(" {");
+            for (int i = 0; i < RszClass.fields.Length; i++)
+            {
+                RszField field = RszClass.fields[i];
+                sb.Append("    ");
+                sb.Append($"{field.original_type} {field.name} = ");
+                if (field.array)
+                {
+                    sb.Append('[');
+                    foreach (var item in (List<object>)Values[i])
+                    {
+                        sb.Append(item);
+                        sb.Append(", ");
+                    }
+                    sb.Length -= 2;
+                    sb.AppendLine("];");
+                }
+                else
+                {
+                    sb.Append(Values[i]);
+                    sb.AppendLine(";");
+                }
+            }
+            sb.AppendLine("}");
+        }
+
+        public string Stringify()
+        {
+            StringBuilder sb = new();
+            Stringify(sb);
+            return sb.ToString();
         }
     }
 }

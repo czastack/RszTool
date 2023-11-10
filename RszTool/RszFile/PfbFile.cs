@@ -138,14 +138,13 @@ namespace RszTool
 
             handler.Align(16);
             Header.Data.dataOffset = handler.Tell();
-            RSZ!.Write(Header.Data.dataOffset);
+            RSZ!.WriteTo(FileHandler.WithOffset(Header.Data.dataOffset));
 
-            handler.Seek(0);
             Header.Data.infoCount = GameObjectInfoList.Count;
             Header.Data.resourceCount = ResourceInfoList.Count;
             Header.Data.gameObjectRefInfoCount = GameObjectRefInfoList.Count;
             Header.Data.userdataCount = UserdataInfoList.Count;
-            Header.Write(handler);
+            Header.Rewrite(handler);
 
             return true;
         }

@@ -13,6 +13,10 @@ namespace RszTool
         private List<StringToWrite>? StringToWrites;
         private Sunday? searcher = new();
 
+        public FileHandler() : this(new MemoryStream())
+        {
+        }
+
         public FileHandler(string path, bool isMemory = false)
         {
             FilePath = path;
@@ -28,15 +32,15 @@ namespace RszTool
             }
         }
 
-        public FileHandler(Stream stream, bool isMemory = false)
+        public FileHandler(Stream stream)
         {
-            IsMemory = isMemory;
+            IsMemory = stream is MemoryStream;
             Stream = stream;
         }
 
-        public FileHandler WithOffset(long offset)
+        ~FileHandler()
         {
-            return new FileHandler(Stream, IsMemory) { Offset = offset };
+            Dispose(false);
         }
 
         public void Dispose()
@@ -53,6 +57,22 @@ namespace RszTool
             }
         }
 
+        public FileHandler AsMemory()
+        {
+            var newStream = new MemoryStream();
+            long pos = Stream.Position;
+            Stream.Position = 0;
+            Stream.CopyTo(newStream);
+            Stream.Position = pos;
+            newStream.Position = pos;
+            return new FileHandler(newStream) { Offset = Offset };
+        }
+
+        public FileHandler WithOffset(long offset)
+        {
+            return new FileHandler(Stream) { Offset = offset };
+        }
+
         public void Save(string? path = null)
         {
             if ((path == null || path == FilePath) && !IsMemory)
@@ -65,9 +85,16 @@ namespace RszTool
                 if (path == null) return;
                 using FileStream fileStream = File.Create(path);
                 long pos = Stream.Position;
+                Stream.Position = 0;
                 Stream.CopyTo(fileStream);
                 Stream.Position = pos;
             }
+        }
+
+        public void Clear()
+        {
+            Stream.SetLength(0);
+            Stream.Flush();
         }
 
         public long FileSize()

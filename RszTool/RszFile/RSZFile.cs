@@ -91,10 +91,14 @@ namespace RszTool
                 RszClass? rszClass = RszParser.GetRSZClass(InstanceInfoList[i].typeId);
                 if (rszClass == null)
                 {
+                    // throw new InvalidDataException($"RszClass {InstanceInfoList[i].typeId} not found!");
                     Console.Error.WriteLine($"RszClass {InstanceInfoList[i].typeId} not found!");
                     continue;
                 }
-                distanceIdToIndex.TryGetValue((uint)i, out int userDataIdx);
+                if (!distanceIdToIndex.TryGetValue((uint)i, out int userDataIdx))
+                {
+                    userDataIdx = -1;
+                }
                 RszInstance instance = new(rszClass, i, userDataIdx);
                 instance.Read(handler);
                 if (userDataIdx != -1)
@@ -111,8 +115,11 @@ namespace RszTool
             var handler = FileHandler;
 
             handler.Seek(Header.Size);
-            handler.Align(16);
 
+            handler.Align(16);
+            ObjectTableList.Write(handler);
+
+            handler.Align(16);
             Header.Data.instanceOffset = handler.Tell();
             InstanceInfoList.Write(handler);
 
@@ -143,11 +150,10 @@ namespace RszTool
             Header.Data.dataOffset = handler.Tell();
             InstanceList.Write(handler);
 
-            handler.Seek(0);
             Header.Data.objectCount = ObjectTableList.Count;
             Header.Data.instanceCount = InstanceList.Count;
             Header.Data.userdataCount = RSZUserDataInfoList.Count;
-            Header.Write(handler);
+            Header.Rewrite(handler);
             return true;
         }
 

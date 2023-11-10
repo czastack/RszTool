@@ -25,12 +25,23 @@ namespace RszTool
 
         static void TestParseUser()
         {
-            string path = @"C:\Users\An\Documents\Hack\Re\re4\RETool\effect\re_chunk_000\natives\STM\_Chainsaw\AppSystem\UI\UserData\AccessoryEffectSettingUserdata.user.2";
+            string path = "test/AccessoryEffectSettingUserdata.user.2";
+            string newPath = "test/AccessoryEffectSettingUserdata_new.user.2";
             RszFileOption option = new("re4");
             UserFile userFile = new(option, new FileHandler(path));
             userFile.Read();
-            Console.WriteLine(userFile.Header.Data.magic.ToString("X"));
-            Console.WriteLine(userFile.Header.Data.dataOffset);
+            using FileHandler newFileHandler = new(newPath);
+            userFile.WriteTo(newFileHandler);
+
+            UserFile newUserFile = new(option, newFileHandler);
+            newUserFile.Read(0);
+            if (newUserFile.RSZ != null)
+            {
+                foreach (var item in newUserFile.RSZ.InstanceList)
+                {
+                    Console.WriteLine(item.Stringify());
+                }
+            }
         }
 
         private static void SubmitUI()

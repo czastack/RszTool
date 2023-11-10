@@ -63,19 +63,13 @@ namespace RszTool
             handler.FlushStringToWrite();
 
             Header.Data.dataOffset = handler.Tell();
-            RSZ!.Write(Header.Data.dataOffset);
+            // 内部偏移是从0开始算的
+            RSZ!.WriteTo(FileHandler.WithOffset(Header.Data.dataOffset));
 
-            handler.Seek(0);
             Header.Data.resourceCount = ResourceInfoList.Count;
             Header.Data.userdataCount = UserdataInfoList.Count;
-            Header.Write(handler);
-
+            Header.Rewrite(handler);
             return true;
-        }
-
-        public bool Save(string filePath)
-        {
-            return false;
         }
     }
 }

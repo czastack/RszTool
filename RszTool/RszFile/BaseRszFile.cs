@@ -1,6 +1,6 @@
 namespace RszTool
 {
-    public abstract class BaseRszFile
+    public abstract class BaseRszFile : IDisposable
     {
         public RszFileOption Option { get; set; }
         public long Start { get; set; }
@@ -15,11 +15,31 @@ namespace RszTool
             FileHandler = fileHandler;
         }
 
+        ~BaseRszFile()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                FileHandler.Dispose();
+            }
+        }
+
         public bool Read()
         {
             Start = FileHandler.Tell();
             bool result = DoRead();
             Size = FileHandler.Tell() - Start;
+            // Console.WriteLine($"{this} Start: {Start}, Read size: {Size}");
             return result;
         }
 
@@ -41,6 +61,7 @@ namespace RszTool
             Start = FileHandler.Tell();
             bool result = DoWrite();
             Size = FileHandler.Tell() - Start;
+            // Console.WriteLine($"{this} Start: {Start}, Write size: {Size}");
             return result;
         }
 
@@ -65,5 +86,28 @@ namespace RszTool
         protected abstract bool DoRead();
 
         protected abstract bool DoWrite();
+
+        public bool WriteTo(FileHandler handler)
+        {
+            FileHandler originHandler = FileHandler;
+            if (handler == originHandler)
+            {
+                return Write();
+            }
+            // save as new file
+            bool result = true;
+            try
+            {
+                FileHandler = handler;
+                Write();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                result = false;
+            }
+            FileHandler = originHandler;
+            return result;
+        }
     }
 }
