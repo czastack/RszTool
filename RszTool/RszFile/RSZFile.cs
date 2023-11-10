@@ -31,10 +31,17 @@ namespace RszTool
         {
         }
 
+        public const uint Magic = 0x5a5352;
+
         protected override bool DoRead()
         {
             var handler = FileHandler;
             if (!Header.Read(handler)) return false;
+            if (Header.Data.magic != Magic)
+            {
+                throw new InvalidDataException($"Not a RSZ data");
+            }
+
             var rszParser = RszParser;
 
             ObjectTableList.Read(handler, Header.Data.objectCount);
@@ -81,6 +88,7 @@ namespace RszTool
             }
 
             // read instance data
+            handler.Seek(Header.Data.dataOffset);
             for (int i = 0; i < InstanceInfoList.Count; i++)
             {
                 RszClass? rszClass = RszParser.GetRSZClass(InstanceInfoList[i].typeId);
@@ -95,10 +103,13 @@ namespace RszTool
                     userDataIdx = -1;
                 }
                 RszInstance instance = new(rszClass, i, userDataIdx);
-                instance.Read(handler);
                 if (userDataIdx != -1)
                 {
                     instance.RSZUserData = RSZUserDataInfoList[userDataIdx];
+                }
+                else
+                {
+                    instance.Read(handler);
                 }
                 InstanceList.Add(instance);
             }

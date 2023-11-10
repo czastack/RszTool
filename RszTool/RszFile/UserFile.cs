@@ -22,10 +22,19 @@ namespace RszTool
         {
         }
 
+        public const uint Magic = 0x525355;
+        public const string Extension = ".2";
+        public const string Extension2 = ".user";
+
         protected override bool DoRead()
         {
             var handler = FileHandler;
             if (!Header.Read(handler)) return false;
+            if (Header.Data.magic != Magic)
+            {
+                throw new InvalidDataException($"{handler.FilePath} Not a SCN file");
+            }
+
             handler.Seek(Header.Data.dataOffset);
             ResourceInfoList.Read(handler, Header.Data.resourceCount);
 
@@ -33,7 +42,7 @@ namespace RszTool
             UserdataInfoList.Read(handler, Header.Data.userdataCount);
 
             RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
-            RSZ.Read();
+            RSZ.Read(0, false);
             return true;
         }
 

@@ -44,7 +44,7 @@ namespace RszTool
             {
                 handler.Read(ref pathOffset);
                 handler.Read(ref parentId);
-                prefabPath = handler.ReadWString((long)pathOffset);
+                prefabPath = handler.ReadWString(pathOffset);
                 return true;
             }
 
@@ -91,7 +91,7 @@ namespace RszTool
         {
         }
 
-        public const uint Magic = 5129043;
+        public const uint Magic = 0x4e4353;
         public const string Extension2 = ".scn";
 
         public string? GetExtension()
@@ -114,6 +114,10 @@ namespace RszTool
         {
             FileHandler handler = FileHandler;
             if (!Header.Read(handler)) return false;
+            if (Header.Data.magic != Magic)
+            {
+                throw new InvalidDataException($"{handler.FilePath} Not a SCN file");
+            }
 
             GameObjectInfoList.Read(handler, Header.Data.infoCount);
 
@@ -130,7 +134,7 @@ namespace RszTool
             UserdataInfoList.Read(handler, Header.Data.userdataCount);
 
             RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
-            RSZ.Read();
+            RSZ.Read(0, false);
             if (RSZ.ObjectTableList.Count > 0)
             {
                 // SetupGameObjects();

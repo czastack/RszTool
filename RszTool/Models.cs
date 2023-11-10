@@ -265,6 +265,7 @@ namespace RszTool
 
         public bool Read(FileHandler handler)
         {
+            handler.CheckRange();
             Start = handler.Tell();
             bool result = DoRead(handler);
             Size = handler.Tell() - Start;

@@ -34,7 +34,9 @@ namespace RszTool
         {
             for (int i = 0; i < RszClass.fields.Length; i++)
             {
+                // long startPos = handler.Tell();
                 Values[i] = ReadRszField(handler, i);
+                // Console.WriteLine($"read at: {startPos} {RszClass.fields[i].name} {Values[i]} {handler.Tell() - startPos}");
             }
             return true;
         }
@@ -68,13 +70,13 @@ namespace RszTool
             }
         }
 
-        public static object ReadNormalField(FileHandler handler, RszField field)
+        public object ReadNormalField(FileHandler handler, RszField field)
         {
             if (field.type == "String" || field.type == "Resource")
             {
                 int charCount = handler.ReadInt();
                 long stringStart = handler.Tell();
-                string value = handler.ReadWString(charCount);
+                string value = charCount <= 1 ? "" : handler.ReadWString(maxLen: charCount);
                 handler.Seek(stringStart + charCount * 2);
                 // TODO checkOpenResource
                 return value;
@@ -101,9 +103,15 @@ namespace RszTool
                     "OBB" => handler.ReadArray<float>(20),
                     "Guid" => handler.Read<Guid>(),
                     "Color" => handler.Read<Color>(),
+                    "Range" => handler.Read<Range>(),
+                    "Quaternion" => handler.Read<Quaternion>(),
                     "Data" => handler.ReadBytes(field.size),
                     _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
+                /* if (field.size != handler.Tell() - startPos)
+                {
+                    throw new InvalidDataException($"{field.name} size not match");
+                } */
                 handler.Seek(startPos + field.size);
                 return value;
             }
@@ -111,9 +119,13 @@ namespace RszTool
 
         protected override bool DoWrite(FileHandler handler)
         {
+            // if has RSZUserData, it is external
+            if (RSZUserData != null) return true;
             for (int i = 0; i < RszClass.fields.Length; i++)
             {
+                // long startPos = handler.Tell();
                 WriteRszField(handler, i);
+                // Console.WriteLine($"write at: {startPos} {RszClass.fields[i].name} {Values[i]} {handler.Tell() - startPos}");
             }
             return true;
         }
@@ -143,8 +155,7 @@ namespace RszTool
             if (field.type == "String" || field.type == "Resource")
             {
                 string valueStr = (string)value;
-                int charCount = valueStr.Length;
-                return handler.Write(charCount * 2) && handler.WriteWString(valueStr);
+                return handler.Write(valueStr.Length + 1) && handler.WriteWString(valueStr);
             }
             else
             {
@@ -168,6 +179,8 @@ namespace RszTool
                     "OBB" => handler.WriteArray((float[])value),
                     "Guid" => handler.Write((Guid)value),
                     "Color" => handler.Write((Color)value),
+                    "Range" => handler.Write((Range)value),
+                    "Quaternion" => handler.Write((Quaternion)value),
                     "Data" => handler.WriteBytes((byte[])value),
                     _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
@@ -197,6 +210,8 @@ namespace RszTool
                 "OBB" => typeof(float[]),
                 "Guid" => typeof(Guid),
                 "Color" => typeof(Color),
+                "Range" => typeof(Range),
+                "Quaternion" => typeof(Quaternion),
                 "Data" => typeof(byte[]),
                 "String" or "Resource" => typeof(string),
                 _ => throw new InvalidDataException($"Not support type {field.type}"),

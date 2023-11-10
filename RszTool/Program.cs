@@ -8,6 +8,9 @@ namespace RszTool
         static void Main(string[] args)
         {
             TestParseUser();
+            // TestParsePfb();
+            // TestParseScn();
+
             // ImGuiSetup setup = new();
             // setup.SubmitUI += SubmitUI;
             // setup.Loop();
@@ -38,6 +41,50 @@ namespace RszTool
             if (newUserFile.RSZ != null)
             {
                 foreach (var item in newUserFile.RSZ.InstanceList)
+                {
+                    Console.WriteLine(item.Stringify());
+                }
+            }
+        }
+
+        static void TestParsePfb()
+        {
+            string path = "test/railcarcrossbowshellgenerator.pfb.17";
+            string newPath = "test/railcarcrossbowshellgenerator_new.pfb.17";
+            RszFileOption option = new("re4");
+            PfbFile pfbFile = new(option, new FileHandler(path));
+            pfbFile.Read();
+            using FileHandler newFileHandler = new(newPath);
+            pfbFile.WriteTo(newFileHandler);
+
+            PfbFile newPfbFile = new(option, newFileHandler);
+            newPfbFile.Read(0);
+
+            if (newPfbFile.RSZ != null)
+            {
+                foreach (var item in newPfbFile.RSZ.InstanceList)
+                {
+                    Console.WriteLine(item.Stringify());
+                }
+            }
+        }
+
+        static void TestParseScn()
+        {
+            string path = "test/level_loc40_200.scn.20";
+            string newPath = "test/level_loc40_200_new.scn.20";
+            RszFileOption option = new("re4");
+            ScnFile scnFile = new(option, new FileHandler(path));
+            scnFile.Read();
+            using FileHandler newFileHandler = new(newPath);
+            scnFile.WriteTo(newFileHandler);
+
+            ScnFile newScnFile = new(option, newFileHandler);
+            newScnFile.Read(0);
+
+            if (newScnFile.RSZ != null)
+            {
+                foreach (var item in newScnFile.RSZ.InstanceList)
                 {
                     Console.WriteLine(item.Stringify());
                 }

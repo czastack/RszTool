@@ -131,6 +131,14 @@ namespace RszTool
             Stream.Seek(skip, SeekOrigin.Current);
         }
 
+        public void CheckRange()
+        {
+            if (Stream.Position > Stream.Length)
+            {
+                throw new IndexOutOfRangeException($"Seek out of range {Stream.Position} > {Stream.Length}");
+            }
+        }
+
         public byte ReadByte()
         {
             return (byte)Stream.ReadByte();
@@ -383,7 +391,7 @@ namespace RszTool
             return text;
         }
 
-        public string ReadWString(long pos = -1, int maxLen=-1, bool jumpBack = true)
+        public string ReadWString(long pos = -1, int maxLen = -1, bool jumpBack = true)
         {
             long originPos = Tell();
             if (pos != -1) Seek(pos);
@@ -396,6 +404,7 @@ namespace RszTool
                 if (readCount != 0)
                 {
                     int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
+                    if (n % 2 != 0) ++n;
                     result = Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount);
                 }
             }
@@ -409,6 +418,7 @@ namespace RszTool
                     if (readCount != 0)
                     {
                         int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
+                        if (n % 2 != 0) ++n;
                         sb.Append(Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount));
                         if (n != -1) break;
                     }
@@ -423,7 +433,7 @@ namespace RszTool
             return result;
         }
 
-        public int ReadWStringLength(long pos = -1, int maxLen=-1, bool jumpBack = true)
+        public int ReadWStringLength(long pos = -1, int maxLen = -1, bool jumpBack = true)
         {
             long originPos = Tell();
             if (pos != -1) Seek(pos);
@@ -436,6 +446,7 @@ namespace RszTool
                 if (readCount != 0)
                 {
                     int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
+                    if (n % 2 != 0) ++n;
                     result = (n != -1 ? n : readCount) / 2;
                 }
             }
@@ -448,6 +459,7 @@ namespace RszTool
                     if (readCount != 0)
                     {
                         int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
+                        if (n % 2 != 0) ++n;
                         result += (n != -1 ? n : readCount) / 2;
                         if (n != -1) break;
                     }
@@ -519,7 +531,7 @@ namespace RszTool
         }
 
         /// <summary>读取数组</summary>
-        public bool ReadArray<T>(T[] array, int start=0, int length=-1) where T : struct
+        public bool ReadArray<T>(T[] array, int start = 0, int length = -1) where T : struct
         {
             if (length == -1 || length > array.Length - start)
             {
@@ -537,7 +549,7 @@ namespace RszTool
         }
 
         /// <summary>写入数组</summary>
-        public bool WriteArray<T>(T[] array, int start=0, int length=-1) where T : struct
+        public bool WriteArray<T>(T[] array, int start = 0, int length = -1) where T : struct
         {
             if (length == -1 || length > array.Length - start)
             {
@@ -651,7 +663,7 @@ namespace RszTool
 
         public void FlushStringToWrite()
         {
-            if (StringToWrites == null) return;
+            if (StringToWrites == null || StringToWrites.Count == 0) return;
             foreach (var item in StringToWrites)
             {
                 long pos = Tell();

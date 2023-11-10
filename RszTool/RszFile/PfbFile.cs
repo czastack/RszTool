@@ -44,7 +44,7 @@ namespace RszTool
         {
         }
 
-        public const uint Magic = 4343376;
+        public const uint Magic = 0x424650;
         public const string Extension2 = ".pfb";
 
         public string? GetExtension()
@@ -68,6 +68,11 @@ namespace RszTool
             FileHandler handler = FileHandler;
 
             if (!Header.Read(handler)) return false;
+            if (Header.Data.magic != Magic)
+            {
+                throw new InvalidDataException($"{handler.FilePath} Not a PFB file");
+            }
+
             GameObjectInfoList.Read(handler, Header.Data.infoCount);
 
             handler.Seek(Header.Data.gameObjectRefInfoOffset);
@@ -80,7 +85,7 @@ namespace RszTool
             UserdataInfoList.Read(handler, (int)Header.Data.userdataCount);
 
             RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
-            RSZ.Read();
+            RSZ.Read(0, false);
             if (RSZ.ObjectTableList.Count > 0)
             {
                 // SetupGameObjects();
