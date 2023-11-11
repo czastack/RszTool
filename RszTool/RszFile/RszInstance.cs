@@ -76,7 +76,7 @@ namespace RszTool
             {
                 int charCount = handler.ReadInt();
                 long stringStart = handler.Tell();
-                string value = charCount <= 1 ? "" : handler.ReadWString(maxLen: charCount);
+                string value = charCount <= 1 ? "" : handler.ReadWString(charCount: charCount);
                 handler.Seek(stringStart + charCount * 2);
                 // TODO checkOpenResource
                 return value;

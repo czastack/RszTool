@@ -36,6 +36,7 @@ namespace RszTool
         protected override bool DoRead()
         {
             var handler = FileHandler;
+            handler.Seek(0);
             if (!Header.Read(handler)) return false;
             if (Header.Data.magic != Magic)
             {
@@ -134,7 +135,7 @@ namespace RszTool
             RSZUserDataInfoList.Write(handler);
 
             handler.Align(16);
-            handler.FlushStringToWrite();
+            handler.StringTableFlush();
 
             // embedded userdata
             if (Option.TdbVersion <= 67 && EmbeddedRSZFileList != null)
@@ -244,7 +245,7 @@ namespace RszTool
         {
             handler.Write(instanceId);
             handler.Write(typeId);
-            handler.AddStringToWrite(path);
+            handler.StringTableAdd(path);
             handler.Write(pathOffset);
             return true;
         }

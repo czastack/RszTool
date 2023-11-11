@@ -10,6 +10,7 @@ namespace RszTool
             TestParseUser();
             // TestParsePfb();
             // TestParseScn();
+            // TestParseMdf();
 
             // ImGuiSetup setup = new();
             // setup.SubmitUI += SubmitUI;
@@ -89,6 +90,20 @@ namespace RszTool
                     Console.WriteLine(item.Stringify());
                 }
             }
+        }
+
+        static void TestParseMdf()
+        {
+            string path = "test/cha200_20.mdf2.32";
+            string newPath = "test/cha200_20_new.mdf2.32";
+            RszFileOption option = new("re4");
+            MdfFile mdfFile = new(option, new FileHandler(path));
+            mdfFile.Read();
+            using FileHandler newFileHandler = new(newPath);
+            mdfFile.WriteTo(newFileHandler);
+
+            // MdfFile newMdfFile = new(option, newFileHandler);
+            // newMdfFile.Read(0);
         }
 
         private static void SubmitUI()

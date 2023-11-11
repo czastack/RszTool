@@ -50,7 +50,7 @@ namespace RszTool
 
             protected override bool DoWrite(FileHandler handler)
             {
-                handler.AddStringToWrite(prefabPath);
+                handler.StringTableAdd(prefabPath);
                 handler.Write(ref pathOffset);
                 handler.Write(ref parentId);
                 return true;
@@ -173,7 +173,7 @@ namespace RszTool
             Header.Data.userdataInfoOffset = handler.Tell();
             UserdataInfoList.Write(handler);
 
-            handler.FlushStringToWrite();
+            handler.StringTableFlush();
 
             handler.Align(16);
             Header.Data.dataOffset = handler.Tell();

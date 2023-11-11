@@ -119,7 +119,7 @@ namespace RszTool
                 UserdataInfoList.Write(handler);
             }
 
-            handler.FlushStringToWrite();
+            handler.StringTableFlush();
 
             handler.Align(16);
             Header.Data.dataOffset = handler.Tell();

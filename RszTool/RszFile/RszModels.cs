@@ -14,7 +14,7 @@ namespace RszTool
 
         protected override bool DoWrite(FileHandler handler)
         {
-            handler.AddStringToWrite(resourcePath);
+            handler.StringTableAdd(resourcePath);
             handler.Write(pathOffset);
             return true;
         }
@@ -41,17 +41,9 @@ namespace RszTool
         {
             handler.Write(ref typeId);
             handler.Write(ref CRC);
-            handler.AddStringToWrite(userdataPath);
+            handler.StringTableAdd(userdataPath);
             handler.Write(ref pathOffset);
             return true;
         }
     }
-
-
-    /// <summary>
-    /// 待写入的字符串
-    /// </summary>
-    /// <param name="OffsetStart">字符串偏移的地址</param>
-    /// <param name="Text">待写入文本</param>
-    public record StringToWrite(long OffsetStart, string Text);
 }

@@ -59,7 +59,7 @@ namespace RszTool
             Header.Data.userdataInfoOffset = handler.Tell();
             UserdataInfoList.Write(handler);
 
-            handler.FlushStringToWrite();
+            handler.StringTableFlush();
 
             Header.Data.dataOffset = handler.Tell();
             // 内部偏移是从0开始算的

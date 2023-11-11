@@ -1,6 +1,7 @@
 using System.Text;
 using RszTool.Common;
 using System.Runtime.InteropServices;
+using System.Collections;
 
 namespace RszTool
 {
@@ -10,7 +11,7 @@ namespace RszTool
         public Stream Stream { get; }
         public bool IsMemory { get; }
         public long Offset { get; set; }
-        private List<StringToWrite>? StringToWrites;
+        private StringTable? StringTable;
         private Sunday? searcher = new();
 
         public FileHandler() : this(new MemoryStream())
@@ -161,6 +162,17 @@ namespace RszTool
             return (sbyte)Stream.ReadByte();
         }
 
+        public char ReadChar()
+        {
+            return Read<char>();
+        }
+
+        public char ReadChar(long tell)
+        {
+            Seek(tell);
+            return Read<char>();
+        }
+
         public bool ReadBoolean()
         {
             return Stream.ReadByte() != 0;
@@ -293,6 +305,17 @@ namespace RszTool
             Stream.WriteByte((byte)value);
         }
 
+        public void WriteChar(char value)
+        {
+            Write(value);
+        }
+
+        public void WriteChar(long tell, char value)
+        {
+            Seek(tell);
+            Write(value);
+        }
+
         public void WriteBoolean(bool value)
         {
             Stream.WriteByte(value ? (byte)1 : (byte)0);
@@ -375,10 +398,45 @@ namespace RszTool
             Stream.Write(buffer, 0, length == -1 ? buffer.Length : length);
         }
 
-        public void WriteBytes(byte[] buffer, long tell, int length = -1)
+        public void WriteBytes(long tell, byte[] buffer, int length = -1)
         {
             Seek(tell);
-            Stream.Write(buffer, 0, length == -1 ? buffer.Length : length);
+            WriteBytes(buffer, length);
+        }
+
+        public void FillBytes(byte value, int length)
+        {
+            if (length < 0)
+            {
+                // throw new ArgumentOutOfRangeException(nameof(length), $"{nameof(length)} must > 0");
+                return;
+            }
+            if (length < 256)
+            {
+                Span<byte> bytes = stackalloc byte[length];
+                bytes.Fill(value);
+                WriteSpan<byte>(bytes);
+            }
+            else
+            {
+                Span<byte> bytes = stackalloc byte[256];
+                bytes.Fill(value);
+                int count = length >> 8;
+                for (int i = 0; i < count; i++)
+                {
+                    WriteSpan<byte>(bytes);
+                }
+                if ((length & 0xFF) != 0)
+                {
+                    WriteSpan<byte>(bytes.Slice(0, length & 0xFF));
+                }
+            }
+        }
+
+        public void FillBytes(long tell, byte value, int length)
+        {
+            Seek(tell);
+            FillBytes(value, length);
         }
 
         public static string MarshalStringTrim(string text)
@@ -391,86 +449,61 @@ namespace RszTool
             return text;
         }
 
-        public string ReadWString(long pos = -1, int maxLen = -1, bool jumpBack = true)
+        public string ReadWString(long pos = -1, int charCount = -1, bool jumpBack = true)
         {
             long originPos = Tell();
             if (pos != -1) Seek(pos);
-            string result = "";
-            Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
-            if (maxLen != -1)
+            string? result = null;
+            if (charCount == -1) charCount = 128;
+
+            Span<char> buffer = stackalloc char[charCount];
+            Span<byte> bytes = MemoryMarshal.AsBytes(buffer);
+            int readCount = Stream.Read(bytes);
+            if (readCount != 0)
             {
-                byte[] buffer = new byte[maxLen * 2];
-                int readCount = Stream.Read(buffer);
-                if (readCount != 0)
+                int n = buffer.IndexOf((char)0);
+                if (n != -1)
                 {
-                    int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
-                    if (n % 2 != 0) ++n;
-                    result = Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount);
+                    result = n == 0 ? "" : new string(buffer.Slice(0, n));
                 }
             }
             else
             {
+                result = "";
+            }
+            if (result == null)
+            {
                 StringBuilder sb = new();
-                byte[] buffer = new byte[256];
+                sb.Append(buffer);
                 do
                 {
-                    int readCount = Stream.Read(buffer);
+                    readCount = Stream.Read(bytes);
                     if (readCount != 0)
                     {
-                        int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
-                        if (n % 2 != 0) ++n;
-                        sb.Append(Encoding.Unicode.GetString(buffer, 0, n != -1 ? n : readCount));
+                        int n = buffer.IndexOf((char)0);
+                        sb.Append(n != -1 ? buffer.Slice(0, n): buffer);
                         if (n != -1) break;
                     }
-                    if (readCount != buffer.Length)
-                    {
-                        break;
-                    }
-                } while (true);
+                } while (readCount == bytes.Length);
                 result = sb.ToString();
             }
             if (jumpBack) Seek(originPos);
-            return result;
+            return result ?? "";
         }
 
         public int ReadWStringLength(long pos = -1, int maxLen = -1, bool jumpBack = true)
         {
             long originPos = Tell();
             if (pos != -1) Seek(pos);
-            int result = 0;
-            Span<byte> nullTerminator = stackalloc byte[] { (byte)0, (byte)0 };
-            if (maxLen != -1)
+            int length = 0;
+            char newByte = ReadChar();
+            while (newByte != 0)
             {
-                byte[] buffer = new byte[maxLen * 2];
-                int readCount = Stream.Read(buffer);
-                if (readCount != 0)
-                {
-                    int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
-                    if (n % 2 != 0) ++n;
-                    result = (n != -1 ? n : readCount) / 2;
-                }
-            }
-            else
-            {
-                byte[] buffer = new byte[256];
-                do
-                {
-                    int readCount = Stream.Read(buffer);
-                    if (readCount != 0)
-                    {
-                        int n = ((ReadOnlySpan<byte>)buffer).IndexOf(nullTerminator);
-                        if (n % 2 != 0) ++n;
-                        result += (n != -1 ? n : readCount) / 2;
-                        if (n != -1) break;
-                    }
-                    if (readCount != buffer.Length)
-                    {
-                        break;
-                    }
-                } while (true);
+                length++;
+                newByte = ReadChar();
             }
             if (jumpBack) Seek(originPos);
-            return result;
+            return length;
         }
 
         public bool WriteWString(string text)
@@ -485,9 +518,27 @@ namespace RszTool
             return value;
         }
 
+        public T Read<T>(long tell, bool jumpBack = true) where T : struct
+        {
+            long pos = Tell();
+            Seek(tell);
+            T value = Read<T>();
+            if (jumpBack) Seek(pos);
+            return value;
+        }
+
         public int Read<T>(ref T value) where T : struct
         {
             return Stream.Read(MemoryUtils.StructureAsBytes(ref value));
+        }
+
+        public int Read<T>(long tell, ref T value, bool jumpBack = true) where T : struct
+        {
+            long pos = Tell();
+            Seek(tell);
+            int result = Read(ref value);
+            if (jumpBack) Seek(pos);
+            return result;
         }
 
         public bool Write<T>(T value) where T : struct
@@ -496,10 +547,28 @@ namespace RszTool
             return true;
         }
 
+        public bool Write<T>(long tell, T value, bool jumpBack = true) where T : struct
+        {
+            long pos = Tell();
+            Seek(tell);
+            bool result = Write(value);
+            if (jumpBack) Seek(pos);
+            return result;
+        }
+
         public bool Write<T>(ref T value) where T : struct
         {
             Stream.Write(MemoryUtils.StructureAsBytes(ref value));
             return true;
+        }
+
+        public bool Write<T>(long tell, ref T value, bool jumpBack = true) where T : struct
+        {
+            long pos = Tell();
+            Seek(tell);
+            bool result = Write(ref value);
+            if (jumpBack) Seek(pos);
+            return result;
         }
 
         public byte[] ReadBytes(int length)
@@ -652,26 +721,111 @@ namespace RszTool
             stream.Position = currentPosition;
         }
 
-        public void AddStringToWrite(string? text)
+        public void StringTableAdd(string? text)
         {
             if (text != null)
             {
-                StringToWrites ??= new();
-                StringToWrites.Add(new(Tell(), text));
+                StringTable ??= new();
+                StringTable.Add(text, Tell());
             }
         }
 
-        public void FlushStringToWrite()
+        /// <summary>
+        /// 写入字符串表字符串和偏移
+        /// </summary>
+        public void StringTableFlush()
         {
-            if (StringToWrites == null || StringToWrites.Count == 0) return;
-            foreach (var item in StringToWrites)
+            if (StringTable == null || StringTable.Count == 0) return;
+            foreach (var item in StringTable)
             {
-                long pos = Tell();
-                WriteInt64(item.OffsetStart, pos);
-                Seek(pos);
+                item.TextStart = Tell();
+                foreach (var offsetStart in item.OffsetStart)
+                {
+                    WriteInt64(offsetStart, item.TextStart);
+                }
+                Seek(item.TextStart);
                 WriteWString(item.Text);
             }
-            StringToWrites.Clear();
+            StringTable.Clear();
         }
+
+        /// <summary>
+        /// 写入字符串表的字符串
+        /// </summary>
+        public void StringTableWriteStrings()
+        {
+            if (StringTable == null || StringTable.Count == 0) return;
+            foreach (var item in StringTable)
+            {
+                item.TextStart = Tell();
+                WriteWString(item.Text);
+            }
+        }
+
+        /// <summary>
+        /// 写入字符串表的偏移，并清空数据
+        /// </summary>
+        public void StringTableFlushOffsets()
+        {
+            if (StringTable == null || StringTable.Count == 0) return;
+            foreach (var item in StringTable)
+            {
+                if (item.TextStart == -1)
+                {
+                    throw new Exception($"StringStart of {item.Text} not set");
+                }
+                foreach (var offsetStart in item.OffsetStart)
+                {
+                    WriteInt64(offsetStart, item.TextStart);
+                }
+            }
+            StringTable.Clear();
+        }
+    }
+
+
+    public class StringTableItem
+    {
+        public string Text { get; }
+        // 引用改字符串的偏移集合
+        public HashSet<long> OffsetStart { get; } = new();
+        public long TextStart { get; set; } = -1;
+
+        public StringTableItem(string text)
+        {
+            Text = text;
+        }
+    }
+
+
+    /// <summary>
+    /// 待写入的字符串表
+    /// </summary>
+    public class StringTable : IEnumerable<StringTableItem>
+    {
+        private List<StringTableItem> Items { get; } = new();
+        private Dictionary<string, StringTableItem> StringMap { get; } = new();
+
+        public int Count => Items.Count;
+
+        public void Clear()
+        {
+            Items.Clear();
+            StringMap.Clear();
+        }
+
+        public void Add(string text, long offset)
+        {
+            if (!StringMap.TryGetValue(text, out var item))
+            {
+                StringMap[text] = item = new(text);
+                Items.Add(item);
+            }
+            item.OffsetStart.Add(offset);
+        }
+
+        public IEnumerator<StringTableItem> GetEnumerator() => Items.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => Items.GetEnumerator();
     }
 }
