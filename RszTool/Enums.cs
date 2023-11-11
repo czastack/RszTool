@@ -1,25 +1,7 @@
 namespace RszTool
 {
-    enum BHVTlvl {
-        id_All = -1,
-        id_Actions = 0,
-        id_Selectors = 1,
-        id_SelectorCallers = 2,
-        id_Conditions = 3,
-        id_TransitionEvents = 4,
-        id_ExpressionTreeConditions = 5,
-        id_StaticActions = 6,
-        id_StaticSelectorCallers = 7,
-        id_StaticConditions = 8,
-        id_StaticTransitionEvents = 9,
-        id_StaticExpressionTreeConditions = 10,
-        id_Transition = 11,
-        id_Paths = 12,
-        id_Tags = 13,
-        id_NameHash = 14
-    }
-
-    public enum TypeIDs : uint {
+    public enum TypeIDs : uint
+    {
         ukn_error = 0,
         ukn_type,
         not_init,

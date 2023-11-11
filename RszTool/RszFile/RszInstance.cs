@@ -72,7 +72,7 @@ namespace RszTool
 
         public object ReadNormalField(FileHandler handler, RszField field)
         {
-            if (field.type == "String" || field.type == "Resource")
+            if (field.type == TypeIDs.String || field.type == TypeIDs.Resource)
             {
                 int charCount = handler.ReadInt();
                 long stringStart = handler.Tell();
@@ -86,26 +86,26 @@ namespace RszTool
                 long startPos = handler.Tell();
                 object value = field.type switch
                 {
-                    "S32" => handler.ReadInt(),
-                    "Object" or "UserData" or "U32" => handler.ReadUInt(),
-                    "S64" => handler.ReadInt64(),
-                    "U64" => handler.ReadUInt64(),
-                    "F32" => handler.ReadFloat(),
-                    "F64" => handler.ReadDouble(),
-                    "Bool" => handler.ReadBoolean(),
-                    "S8" => handler.ReadSByte(),
-                    "U8" => handler.ReadByte(),
-                    "S16" => handler.ReadShort(),
-                    "U16" => handler.ReadUShort(),
-                    "Vec2" => handler.Read<Vector2>(),
-                    "Vec3" => handler.Read<Vector3>(),
-                    "Vec4" => handler.Read<Vector4>(),
-                    "OBB" => handler.ReadArray<float>(20),
-                    "Guid" => handler.Read<Guid>(),
-                    "Color" => handler.Read<Color>(),
-                    "Range" => handler.Read<Range>(),
-                    "Quaternion" => handler.Read<Quaternion>(),
-                    "Data" => handler.ReadBytes(field.size),
+                    TypeIDs.S32 => handler.ReadInt(),
+                    TypeIDs.Object or TypeIDs.UserData or TypeIDs.U32 => handler.ReadUInt(),
+                    TypeIDs.S64 => handler.ReadInt64(),
+                    TypeIDs.U64 => handler.ReadUInt64(),
+                    TypeIDs.F32 => handler.ReadFloat(),
+                    TypeIDs.F64 => handler.ReadDouble(),
+                    TypeIDs.Bool => handler.ReadBoolean(),
+                    TypeIDs.S8 => handler.ReadSByte(),
+                    TypeIDs.U8 => handler.ReadByte(),
+                    TypeIDs.S16 => handler.ReadShort(),
+                    TypeIDs.U16 => handler.ReadUShort(),
+                    TypeIDs.Vec2 => handler.Read<Vector2>(),
+                    TypeIDs.Vec3 => handler.Read<Vector3>(),
+                    TypeIDs.Vec4 => handler.Read<Vector4>(),
+                    TypeIDs.OBB => handler.ReadArray<float>(20),
+                    TypeIDs.Guid => handler.Read<Guid>(),
+                    TypeIDs.Color => handler.Read<Color>(),
+                    TypeIDs.Range => handler.Read<Range>(),
+                    TypeIDs.Quaternion => handler.Read<Quaternion>(),
+                    TypeIDs.Data => handler.ReadBytes(field.size),
                     _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
                 /* if (field.size != handler.Tell() - startPos)
@@ -152,7 +152,7 @@ namespace RszTool
 
         public static bool WriteNormalField(FileHandler handler, RszField field, object value)
         {
-            if (field.type == "String" || field.type == "Resource")
+            if (field.type == TypeIDs.String || field.type == TypeIDs.Resource)
             {
                 string valueStr = (string)value;
                 return handler.Write(valueStr.Length + 1) && handler.WriteWString(valueStr);
@@ -162,26 +162,26 @@ namespace RszTool
                 long startPos = handler.Tell();
                 _ = field.type switch
                 {
-                    "S32" => handler.Write((int)value),
-                    "Object" or "UserData" or "U32" => handler.Write((uint)value),
-                    "S64" => handler.Write((long)value),
-                    "U64" => handler.Write((ulong)value),
-                    "F32" => handler.Write((float)value),
-                    "F64" => handler.Write((double)value),
-                    "Bool" => handler.Write((bool)value),
-                    "S8" => handler.Write((sbyte)value),
-                    "U8" => handler.Write((byte)value),
-                    "S16" => handler.Write((short)value),
-                    "U16" => handler.Write((ushort)value),
-                    "Vec2" => handler.Write((Vector2)value),
-                    "Vec3" => handler.Write((Vector3)value),
-                    "Vec4" => handler.Write((Vector4)value),
-                    "OBB" => handler.WriteArray((float[])value),
-                    "Guid" => handler.Write((Guid)value),
-                    "Color" => handler.Write((Color)value),
-                    "Range" => handler.Write((Range)value),
-                    "Quaternion" => handler.Write((Quaternion)value),
-                    "Data" => handler.WriteBytes((byte[])value),
+                    TypeIDs.S32 => handler.Write((int)value),
+                    TypeIDs.Object or TypeIDs.UserData or TypeIDs.U32 => handler.Write((uint)value),
+                    TypeIDs.S64 => handler.Write((long)value),
+                    TypeIDs.U64 => handler.Write((ulong)value),
+                    TypeIDs.F32 => handler.Write((float)value),
+                    TypeIDs.F64 => handler.Write((double)value),
+                    TypeIDs.Bool => handler.Write((bool)value),
+                    TypeIDs.S8 => handler.Write((sbyte)value),
+                    TypeIDs.U8 => handler.Write((byte)value),
+                    TypeIDs.S16 => handler.Write((short)value),
+                    TypeIDs.U16 => handler.Write((ushort)value),
+                    TypeIDs.Vec2 => handler.Write((Vector2)value),
+                    TypeIDs.Vec3 => handler.Write((Vector3)value),
+                    TypeIDs.Vec4 => handler.Write((Vector4)value),
+                    TypeIDs.OBB => handler.WriteArray((float[])value),
+                    TypeIDs.Guid => handler.Write((Guid)value),
+                    TypeIDs.Color => handler.Write((Color)value),
+                    TypeIDs.Range => handler.Write((Range)value),
+                    TypeIDs.Quaternion => handler.Write((Quaternion)value),
+                    TypeIDs.Data => handler.WriteBytes((byte[])value),
                     _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
                 handler.Seek(startPos + field.size);
@@ -193,27 +193,27 @@ namespace RszTool
         {
             return field.type switch
             {
-                "S32" => typeof(int),
-                "Object" or "UserData" or "U32" => typeof(uint),
-                "S64" => typeof(long),
-                "U64" => typeof(ulong),
-                "F32" => typeof(float),
-                "F64" => typeof(double),
-                "Bool" => typeof(bool),
-                "S8" => typeof(sbyte),
-                "U8" => typeof(byte),
-                "S16" => typeof(short),
-                "U16" => typeof(ushort),
-                "Vec2" => typeof(Vector2),
-                "Vec3" => typeof(Vector3),
-                "Vec4" => typeof(Vector4),
-                "OBB" => typeof(float[]),
-                "Guid" => typeof(Guid),
-                "Color" => typeof(Color),
-                "Range" => typeof(Range),
-                "Quaternion" => typeof(Quaternion),
-                "Data" => typeof(byte[]),
-                "String" or "Resource" => typeof(string),
+                TypeIDs.S32 => typeof(int),
+                TypeIDs.Object or TypeIDs.UserData or TypeIDs.U32 => typeof(uint),
+                TypeIDs.S64 => typeof(long),
+                TypeIDs.U64 => typeof(ulong),
+                TypeIDs.F32 => typeof(float),
+                TypeIDs.F64 => typeof(double),
+                TypeIDs.Bool => typeof(bool),
+                TypeIDs.S8 => typeof(sbyte),
+                TypeIDs.U8 => typeof(byte),
+                TypeIDs.S16 => typeof(short),
+                TypeIDs.U16 => typeof(ushort),
+                TypeIDs.Vec2 => typeof(Vector2),
+                TypeIDs.Vec3 => typeof(Vector3),
+                TypeIDs.Vec4 => typeof(Vector4),
+                TypeIDs.OBB => typeof(float[]),
+                TypeIDs.Guid => typeof(Guid),
+                TypeIDs.Color => typeof(Color),
+                TypeIDs.Range => typeof(Range),
+                TypeIDs.Quaternion => typeof(Quaternion),
+                TypeIDs.Data => typeof(byte[]),
+                TypeIDs.String or TypeIDs.Resource => typeof(string),
                 _ => throw new InvalidDataException($"Not support type {field.type}"),
             };
         }

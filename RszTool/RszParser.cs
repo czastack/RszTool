@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using RszTool.Common;
 
 namespace RszTool
 {
@@ -91,7 +92,7 @@ namespace RszTool
 
         public string GetFieldTypeName(uint classHash, uint fieldIndex)
         {
-            return GetField(classHash, fieldIndex)?.type ?? "not found";
+            return GetField(classHash, fieldIndex)?.type.ToString() ?? "not found";
         }
 
         public string GetFieldOrgTypeName(uint classHash, uint fieldIndex)
@@ -110,7 +111,7 @@ namespace RszTool
             {
                 if (fieldIndex >= 0 && fieldIndex < rszClass.fields.Length)
                 {
-                    return GetFieldTypeInternal(rszClass.fields[fieldIndex].type);
+                    return rszClass.fields[fieldIndex].type;
                 }
                 return TypeIDs.out_of_range;
             }
@@ -158,95 +159,8 @@ namespace RszTool
         public int size { get; set; }
         public bool array { get; set; }
         public bool native { get; set; }
-        public string type { get; set; } = "";
+        [JsonConverter(typeof(EnumJsonConverter<TypeIDs>))]
+        public TypeIDs type { get; set; }
         public string original_type { get; set; } = "";
-    }
-
-    public class HexUIntJsonConverter : JsonConverter<uint>
-    {
-        public override uint Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                string? text = reader.GetString();
-                if (text == null) return default;
-                return Convert.ToUInt32(text, 16);
-            }
-
-            return reader.GetUInt32();
-        }
-
-        public override void Write(Utf8JsonWriter writer, uint value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue($"0x{value:x}");
-        }
-    }
-
-    public class HexIntJsonConverter : JsonConverter<int>
-    {
-        public override int Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                string? text = reader.GetString();
-                if (text == null) return default;
-                return Convert.ToInt32(text, 16);
-            }
-
-            return reader.GetInt32();
-        }
-
-        public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue($"0x{value:x}");
-        }
-    }
-
-    public class HexIntPtrJsonConverter : JsonConverter<nint>
-    {
-        public override nint Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                string? text = reader.GetString();
-                if (text == null) return default;
-                return (nint)Convert.ToInt64(text, 16);
-            }
-
-            return (nint)reader.GetInt64();
-        }
-
-        public override void Write(Utf8JsonWriter writer, nint value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue($"0x{value:x}");
-        }
-    }
-
-    public class ConstObjectConverter : JsonConverter<object?>
-    {
-        public override object? Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                return reader.GetString();
-            }
-            else if (reader.TokenType == JsonTokenType.Number)
-            {
-                return reader.GetDecimal();
-            }
-            return null;
-        }
-
-        public override void Write(Utf8JsonWriter writer, object? value, JsonSerializerOptions options)
-        {
-            if (value is string stringValue)
-            {
-                writer.WriteStringValue(stringValue);
-            }
-            else if (value is IConvertible convertible)
-            {
-                writer.WriteNumberValue(convertible.ToDecimal(null));
-            }
-        }
     }
 }
