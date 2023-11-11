@@ -25,6 +25,11 @@ namespace RszTool
             Name = $"{rszClass.name}[{index}]";
         }
 
+        private void AlignFirstField(FileHandler handler)
+        {
+            handler.Align(RszClass.fields[0].array ? 4 : RszClass.fields[0].align);
+        }
+
         /// <summary>
         /// 读取字段
         /// </summary>
@@ -32,11 +37,14 @@ namespace RszTool
         /// <returns></returns>
         protected override bool DoRead(FileHandler handler)
         {
+            // if has RSZUserData, it is external
+            if (RSZUserData != null || RszClass.fields.Length == 0) return true;
+
+            AlignFirstField(handler);
+            // Console.WriteLine($"read {Name} at: {handler.Position:X}");
             for (int i = 0; i < RszClass.fields.Length; i++)
             {
-                // long startPos = handler.Tell();
                 Values[i] = ReadRszField(handler, i);
-                // Console.WriteLine($"read at: {startPos} {RszClass.fields[i].name} {Values[i]} {handler.Tell() - startPos}");
             }
             return true;
         }
@@ -45,19 +53,20 @@ namespace RszTool
         {
             RszField field = RszClass.fields[index];
             handler.Align(field.array ? 4 : field.align);
-            if (index == 0)
-            {
-                // after align
-                Start = handler.Tell();
-            }
+            // Console.WriteLine($"    read at: {handler.Position:X} {field.original_type} {field.name}");
             if (field.array)
             {
                 int count = handler.ReadInt();
+                if (count < 0)
+                {
+                    throw new InvalidDataException($"{field.name} count {count} < 0");
+                }
                 if (count > 1024)
                 {
                     throw new InvalidDataException($"{field.name} count {count} too large");
                 }
                 List<object> arrayItems = new(count);
+                if (count > 0) handler.Align(field.align);
                 for (int i = 0; i < count; i++)
                 {
                     arrayItems.Add(ReadNormalField(handler, field));
@@ -70,7 +79,7 @@ namespace RszTool
             }
         }
 
-        public object ReadNormalField(FileHandler handler, RszField field)
+        public static object ReadNormalField(FileHandler handler, RszField field)
         {
             if (field.type == TypeIDs.String || field.type == TypeIDs.Resource)
             {
@@ -97,11 +106,11 @@ namespace RszTool
                     TypeIDs.U8 => handler.ReadByte(),
                     TypeIDs.S16 => handler.ReadShort(),
                     TypeIDs.U16 => handler.ReadUShort(),
-                    TypeIDs.Vec2 => handler.Read<Vector2>(),
-                    TypeIDs.Vec3 => handler.Read<Vector3>(),
-                    TypeIDs.Vec4 => handler.Read<Vector4>(),
+                    TypeIDs.Vec2 or TypeIDs.Float2 => handler.Read<Vector2>(),
+                    TypeIDs.Vec3 or TypeIDs.Float3 => handler.Read<Vector3>(),
+                    TypeIDs.Vec4 or TypeIDs.Float4 => handler.Read<Vector4>(),
                     TypeIDs.OBB => handler.ReadArray<float>(20),
-                    TypeIDs.Guid => handler.Read<Guid>(),
+                    TypeIDs.Guid or TypeIDs.GameObjectRef => handler.Read<Guid>(),
                     TypeIDs.Color => handler.Read<Color>(),
                     TypeIDs.Range => handler.Read<Range>(),
                     TypeIDs.Quaternion => handler.Read<Quaternion>(),
@@ -120,12 +129,12 @@ namespace RszTool
         protected override bool DoWrite(FileHandler handler)
         {
             // if has RSZUserData, it is external
-            if (RSZUserData != null) return true;
+            if (RSZUserData != null || RszClass.fields.Length == 0) return true;
+            AlignFirstField(handler);
+            // Console.WriteLine($"write {Name} at: {(handler.Offset + handler.Tell()):X}");
             for (int i = 0; i < RszClass.fields.Length; i++)
             {
-                // long startPos = handler.Tell();
                 WriteRszField(handler, i);
-                // Console.WriteLine($"write at: {startPos} {RszClass.fields[i].name} {Values[i]} {handler.Tell() - startPos}");
             }
             return true;
         }
@@ -134,13 +143,18 @@ namespace RszTool
         {
             RszField field = RszClass.fields[index];
             handler.Align(field.array ? 4 : field.align);
+            // Console.WriteLine($"    write at: {handler.Position:X} {field.original_type} {field.name}");
             if (field.array)
             {
                 List<object> list = (List<object>)Values[index];
                 handler.Write(list.Count);
-                foreach (var item in list)
+                if (list.Count > 0)
                 {
-                    WriteNormalField(handler, field, item);
+                    handler.Align(field.align);
+                    foreach (var value in list)
+                    {
+                        WriteNormalField(handler, field, value);
+                    }
                 }
                 return true;
             }
@@ -173,11 +187,11 @@ namespace RszTool
                     TypeIDs.U8 => handler.Write((byte)value),
                     TypeIDs.S16 => handler.Write((short)value),
                     TypeIDs.U16 => handler.Write((ushort)value),
-                    TypeIDs.Vec2 => handler.Write((Vector2)value),
-                    TypeIDs.Vec3 => handler.Write((Vector3)value),
-                    TypeIDs.Vec4 => handler.Write((Vector4)value),
+                    TypeIDs.Vec2 or TypeIDs.Float2 => handler.Write((Vector2)value),
+                    TypeIDs.Vec3 or TypeIDs.Float3 => handler.Write((Vector3)value),
+                    TypeIDs.Vec4 or TypeIDs.Float4 => handler.Write((Vector4)value),
                     TypeIDs.OBB => handler.WriteArray((float[])value),
-                    TypeIDs.Guid => handler.Write((Guid)value),
+                    TypeIDs.Guid or TypeIDs.GameObjectRef => handler.Write((Guid)value),
                     TypeIDs.Color => handler.Write((Color)value),
                     TypeIDs.Range => handler.Write((Range)value),
                     TypeIDs.Quaternion => handler.Write((Quaternion)value),
@@ -204,11 +218,11 @@ namespace RszTool
                 TypeIDs.U8 => typeof(byte),
                 TypeIDs.S16 => typeof(short),
                 TypeIDs.U16 => typeof(ushort),
-                TypeIDs.Vec2 => typeof(Vector2),
-                TypeIDs.Vec3 => typeof(Vector3),
-                TypeIDs.Vec4 => typeof(Vector4),
+                TypeIDs.Vec2 or TypeIDs.Float2 => typeof(Vector2),
+                TypeIDs.Vec3 or TypeIDs.Float3 => typeof(Vector3),
+                TypeIDs.Vec4 or TypeIDs.Float4 => typeof(Vector4),
                 TypeIDs.OBB => typeof(float[]),
-                TypeIDs.Guid => typeof(Guid),
+                TypeIDs.Guid or TypeIDs.GameObjectRef => typeof(Guid),
                 TypeIDs.Color => typeof(Color),
                 TypeIDs.Range => typeof(Range),
                 TypeIDs.Quaternion => typeof(Quaternion),
@@ -251,26 +265,32 @@ namespace RszTool
             }
             sb.Append(Name);
             sb.AppendLine(" {");
-            for (int i = 0; i < RszClass.fields.Length; i++)
+            if (RSZUserData != null)
             {
-                RszField field = RszClass.fields[i];
-                sb.Append("    ");
-                sb.Append($"{field.original_type} {field.name} = ");
-                if (field.array)
+            }
+            else
+            {
+                for (int i = 0; i < RszClass.fields.Length; i++)
                 {
-                    sb.Append('[');
-                    foreach (var item in (List<object>)Values[i])
+                    RszField field = RszClass.fields[i];
+                    sb.Append("    ");
+                    sb.Append($"{field.original_type} {field.name} = ");
+                    if (field.array)
                     {
-                        sb.Append(item);
-                        sb.Append(", ");
+                        sb.Append('[');
+                        foreach (var item in (List<object>)Values[i])
+                        {
+                            sb.Append(item);
+                            sb.Append(", ");
+                        }
+                        sb.Length -= 2;
+                        sb.AppendLine("];");
                     }
-                    sb.Length -= 2;
-                    sb.AppendLine("];");
-                }
-                else
-                {
-                    sb.Append(Values[i]);
-                    sb.AppendLine(";");
+                    else
+                    {
+                        sb.Append(Values[i]);
+                        sb.AppendLine(";");
+                    }
                 }
             }
             sb.AppendLine("}");

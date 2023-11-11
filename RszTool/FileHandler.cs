@@ -14,6 +14,8 @@ namespace RszTool
         private StringTable? StringTable;
         private Sunday? searcher = new();
 
+        public long Position => Stream.Position;
+
         public FileHandler() : this(new MemoryStream())
         {
         }
@@ -454,9 +456,12 @@ namespace RszTool
             long originPos = Tell();
             if (pos != -1) Seek(pos);
             string? result = null;
+            if (charCount > 1024)
+            {
+                throw new Exception($"{nameof(charCount)} {charCount} too large");
+            }
             if (charCount == -1) charCount = 128;
-
-            Span<char> buffer = stackalloc char[charCount];
+            Span<char> buffer = charCount <= 128 ? stackalloc char[charCount] : new char[charCount];
             Span<byte> bytes = MemoryMarshal.AsBytes(buffer);
             int readCount = Stream.Read(bytes);
             if (readCount != 0)
