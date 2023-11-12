@@ -212,33 +212,76 @@ namespace RszTool
         }
 
         /// <summary>
+        /// 实例的字段值，如果是对象序号，替换成对应的实例对象
+        /// </summary>
+        /// <param name="instance"></param>
+        public void InstanceUnflatten(RszInstance instance)
+        {
+            if (instance.RSZUserData != null) return;
+            for (int i = 0; i < instance.RszClass.fields.Length; i++)
+            {
+                var field = instance.RszClass.fields[i];
+                if (field.type == RszFieldType.Object)
+                {
+                    if (field.array)
+                    {
+                        var items = (List<object>)instance.Values[i];
+                        for (int j = 0; j < items.Count; j++)
+                        {
+                            if (items[j] is int objectId)
+                            {
+                                items[j] = InstanceList[objectId];
+                            }
+                        }
+                    }
+                    else if (instance.Values[i] is int objectId)
+                    {
+                        instance.Values[i] = InstanceList[objectId];
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 所有实例的字段值，如果是对象序号，替换成对应的实例对象
         /// </summary>
         public void InstanceUnflatten()
         {
             foreach (var instance in InstanceList)
             {
-                if (instance.RSZUserData != null) continue;
-                for (int i = 0; i < instance.RszClass.fields.Length; i++)
+                InstanceUnflatten(instance);
+            }
+        }
+
+        /// <summary>
+        /// 实例的字段值，如果是对象，替换成实例序号
+        /// </summary>
+        /// <param name="instance"></param>
+        public void InstanceFlatten(RszInstance instance)
+        {
+            CheckInstanceIndex(instance);
+            if (instance.RSZUserData != null) return;
+            for (int i = 0; i < instance.RszClass.fields.Length; i++)
+            {
+                var field = instance.RszClass.fields[i];
+                if (field.type == RszFieldType.Object)
                 {
-                    var field = instance.RszClass.fields[i];
-                    if (field.type == RszFieldType.Object)
+                    if (field.array)
                     {
-                        if (field.array)
+                        var items = (List<object>)instance.Values[i];
+                        for (int j = 0; j < items.Count; j++)
                         {
-                            var items = (List<object>)instance.Values[i];
-                            for (int j = 0; j < items.Count; j++)
+                            if (items[j] is RszInstance instanceValue)
                             {
-                                if (items[j] is int objectId)
-                                {
-                                    items[j] = InstanceList[objectId];
-                                }
+                                CheckInstanceIndex(instanceValue);
+                                items[j] = instanceValue.Index;
                             }
                         }
-                        else if (instance.Values[i] is int objectId)
-                        {
-                            instance.Values[i] = InstanceList[objectId];
-                        }
+                    }
+                    else if (instance.Values[i] is RszInstance instanceValue)
+                    {
+                        CheckInstanceIndex(instanceValue);
+                        instance.Values[i] = instanceValue.Index;
                     }
                 }
             }
@@ -251,32 +294,7 @@ namespace RszTool
         {
             foreach (var instance in InstanceList)
             {
-                CheckInstanceIndex(instance);
-                if (instance.RSZUserData != null) continue;
-                for (int i = 0; i < instance.RszClass.fields.Length; i++)
-                {
-                    var field = instance.RszClass.fields[i];
-                    if (field.type == RszFieldType.Object)
-                    {
-                        if (field.array)
-                        {
-                            var items = (List<object>)instance.Values[i];
-                            for (int j = 0; j < items.Count; j++)
-                            {
-                                if (items[j] is RszInstance instanceValue)
-                                {
-                                    CheckInstanceIndex(instanceValue);
-                                    items[j] = instanceValue.Index;
-                                }
-                            }
-                        }
-                        else if (instance.Values[i] is RszInstance instanceValue)
-                        {
-                            CheckInstanceIndex(instanceValue);
-                            instance.Values[i] = instanceValue.Index;
-                        }
-                    }
-                }
+                InstanceFlatten(instance);
             }
         }
 

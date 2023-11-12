@@ -284,5 +284,13 @@ namespace RszTool
                 }
             }
         }
+
+        /// <summary>
+        /// 根据GameObjectDatas重建其他表
+        /// </summary>
+        public void RebuildByGameObjectDatas()
+        {
+
+        }
     }
 }
