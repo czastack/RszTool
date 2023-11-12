@@ -1,6 +1,6 @@
 namespace RszTool
 {
-    public enum TypeIDs : uint
+    public enum RszFieldType : uint
     {
         ukn_error = 0,
         ukn_type,

@@ -8,10 +8,13 @@ namespace RszTool
         static void Main(string[] args)
         {
             TestParseUser();
+            // TestParseUserRead();
             // TestParsePfb();
             // TestParseScn();
+            // TestParseScnRead();
             // TestParseMdf();
             // TestMurMur3Hash();
+            // TestParseEnum();
 
             // ImGuiSetup setup = new();
             // setup.SubmitUI += SubmitUI;
@@ -49,6 +52,18 @@ namespace RszTool
             }
         }
 
+        static void TestParseUserRead()
+        {
+            string path = "test/AccessoryEffectSettingUserdata.user.2";
+            RszFileOption option = new("re4");
+            UserFile userFile = new(option, new FileHandler(path));
+            userFile.Read();
+            if (userFile.RSZ != null)
+            {
+                Console.WriteLine(userFile.RSZ.ObjectsStringify());
+            }
+        }
+
         static void TestParsePfb()
         {
             string path = "test/railcarcrossbowshellgenerator.pfb.17";
@@ -73,8 +88,8 @@ namespace RszTool
 
         static void TestParseScn()
         {
-            string path = "test/level_loc40_200.scn.20";
-            string newPath = "test/level_loc40_200_new.scn.20";
+            string path = "test/gimmick_st66_101.scn.20";
+            string newPath = "test/gimmick_st66_101_new.scn.20";
             RszFileOption option = new("re4");
             ScnFile scnFile = new(option, new FileHandler(path));
             scnFile.Read();
@@ -90,6 +105,31 @@ namespace RszTool
                 {
                     Console.WriteLine(item.Stringify());
                 }
+            }
+        }
+
+        static void TestParseScnRead()
+        {
+            string path = "test/gimmick_st66_101.scn.20";
+            RszFileOption option = new("re4");
+            ScnFile scnFile = new(option, new FileHandler(path));
+            scnFile.Read();
+
+            if (scnFile.RSZ != null)
+            {
+                // Console.WriteLine(scnFile.RSZ.ObjectsStringify());
+                scnFile.SetupGameObjects();
+                if (scnFile.GameObjectDatas != null)
+                {
+                    foreach (var item in scnFile.GameObjectDatas)
+                    {
+                        if (item.Parent == null)
+                        {
+                            Console.WriteLine(item.Name);
+                        }
+                    }
+                }
+
             }
         }
 
@@ -125,6 +165,22 @@ namespace RszTool
                 string result = hash == hashes[i] ? "" : $", expacted {hashes[i]:X}";
                 Console.WriteLine($"hash of {strings[i]} is {hash:X}{result}");
             }
+        }
+
+        [Flags]
+        public enum TestEnum
+        {
+            None = 0,
+            A = 1,
+            B = 2,
+            C = 4,
+        }
+
+        static void TestParseEnum()
+        {
+            string value = "A | B";
+            TestEnum result = Enum.Parse<TestEnum>(value.Replace("|", ","));
+            Console.WriteLine(result);
         }
 
         private static void SubmitUI()

@@ -30,17 +30,18 @@ namespace RszTool
             var dict = JsonSerializer.Deserialize<Dictionary<string, RszClass>>(fileStream);
             if (dict != null)
             {
-                foreach (var item in dict)
+                foreach (var (key, value) in dict)
                 {
-                    classDict[uint.Parse(item.Key, NumberStyles.HexNumber)] = item.Value;
-                    classNameDict[item.Value.name] = item.Value;
+                    value.typeId = uint.Parse(key, NumberStyles.HexNumber);
+                    classDict[value.typeId] = value;
+                    classNameDict[value.name] = value;
                 }
             }
         }
 
-        public static TypeIDs GetFieldTypeInternal(string typeName)
+        public static RszFieldType GetFieldTypeInternal(string typeName)
         {
-            return Enum.Parse<TypeIDs>(typeName, true);
+            return Enum.Parse<RszFieldType>(typeName, true);
         }
 
         public string GetRSZClassName(uint classHash)
@@ -105,7 +106,7 @@ namespace RszTool
             return GetField(classHash, fieldIndex)?.size ?? -1;
         }
 
-        public TypeIDs GetFieldType(uint classHash, uint fieldIndex)
+        public RszFieldType GetFieldType(uint classHash, uint fieldIndex)
         {
             if (classDict.TryGetValue(classHash, out var rszClass))
             {
@@ -113,9 +114,9 @@ namespace RszTool
                 {
                     return rszClass.fields[fieldIndex].type;
                 }
-                return TypeIDs.out_of_range;
+                return RszFieldType.out_of_range;
             }
-            return TypeIDs.class_not_found;
+            return RszFieldType.class_not_found;
         }
 
         public bool IsClassNative(uint classHash)
@@ -131,6 +132,8 @@ namespace RszTool
 
     public class RszClass
     {
+        [JsonIgnore]
+        public uint typeId { get; set; }
         [JsonConverter(typeof(HexUIntJsonConverter))]
         public uint crc { get; set; }
         public string name { get; set; } = "";
@@ -159,8 +162,8 @@ namespace RszTool
         public int size { get; set; }
         public bool array { get; set; }
         public bool native { get; set; }
-        [JsonConverter(typeof(EnumJsonConverter<TypeIDs>))]
-        public TypeIDs type { get; set; }
+        [JsonConverter(typeof(EnumJsonConverter<RszFieldType>))]
+        public RszFieldType type { get; set; }
         public string original_type { get; set; } = "";
     }
 }

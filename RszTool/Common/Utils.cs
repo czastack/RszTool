@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace RszTool.Common
 {
@@ -79,6 +80,14 @@ namespace RszTool.Common
         {
             reference.TryGetTarget(out T? target);
             return target;
+        }
+
+        public static void AppendIndent(this StringBuilder sb, int indent)
+        {
+            for (int i = 0; i < indent; i++)
+            {
+                sb.Append("    ");
+            }
         }
     }
 }

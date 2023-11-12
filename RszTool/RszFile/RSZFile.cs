@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace RszTool
 {
     public class RSZFile : BaseRszFile
@@ -57,7 +59,7 @@ namespace RszTool
             }
 
             handler.Seek(Header.Data.userdataOffset);
-            Dictionary<uint, int> distanceIdToIndex = new();
+            Dictionary<uint, int> instanceIdToUserData = new();
             if (Option.TdbVersion < 67)
             {
                 if (Header.Data.userdataCount > 0)
@@ -69,7 +71,7 @@ namespace RszTool
                         rszUserDataInfo.Read(handler);
                         rszUserDataInfo.ReadClassName(rszParser);
                         RSZUserDataInfoList.Add(rszUserDataInfo);
-                        distanceIdToIndex[rszUserDataInfo.instanceId] = i;
+                        instanceIdToUserData[rszUserDataInfo.instanceId] = i;
 
                         RSZFile embeddedRSZFile = new(Option, handler.WithOffset(rszUserDataInfo.RSZOffset));
                         embeddedRSZFile.Read();
@@ -84,7 +86,7 @@ namespace RszTool
                     RSZUserDataInfo rszUserDataInfo = new();
                     rszUserDataInfo.Read(handler);
                     RSZUserDataInfoList.Add(rszUserDataInfo);
-                    distanceIdToIndex[rszUserDataInfo.instanceId] = i;
+                    instanceIdToUserData[rszUserDataInfo.instanceId] = i;
                 }
             }
 
@@ -99,7 +101,7 @@ namespace RszTool
                     Console.Error.WriteLine($"RszClass {InstanceInfoList[i].typeId} not found!");
                     continue;
                 }
-                if (!distanceIdToIndex.TryGetValue((uint)i, out int userDataIdx))
+                if (!instanceIdToUserData.TryGetValue((uint)i, out int userDataIdx))
                 {
                     userDataIdx = -1;
                 }
@@ -146,7 +148,7 @@ namespace RszTool
                     var item = (RSZUserDataInfo_TDB_LE_67)RSZUserDataInfoList[i];
                     item.RSZOffset = handler.Tell();
                     var embeddedRSZ = EmbeddedRSZFileList[i];
-                    embeddedRSZ.Write();
+                    embeddedRSZ.WriteTo(FileHandler.WithOffset(item.RSZOffset));
                     // rewrite
                     item.dataSize = (uint)embeddedRSZ.Size;
                     item.Rewrite(handler);
@@ -169,6 +171,17 @@ namespace RszTool
             return InstanceList[ObjectTableList[objectIndex].Data.instanceId];
         }
 
+        public string ObjectsStringify()
+        {
+            StringBuilder sb = new();
+            foreach (var item in ObjectTableList)
+            {
+                RszInstance instance = InstanceList[item.Data.instanceId];
+                sb.AppendLine(instance.Stringify(InstanceList));
+            }
+            return sb.ToString();
+        }
+
         public RszInstance? CreateInstance(string className, int index = -1)
         {
             RszClass? rszClass = RszParser.GetRSZClass(className);
@@ -177,12 +190,111 @@ namespace RszTool
                 index = InstanceList.Count;
             }
             if (rszClass == null) return null;
-            RszInstance instance = new(rszClass, index, -1)
+            RszInstance instance = new(rszClass, index)
             {
                 Start = Start + Size
             };
             // TODO Values
             return instance;
+        }
+
+        public void CheckInstanceIndex(RszInstance instance)
+        {
+            if (instance.Index == -1 || instance.Index >= InstanceList.Count || InstanceList[instance.Index] != instance)
+            {
+                instance.Index = InstanceList.IndexOf(instance);
+                if (instance.Index == -1)
+                {
+                    instance.Index = InstanceList.Count;
+                    InstanceList.Add(instance);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 所有实例的字段值，如果是对象序号，替换成对应的实例对象
+        /// </summary>
+        public void InstanceUnflatten()
+        {
+            foreach (var instance in InstanceList)
+            {
+                if (instance.RSZUserData != null) continue;
+                for (int i = 0; i < instance.RszClass.fields.Length; i++)
+                {
+                    var field = instance.RszClass.fields[i];
+                    if (field.type == RszFieldType.Object)
+                    {
+                        if (field.array)
+                        {
+                            var items = (List<object>)instance.Values[i];
+                            for (int j = 0; j < items.Count; j++)
+                            {
+                                if (items[j] is int objectId)
+                                {
+                                    items[j] = InstanceList[objectId];
+                                }
+                            }
+                        }
+                        else if (instance.Values[i] is int objectId)
+                        {
+                            instance.Values[i] = InstanceList[objectId];
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 所有实例的字段值，如果是对象，替换成实例序号
+        /// </summary>
+        public void InstanceFlatten()
+        {
+            foreach (var instance in InstanceList)
+            {
+                CheckInstanceIndex(instance);
+                if (instance.RSZUserData != null) continue;
+                for (int i = 0; i < instance.RszClass.fields.Length; i++)
+                {
+                    var field = instance.RszClass.fields[i];
+                    if (field.type == RszFieldType.Object)
+                    {
+                        if (field.array)
+                        {
+                            var items = (List<object>)instance.Values[i];
+                            for (int j = 0; j < items.Count; j++)
+                            {
+                                if (items[j] is RszInstance instanceValue)
+                                {
+                                    CheckInstanceIndex(instanceValue);
+                                    items[j] = instanceValue.Index;
+                                }
+                            }
+                        }
+                        else if (instance.Values[i] is RszInstance instanceValue)
+                        {
+                            CheckInstanceIndex(instanceValue);
+                            instance.Values[i] = instanceValue.Index;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 根据实例列表，重建InstanceInfo
+        /// </summary>
+        public void RebulidInstanceInfo()
+        {
+            InstanceFlatten();
+            InstanceInfoList.Clear();
+            for (int i = 0; i < InstanceList.Count; i++)
+            {
+                InstanceInfoList.Add(new InstanceInfo
+                {
+                    typeId = InstanceList[i].RszClass.typeId,
+                    CRC = InstanceList[i].RszClass.crc
+                });
+            }
         }
     }
 

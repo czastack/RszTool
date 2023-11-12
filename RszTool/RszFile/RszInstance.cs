@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Numerics;
 using System.Text;
+using RszTool.Common;
 
 namespace RszTool
 {
@@ -16,7 +17,7 @@ namespace RszTool
         public string Name { get; set; }
         public IRSZUserDataInfo? RSZUserData { get; set; }
 
-        public RszInstance(RszClass rszClass, int index, int rszUserDataIdx)
+        public RszInstance(RszClass rszClass, int index, int rszUserDataIdx = -1)
         {
             RszClass = rszClass;
             Values = new object[rszClass.fields.Length];
@@ -81,7 +82,7 @@ namespace RszTool
 
         public static object ReadNormalField(FileHandler handler, RszField field)
         {
-            if (field.type == TypeIDs.String || field.type == TypeIDs.Resource)
+            if (field.type == RszFieldType.String || field.type == RszFieldType.Resource)
             {
                 int charCount = handler.ReadInt();
                 long stringStart = handler.Tell();
@@ -95,26 +96,26 @@ namespace RszTool
                 long startPos = handler.Tell();
                 object value = field.type switch
                 {
-                    TypeIDs.S32 => handler.ReadInt(),
-                    TypeIDs.Object or TypeIDs.UserData or TypeIDs.U32 => handler.ReadUInt(),
-                    TypeIDs.S64 => handler.ReadInt64(),
-                    TypeIDs.U64 => handler.ReadUInt64(),
-                    TypeIDs.F32 => handler.ReadFloat(),
-                    TypeIDs.F64 => handler.ReadDouble(),
-                    TypeIDs.Bool => handler.ReadBoolean(),
-                    TypeIDs.S8 => handler.ReadSByte(),
-                    TypeIDs.U8 => handler.ReadByte(),
-                    TypeIDs.S16 => handler.ReadShort(),
-                    TypeIDs.U16 => handler.ReadUShort(),
-                    TypeIDs.Vec2 or TypeIDs.Float2 => handler.Read<Vector2>(),
-                    TypeIDs.Vec3 or TypeIDs.Float3 => handler.Read<Vector3>(),
-                    TypeIDs.Vec4 or TypeIDs.Float4 => handler.Read<Vector4>(),
-                    TypeIDs.OBB => handler.ReadArray<float>(20),
-                    TypeIDs.Guid or TypeIDs.GameObjectRef => handler.Read<Guid>(),
-                    TypeIDs.Color => handler.Read<Color>(),
-                    TypeIDs.Range => handler.Read<Range>(),
-                    TypeIDs.Quaternion => handler.Read<Quaternion>(),
-                    TypeIDs.Data => handler.ReadBytes(field.size),
+                    RszFieldType.S32 or RszFieldType.Object or RszFieldType.UserData => handler.ReadInt(),
+                    RszFieldType.U32 => handler.ReadUInt(),
+                    RszFieldType.S64 => handler.ReadInt64(),
+                    RszFieldType.U64 => handler.ReadUInt64(),
+                    RszFieldType.F32 => handler.ReadFloat(),
+                    RszFieldType.F64 => handler.ReadDouble(),
+                    RszFieldType.Bool => handler.ReadBoolean(),
+                    RszFieldType.S8 => handler.ReadSByte(),
+                    RszFieldType.U8 => handler.ReadByte(),
+                    RszFieldType.S16 => handler.ReadShort(),
+                    RszFieldType.U16 => handler.ReadUShort(),
+                    RszFieldType.Vec2 or RszFieldType.Float2 => handler.Read<Vector2>(),
+                    RszFieldType.Vec3 or RszFieldType.Float3 => handler.Read<Vector3>(),
+                    RszFieldType.Vec4 or RszFieldType.Float4 => handler.Read<Vector4>(),
+                    RszFieldType.OBB => handler.ReadArray<float>(20),
+                    RszFieldType.Guid or RszFieldType.GameObjectRef => handler.Read<Guid>(),
+                    RszFieldType.Color => handler.Read<Color>(),
+                    RszFieldType.Range => handler.Read<Range>(),
+                    RszFieldType.Quaternion => handler.Read<Quaternion>(),
+                    RszFieldType.Data => handler.ReadBytes(field.size),
                     _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
                 /* if (field.size != handler.Tell() - startPos)
@@ -166,7 +167,7 @@ namespace RszTool
 
         public static bool WriteNormalField(FileHandler handler, RszField field, object value)
         {
-            if (field.type == TypeIDs.String || field.type == TypeIDs.Resource)
+            if (field.type == RszFieldType.String || field.type == RszFieldType.Resource)
             {
                 string valueStr = (string)value;
                 return handler.Write(valueStr.Length + 1) && handler.WriteWString(valueStr);
@@ -176,26 +177,26 @@ namespace RszTool
                 long startPos = handler.Tell();
                 _ = field.type switch
                 {
-                    TypeIDs.S32 => handler.Write((int)value),
-                    TypeIDs.Object or TypeIDs.UserData or TypeIDs.U32 => handler.Write((uint)value),
-                    TypeIDs.S64 => handler.Write((long)value),
-                    TypeIDs.U64 => handler.Write((ulong)value),
-                    TypeIDs.F32 => handler.Write((float)value),
-                    TypeIDs.F64 => handler.Write((double)value),
-                    TypeIDs.Bool => handler.Write((bool)value),
-                    TypeIDs.S8 => handler.Write((sbyte)value),
-                    TypeIDs.U8 => handler.Write((byte)value),
-                    TypeIDs.S16 => handler.Write((short)value),
-                    TypeIDs.U16 => handler.Write((ushort)value),
-                    TypeIDs.Vec2 or TypeIDs.Float2 => handler.Write((Vector2)value),
-                    TypeIDs.Vec3 or TypeIDs.Float3 => handler.Write((Vector3)value),
-                    TypeIDs.Vec4 or TypeIDs.Float4 => handler.Write((Vector4)value),
-                    TypeIDs.OBB => handler.WriteArray((float[])value),
-                    TypeIDs.Guid or TypeIDs.GameObjectRef => handler.Write((Guid)value),
-                    TypeIDs.Color => handler.Write((Color)value),
-                    TypeIDs.Range => handler.Write((Range)value),
-                    TypeIDs.Quaternion => handler.Write((Quaternion)value),
-                    TypeIDs.Data => handler.WriteBytes((byte[])value),
+                    RszFieldType.S32 or RszFieldType.Object or RszFieldType.UserData => handler.Write((int)value),
+                    RszFieldType.U32 => handler.Write((uint)value),
+                    RszFieldType.S64 => handler.Write((long)value),
+                    RszFieldType.U64 => handler.Write((ulong)value),
+                    RszFieldType.F32 => handler.Write((float)value),
+                    RszFieldType.F64 => handler.Write((double)value),
+                    RszFieldType.Bool => handler.Write((bool)value),
+                    RszFieldType.S8 => handler.Write((sbyte)value),
+                    RszFieldType.U8 => handler.Write((byte)value),
+                    RszFieldType.S16 => handler.Write((short)value),
+                    RszFieldType.U16 => handler.Write((ushort)value),
+                    RszFieldType.Vec2 or RszFieldType.Float2 => handler.Write((Vector2)value),
+                    RszFieldType.Vec3 or RszFieldType.Float3 => handler.Write((Vector3)value),
+                    RszFieldType.Vec4 or RszFieldType.Float4 => handler.Write((Vector4)value),
+                    RszFieldType.OBB => handler.WriteArray((float[])value),
+                    RszFieldType.Guid or RszFieldType.GameObjectRef => handler.Write((Guid)value),
+                    RszFieldType.Color => handler.Write((Color)value),
+                    RszFieldType.Range => handler.Write((Range)value),
+                    RszFieldType.Quaternion => handler.Write((Quaternion)value),
+                    RszFieldType.Data => handler.WriteBytes((byte[])value),
                     _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
                 handler.Seek(startPos + field.size);
@@ -207,27 +208,27 @@ namespace RszTool
         {
             return field.type switch
             {
-                TypeIDs.S32 => typeof(int),
-                TypeIDs.Object or TypeIDs.UserData or TypeIDs.U32 => typeof(uint),
-                TypeIDs.S64 => typeof(long),
-                TypeIDs.U64 => typeof(ulong),
-                TypeIDs.F32 => typeof(float),
-                TypeIDs.F64 => typeof(double),
-                TypeIDs.Bool => typeof(bool),
-                TypeIDs.S8 => typeof(sbyte),
-                TypeIDs.U8 => typeof(byte),
-                TypeIDs.S16 => typeof(short),
-                TypeIDs.U16 => typeof(ushort),
-                TypeIDs.Vec2 or TypeIDs.Float2 => typeof(Vector2),
-                TypeIDs.Vec3 or TypeIDs.Float3 => typeof(Vector3),
-                TypeIDs.Vec4 or TypeIDs.Float4 => typeof(Vector4),
-                TypeIDs.OBB => typeof(float[]),
-                TypeIDs.Guid or TypeIDs.GameObjectRef => typeof(Guid),
-                TypeIDs.Color => typeof(Color),
-                TypeIDs.Range => typeof(Range),
-                TypeIDs.Quaternion => typeof(Quaternion),
-                TypeIDs.Data => typeof(byte[]),
-                TypeIDs.String or TypeIDs.Resource => typeof(string),
+                RszFieldType.S32 or RszFieldType.Object or RszFieldType.UserData => typeof(int),
+                RszFieldType.U32 => typeof(uint),
+                RszFieldType.S64 => typeof(long),
+                RszFieldType.U64 => typeof(ulong),
+                RszFieldType.F32 => typeof(float),
+                RszFieldType.F64 => typeof(double),
+                RszFieldType.Bool => typeof(bool),
+                RszFieldType.S8 => typeof(sbyte),
+                RszFieldType.U8 => typeof(byte),
+                RszFieldType.S16 => typeof(short),
+                RszFieldType.U16 => typeof(ushort),
+                RszFieldType.Vec2 or RszFieldType.Float2 => typeof(Vector2),
+                RszFieldType.Vec3 or RszFieldType.Float3 => typeof(Vector3),
+                RszFieldType.Vec4 or RszFieldType.Float4 => typeof(Vector4),
+                RszFieldType.OBB => typeof(float[]),
+                RszFieldType.Guid or RszFieldType.GameObjectRef => typeof(Guid),
+                RszFieldType.Color => typeof(Color),
+                RszFieldType.Range => typeof(Range),
+                RszFieldType.Quaternion => typeof(Quaternion),
+                RszFieldType.Data => typeof(byte[]),
+                RszFieldType.String or RszFieldType.Resource => typeof(string),
                 _ => throw new InvalidDataException($"Not support type {field.type}"),
             };
         }
@@ -256,7 +257,7 @@ namespace RszTool
             Values[index] = value;
         }
 
-        public void Stringify(StringBuilder sb)
+        public void Stringify(StringBuilder sb, IList<RszInstance>? instances = null, int indent = 0)
         {
             if (RszClass.crc == 0)
             {
@@ -265,6 +266,35 @@ namespace RszTool
             }
             sb.Append(Name);
             sb.AppendLine(" {");
+
+            void ValueStringify(RszField field, object value)
+            {
+                if (field.type == RszFieldType.Object)
+                {
+                    if (field.array)
+                    {
+                        sb.AppendLine();
+                        sb.AppendIndent(indent + 2);
+                    }
+                    if (value is int index && instances != null)
+                    {
+                        instances[(int)value].Stringify(sb, instances, indent + 2);
+                    }
+                    else if (value is RszInstance instance)
+                    {
+                        instance.Stringify(sb, instances, indent + 2);
+                    }
+                    else
+                    {
+                        sb.Append(value);
+                    }
+                }
+                else
+                {
+                    sb.Append(value);
+                }
+            }
+
             if (RSZUserData != null)
             {
             }
@@ -273,33 +303,39 @@ namespace RszTool
                 for (int i = 0; i < RszClass.fields.Length; i++)
                 {
                     RszField field = RszClass.fields[i];
-                    sb.Append("    ");
-                    sb.Append($"{field.original_type} {field.name} = ");
+                    string type = field.original_type != "" ? field.original_type : field.type.ToString();
+                    sb.AppendIndent(indent + 1);
+                    sb.Append($"{type} {field.name} = ");
                     if (field.array)
                     {
                         sb.Append('[');
-                        foreach (var item in (List<object>)Values[i])
+                        var items = (List<object>)Values[i];
+                        if (items.Count > 0)
                         {
-                            sb.Append(item);
-                            sb.Append(", ");
+                            foreach (var item in items)
+                            {
+                                ValueStringify(field, item);
+                                sb.Append(", ");
+                            }
+                            sb.Length -= 2;
                         }
-                        sb.Length -= 2;
                         sb.AppendLine("];");
                     }
                     else
                     {
-                        sb.Append(Values[i]);
+                        ValueStringify(field, Values[i]);
                         sb.AppendLine(";");
                     }
                 }
             }
-            sb.AppendLine("}");
+            sb.AppendIndent(indent);
+            sb.Append("}");
         }
 
-        public string Stringify()
+        public string Stringify(IList<RszInstance>? instances = null, int indent = 0)
         {
             StringBuilder sb = new();
-            Stringify(sb);
+            Stringify(sb, instances, indent);
             return sb.ToString();
         }
     }

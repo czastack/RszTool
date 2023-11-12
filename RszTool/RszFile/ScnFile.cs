@@ -2,6 +2,7 @@ namespace RszTool
 {
     using GameObjectInfoModel = StructModel<ScnFile.GameObjectInfo>;
     using FolderInfoModel = StructModel<ScnFile.FolderInfo>;
+    using RszTool.Common;
 
     public class ScnFile : BaseRszFile
     {
@@ -57,22 +58,46 @@ namespace RszTool
             }
         }
 
+
         public class FolderData
         {
+            public WeakReference<FolderData>? ParentRef;
             public FolderInfoModel? Info;
             public List<FolderData> Chidren = new();
             public List<GameObjectData> GameObjects = new();
             public RszInstance? RszInstance;
+
+            public FolderData? Parent
+            {
+                get => ParentRef?.GetTarget();
+                set => ParentRef = value != null ? new(value) : null;
+            }
         }
 
 
         public class GameObjectData
         {
+            private WeakReference<FolderData>? FolderRef;
+            public WeakReference<GameObjectData>? ParentRef;
             public GameObjectInfoModel? Info;
             public List<RszInstance> Components = new();
             public List<GameObjectData> Chidren = new();
-            public RszInstance? GameObject;
+            public RszInstance? Instance;
             public PrefabInfo? Prefab;
+
+            public FolderData? Folder
+            {
+                get => FolderRef?.GetTarget();
+                set => FolderRef = value != null ? new(value) : null;
+            }
+
+            public GameObjectData? Parent
+            {
+                get => ParentRef?.GetTarget();
+                set => ParentRef = value != null ? new(value) : null;
+            }
+
+            public string? Name => Instance?.GetFieldValue("v0") as string;
         }
 
         public StructModel<HeaderStruct> Header { get; } = new();
@@ -197,7 +222,7 @@ namespace RszTool
         /// <summary>
         /// 解析关联的关系，形成树状结构
         /// </summary>
-        private void SetupGameObjects()
+        public void SetupGameObjects()
         {
             Dictionary<int, FolderData> folderIdxMap = new();
             if (FolderInfoList.Count > 0)
@@ -215,14 +240,14 @@ namespace RszTool
                 }
             }
 
-            Dictionary<int, GameObjectData> gameObjParentMap = new();
+            Dictionary<int, GameObjectData> gameObjectMap = new();
             GameObjectDatas ??= new();
             foreach (var info in GameObjectInfoList)
             {
                 GameObjectData gameObjectData = new()
                 {
                     Info = info,
-                    GameObject = RSZ!.GetGameObject(info.Data.objectId),
+                    Instance = RSZ!.GetGameObject(info.Data.objectId),
                 };
                 for (int i = info.Data.objectId + 1; i < info.Data.objectId + info.Data.componentCount; i++)
                 {
@@ -232,19 +257,22 @@ namespace RszTool
                 {
                     gameObjectData.Prefab = PrefabInfoList[info.Data.prefabId];
                 }
-                gameObjParentMap[info.Data.objectId] = gameObjectData;
+                gameObjectMap[info.Data.objectId] = gameObjectData;
                 GameObjectDatas.Add(gameObjectData);
             }
 
             foreach (var info in GameObjectInfoList)
             {
-                if (gameObjParentMap.TryGetValue(info.Data.parentId, out var parent))
+                var gameObject = gameObjectMap[info.Data.objectId];
+                if (gameObjectMap.TryGetValue(info.Data.parentId, out var parent))
                 {
-                    parent.Chidren.Add(gameObjParentMap[info.Data.objectId]);
+                    parent.Chidren.Add(gameObject);
+                    gameObject.Parent = parent;
                 }
                 if (folderIdxMap.TryGetValue(info.Data.parentId, out var folder))
                 {
-                    folder.GameObjects.Add(gameObjParentMap[info.Data.objectId]);
+                    folder.GameObjects.Add(gameObject);
+                    gameObject.Folder = folder;
                 }
             }
 
