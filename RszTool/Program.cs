@@ -11,6 +11,7 @@ namespace RszTool
             // TestParsePfb();
             // TestParseScn();
             // TestParseMdf();
+            // TestMurMur3Hash();
 
             // ImGuiSetup setup = new();
             // setup.SubmitUI += SubmitUI;
@@ -104,6 +105,26 @@ namespace RszTool
 
             // MdfFile newMdfFile = new(option, newFileHandler);
             // newMdfFile.Read(0);
+        }
+
+        static void TestMurMur3Hash()
+        {
+            string[] strings = {
+                "Hair00_mat",
+                "Hair01_mat",
+                "Hair02_mat",
+            };
+            uint[] hashes = {
+                0x430FD5EC,
+                0x2A439950,
+                0xFA9B78B1,
+            };
+            for (int i = 0; i < strings.Length; i++)
+            {
+                uint hash = PakHash.GetHash(strings[i]);
+                string result = hash == hashes[i] ? "" : $", expacted {hashes[i]:X}";
+                Console.WriteLine($"hash of {strings[i]} is {hash:X}{result}");
+            }
         }
 
         private static void SubmitUI()

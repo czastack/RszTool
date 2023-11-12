@@ -78,7 +78,11 @@ namespace RszTool
 
             protected override bool DoWrite(FileHandler handler)
             {
-                handler.StringTableAdd(matName);
+                if (matName != null)
+                {
+                    handler.StringTableAdd(matName);
+                    matNameHash = PakHash.GetHash(matName);
+                }
                 handler.Write(ref matNameOffset);
                 handler.Write(ref matNameHash);
                 if (tdbVersion == 49) handler.Write(ref uknRE7);
@@ -136,7 +140,12 @@ namespace RszTool
 
             protected override bool DoWrite(FileHandler handler)
             {
-                handler.StringTableAdd(texType);
+                if (texType != null)
+                {
+                    handler.StringTableAdd(texType);
+                    hash = PakHash.GetHash(texType);
+                    asciiHash = PakHash.GetAsciiHash(texType);
+                }
                 handler.Write(ref texTypeOffset);
                 handler.Write(ref hash);
                 handler.Write(ref asciiHash);
@@ -174,30 +183,42 @@ namespace RszTool
                 handler.Read(ref paramNameOffset);
                 handler.Read(ref hash);
                 handler.Read(ref asciiHash);
-                handler.Read(ref componentCount);
-                handler.Read(ref paramRelOffset);
                 // RE3R+
                 if (tdbVersion >= 68)
                 {
-                    (componentCount, paramRelOffset) = (paramRelOffset, componentCount);
+                    handler.Read(ref paramRelOffset);
+                    handler.Read(ref componentCount);
+                }
+                else
+                {
+                    handler.Read(ref componentCount);
+                    handler.Read(ref paramRelOffset);
                 }
                 paramName = handler.ReadWString(paramNameOffset);
-                Console.WriteLine(paramName);
                 return true;
             }
 
             protected override bool DoWrite(FileHandler handler)
             {
-                if (tdbVersion >= 68)
+                if (paramName != null)
                 {
-                    (componentCount, paramRelOffset) = (paramRelOffset, componentCount);
+                    handler.StringTableAdd(paramName);
+                    hash = PakHash.GetHash(paramName);
+                    asciiHash = PakHash.GetAsciiHash(paramName);
                 }
-                handler.StringTableAdd(paramName);
                 handler.Write(ref paramNameOffset);
                 handler.Write(ref hash);
                 handler.Write(ref asciiHash);
-                handler.Write(ref componentCount);
-                handler.Write(ref paramRelOffset);
+                if (tdbVersion >= 68)
+                {
+                    handler.Write(ref paramRelOffset);
+                    handler.Write(ref componentCount);
+                }
+                else
+                {
+                    handler.Write(ref componentCount);
+                    handler.Write(ref paramRelOffset);
+                }
                 return true;
             }
         }

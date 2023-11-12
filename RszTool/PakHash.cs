@@ -1,78 +1,54 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace RszTool
 {
     class PakHash
     {
-        private static UInt32 MurMur3Hash(Stream stream)
+        private static uint MurMur3Hash(ReadOnlySpan<byte> bytes)
         {
-            const UInt32 c1 = 0xcc9e2d51;
-            const UInt32 c2 = 0x1b873593;
-            const UInt32 seed = 0xffffffff;
+            const uint c1 = 0xcc9e2d51;
+            const uint c2 = 0x1b873593;
+            const uint seed = 0xffffffff;
 
-            UInt32 h1 = seed;
-            UInt32 k1 = 0;
-            UInt32 streamLength = 0;
+            uint h1 = seed;
+            uint k1;
 
-            using (BinaryReader reader = new BinaryReader(stream))
+            for (int i = 0; i < bytes.Length; i += 4)
             {
-                Byte[] chunk = reader.ReadBytes(4);
-                while (chunk.Length > 0)
+                int chunkLength = Math.Min(4, bytes.Length - i);
+                k1 = chunkLength switch
                 {
-                    streamLength += (UInt32)chunk.Length;
-                    switch (chunk.Length)
-                    {
-                        case 4:
-                            k1 = (UInt32)(chunk[0] | chunk[1] << 8 | chunk[2] << 16 | chunk[3] << 24);
-                            k1 *= c1;
-                            k1 = rotl32(k1, 15);
-                            k1 *= c2;
-                            h1 ^= k1;
-                            h1 = rotl32(h1, 13);
-                            h1 = h1 * 5 + 0xe6546b64;
-                            break;
-                        case 3:
-                            k1 = (UInt32)(chunk[0] | chunk[1] << 8 | chunk[2] << 16);
-                            k1 *= c1;
-                            k1 = rotl32(k1, 15);
-                            k1 *= c2;
-                            h1 ^= k1;
-                            break;
-                        case 2:
-                            k1 = (UInt32)(chunk[0] | chunk[1] << 8);
-                            k1 *= c1;
-                            k1 = rotl32(k1, 15);
-                            k1 *= c2;
-                            h1 ^= k1;
-                            break;
-                        case 1:
-                            k1 = (UInt32)(chunk[0]);
-                            k1 *= c1;
-                            k1 = rotl32(k1, 15);
-                            k1 *= c2;
-                            h1 ^= k1;
-                            break;
-
-                    }
-                    chunk = reader.ReadBytes(4);
+                    4 => (uint)(bytes[i] | bytes[i + 1] << 8 | bytes[i + 2] << 16 | bytes[i + 3] << 24),
+                    3 => (uint)(bytes[i] | bytes[i + 1] << 8 | bytes[i + 2] << 16),
+                    2 => (uint)(bytes[i] | bytes[i + 1] << 8),
+                    1 => bytes[i],
+                    _ => 0
+                };
+                k1 *= c1;
+                k1 = Rotl32(k1, 15);
+                k1 *= c2;
+                h1 ^= k1;
+                if (chunkLength == 4)
+                {
+                    h1 = Rotl32(h1, 13);
+                    h1 = h1 * 5 + 0xe6546b64;
                 }
             }
 
-            h1 ^= streamLength;
-            h1 = fmix(h1);
+            h1 ^= (uint)bytes.Length;
+            h1 = Fmix(h1);
 
-            unchecked
-            {
-                return h1;
-            }
+            return h1;
         }
 
-        private static UInt32 rotl32(UInt32 x, Byte r)
+        private static uint Rotl32(uint x, byte r)
         {
             return (x << r) | (x >> (32 - r));
         }
 
-        private static UInt32 fmix(UInt32 h)
+        private static uint Fmix(uint h)
         {
             h ^= h >> 16;
             h *= 0x85ebca6b;
@@ -82,16 +58,14 @@ namespace RszTool
             return h;
         }
 
-        public static UInt32 iGetHash(String m_String)
+        public static uint GetHash(string text)
         {
-            UInt32 dwHash = 0;
-            Byte[] lpBuffer = Encoding.Unicode.GetBytes(m_String);
+            return MurMur3Hash(MemoryMarshal.AsBytes((ReadOnlySpan<char>)text));
+        }
 
-            using (MemoryStream TMemoryStream = new MemoryStream(lpBuffer))
-            {
-                dwHash = MurMur3Hash(TMemoryStream);
-            }
-            return dwHash;
+        public static uint GetAsciiHash(string text)
+        {
+            return MurMur3Hash(Encoding.ASCII.GetBytes(text));
         }
     }
 }
