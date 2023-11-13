@@ -12,6 +12,7 @@ namespace RszTool
             // TestParsePfb();
             // TestParseScn();
             // TestParseScnRead();
+            // TestParseScnExtractGameObjectRSZ();
             // TestParseMdf();
             // TestMurMur3Hash();
             // TestParseEnum();
@@ -123,13 +124,28 @@ namespace RszTool
                 {
                     foreach (var item in scnFile.GameObjectDatas)
                     {
-                        if (item.Parent == null)
-                        {
-                            Console.WriteLine(item.Name);
-                        }
+                        Console.WriteLine(item.Name);
                     }
                 }
 
+            }
+        }
+
+        static void TestParseScnExtractGameObjectRSZ()
+        {
+            string path = "test/gimmick_st66_101.scn.20";
+            RszFileOption option = new("re4");
+            ScnFile scnFile = new(option, new FileHandler(path));
+            scnFile.Read();
+
+            if (scnFile.RSZ != null)
+            {
+                // Console.WriteLine(scnFile.RSZ.ObjectsStringify());
+                scnFile.SetupGameObjects();
+                FileHandler newFileHandler = new("test/gimmick_st66_101_new.rsz");
+                RSZFile newRSZ = new(option, newFileHandler);
+                bool success = scnFile.ExtractGameObjectRSZ("設置機銃砦１", newRSZ);
+                Console.WriteLine(success);
             }
         }
 

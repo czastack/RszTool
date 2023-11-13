@@ -235,7 +235,10 @@ namespace RszTool
                         Info = info,
                         RszInstance = RSZ!.GetGameObject(info.Data.objectId),
                     };
-                    FolderDatas.Add(folderData);
+                    if (info.Data.parentId == -1)
+                    {
+                        FolderDatas.Add(folderData);
+                    }
                     folderIdxMap[info.Data.objectId] = folderData;
                 }
             }
@@ -258,9 +261,13 @@ namespace RszTool
                     gameObjectData.Prefab = PrefabInfoList[info.Data.prefabId];
                 }
                 gameObjectMap[info.Data.objectId] = gameObjectData;
-                GameObjectDatas.Add(gameObjectData);
+                if (info.Data.parentId == -1)
+                {
+                    GameObjectDatas.Add(gameObjectData);
+                }
             }
 
+            // add children and set parent
             foreach (var info in GameObjectInfoList)
             {
                 var gameObject = gameObjectMap[info.Data.objectId];
@@ -290,7 +297,100 @@ namespace RszTool
         /// </summary>
         public void RebuildByGameObjectDatas()
         {
+            if (GameObjectDatas == null)
+            {
+                throw new InvalidOperationException("GameObjectDatas is null");
+            }
+            GameObjectInfoList.Clear();
+            FolderInfoList.Clear();
+            PrefabInfoList.Clear();
 
+            foreach (var gameObjectData in GameObjectDatas)
+            {
+                // TODO
+            }
+        }
+
+        /// <summary>
+        /// 提取某个游戏对象，构造新的RSZ
+        /// 暂时只支持没有Parent的GameObject
+        /// </summary>
+        /// <param name="name"></param>
+        public bool ExtractGameObjectRSZ(string name, RSZFile newRSZ)
+        {
+            if (GameObjectDatas == null)
+            {
+                Console.Error.WriteLine("GameObjectDatas is null");
+                return false;
+            }
+            GameObjectData? gameObject = null;
+            foreach (var item in GameObjectDatas)
+            {
+                if (item.Name == name)
+                {
+                    gameObject = item;
+                    break;
+                }
+            }
+            if (gameObject == null)
+            {
+                Console.Error.WriteLine($"GameObject {name} not found");
+                return false;
+            }
+            if (RSZ == null)
+            {
+                Console.Error.WriteLine($"RSZ is null");
+                return false;
+            }
+
+            List<RszInstance> refInstances = new();
+
+            void GetGameObjectInstances(GameObjectData gameObject)
+            {
+                refInstances.Add(gameObject.Instance!);
+                foreach (var item in gameObject.Components)
+                {
+                    refInstances.Add(item);
+                }
+                foreach (var child in gameObject.Chidren)
+                {
+                    GetGameObjectInstances(child);
+                }
+            }
+
+            // self InstanceUnflatten
+            GetGameObjectInstances(gameObject);
+            foreach (var instance in refInstances)
+            {
+                RSZ.InstanceUnflatten(instance);
+            }
+
+            // new InstanceFlatten
+            foreach (var instance in refInstances)
+            {
+                newRSZ.InstanceFlatten(instance);
+            }
+
+            newRSZ.RebulidInstanceInfo(false);
+            // foreach (var item in newRSZ.InstanceList)
+            // {
+            //     Console.WriteLine(newRSZ.InstanceStringify(item));
+            // }
+            // write
+            newRSZ.Write();
+
+            // new InstanceUnflatten
+            foreach (var instance in refInstances)
+            {
+                newRSZ.InstanceUnflatten(instance);
+            }
+
+            // self InstanceFlatten
+            foreach (var instance in refInstances)
+            {
+                RSZ.InstanceFlatten(instance);
+            }
+            return true;
         }
     }
 }

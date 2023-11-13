@@ -59,7 +59,7 @@ namespace RszTool
             }
 
             handler.Seek(Header.Data.userdataOffset);
-            Dictionary<uint, int> instanceIdToUserData = new();
+            Dictionary<int, int> instanceIdToUserData = new();
             if (Option.TdbVersion < 67)
             {
                 if (Header.Data.userdataCount > 0)
@@ -101,7 +101,7 @@ namespace RszTool
                     Console.Error.WriteLine($"RszClass {InstanceInfoList[i].typeId} not found!");
                     continue;
                 }
-                if (!instanceIdToUserData.TryGetValue((uint)i, out int userDataIdx))
+                if (!instanceIdToUserData.TryGetValue(i, out int userDataIdx))
                 {
                     userDataIdx = -1;
                 }
@@ -171,6 +171,13 @@ namespace RszTool
             return InstanceList[ObjectTableList[objectIndex].Data.instanceId];
         }
 
+        public string InstanceStringify(RszInstance instance)
+        {
+            StringBuilder sb = new();
+            sb.AppendLine(instance.Stringify(InstanceList));
+            return sb.ToString();
+        }
+
         public string ObjectsStringify()
         {
             StringBuilder sb = new();
@@ -215,7 +222,7 @@ namespace RszTool
         /// 实例的字段值，如果是对象序号，替换成对应的实例对象
         /// </summary>
         /// <param name="instance"></param>
-        public void InstanceUnflatten(RszInstance instance)
+        public void InstanceUnflatten(RszInstance instance, bool recursive = true)
         {
             if (instance.RSZUserData != null) return;
             for (int i = 0; i < instance.RszClass.fields.Length; i++)
@@ -231,12 +238,20 @@ namespace RszTool
                             if (items[j] is int objectId)
                             {
                                 items[j] = InstanceList[objectId];
+                                if (recursive)
+                                {
+                                    InstanceUnflatten(InstanceList[objectId], recursive);
+                                }
                             }
                         }
                     }
                     else if (instance.Values[i] is int objectId)
                     {
                         instance.Values[i] = InstanceList[objectId];
+                        if (recursive)
+                        {
+                            InstanceUnflatten(InstanceList[objectId], recursive);
+                        }
                     }
                 }
             }
@@ -245,7 +260,7 @@ namespace RszTool
         /// <summary>
         /// 所有实例的字段值，如果是对象序号，替换成对应的实例对象
         /// </summary>
-        public void InstanceUnflatten()
+        public void InstanceListUnflatten()
         {
             foreach (var instance in InstanceList)
             {
@@ -257,40 +272,54 @@ namespace RszTool
         /// 实例的字段值，如果是对象，替换成实例序号
         /// </summary>
         /// <param name="instance"></param>
-        public void InstanceFlatten(RszInstance instance)
+        public void InstanceFlatten(RszInstance instance, bool recursive = true)
         {
-            CheckInstanceIndex(instance);
-            if (instance.RSZUserData != null) return;
-            for (int i = 0; i < instance.RszClass.fields.Length; i++)
+            if (instance.RSZUserData == null)
             {
-                var field = instance.RszClass.fields[i];
-                if (field.type == RszFieldType.Object)
+                for (int i = 0; i < instance.RszClass.fields.Length; i++)
                 {
-                    if (field.array)
+                    var field = instance.RszClass.fields[i];
+                    if (field.type == RszFieldType.Object)
                     {
-                        var items = (List<object>)instance.Values[i];
-                        for (int j = 0; j < items.Count; j++)
+                        if (field.array)
                         {
-                            if (items[j] is RszInstance instanceValue)
+                            var items = (List<object>)instance.Values[i];
+                            for (int j = 0; j < items.Count; j++)
                             {
-                                CheckInstanceIndex(instanceValue);
-                                items[j] = instanceValue.Index;
+                                if (items[j] is RszInstance instanceValue)
+                                {
+                                    if (recursive)
+                                    {
+                                        InstanceFlatten(instanceValue, recursive);
+                                    }
+                                    CheckInstanceIndex(instanceValue);
+                                    items[j] = instanceValue.Index;
+                                }
                             }
                         }
-                    }
-                    else if (instance.Values[i] is RszInstance instanceValue)
-                    {
-                        CheckInstanceIndex(instanceValue);
-                        instance.Values[i] = instanceValue.Index;
+                        else if (instance.Values[i] is RszInstance instanceValue)
+                        {
+                            if (recursive)
+                            {
+                                InstanceFlatten(instanceValue, recursive);
+                            }
+                            CheckInstanceIndex(instanceValue);
+                            instance.Values[i] = instanceValue.Index;
+                        }
                     }
                 }
+            }
+            CheckInstanceIndex(instance);
+            if (instance.RSZUserData != null && instance.RSZUserData.InstanceId != instance.Index)
+            {
+                instance.RSZUserData.InstanceId = instance.Index;
             }
         }
 
         /// <summary>
         /// 所有实例的字段值，如果是对象，替换成实例序号
         /// </summary>
-        public void InstanceFlatten()
+        public void InstanceListFlatten()
         {
             foreach (var instance in InstanceList)
             {
@@ -301,17 +330,26 @@ namespace RszTool
         /// <summary>
         /// 根据实例列表，重建InstanceInfo
         /// </summary>
-        public void RebulidInstanceInfo()
+        /// <param name="flatten">是否先进行flatten</param>
+        public void RebulidInstanceInfo(bool flatten = true)
         {
-            InstanceFlatten();
+            if (flatten)
+            {
+                InstanceListFlatten();
+            }
             InstanceInfoList.Clear();
-            for (int i = 0; i < InstanceList.Count; i++)
+            RSZUserDataInfoList.Clear();
+            foreach (var instance in InstanceList)
             {
                 InstanceInfoList.Add(new InstanceInfo
                 {
-                    typeId = InstanceList[i].RszClass.typeId,
-                    CRC = InstanceList[i].RszClass.crc
+                    typeId = instance.RszClass.typeId,
+                    CRC = instance.RszClass.crc
                 });
+                if (instance.RSZUserData != null)
+                {
+                    RSZUserDataInfoList.Add(instance.RSZUserData);
+                }
             }
         }
     }
@@ -345,20 +383,19 @@ namespace RszTool
 
     public interface IRSZUserDataInfo : IModel
     {
-        uint InstanceId { get; }
+        int InstanceId { get; set; }
         uint TypeId { get; }
         string? ClassName { get; }
-
     }
 
     public class RSZUserDataInfo : BaseModel, IRSZUserDataInfo
     {
-        public uint instanceId;
+        public int instanceId;
         public uint typeId;
         public ulong pathOffset;
         public string? path;
 
-        public uint InstanceId => instanceId;
+        public int InstanceId { get => instanceId; set => instanceId = value; }
         public uint TypeId => typeId;
         public string? ClassName { get; set; }
 
@@ -388,13 +425,13 @@ namespace RszTool
 
     public class RSZUserDataInfo_TDB_LE_67 : BaseModel, IRSZUserDataInfo
     {
-        public uint instanceId;
+        public int instanceId;
         public uint typeId;
         public uint jsonPathHash;
         public uint dataSize;
         public long RSZOffset;
 
-        public uint InstanceId => instanceId;
+        public int InstanceId { get => instanceId; set => instanceId = value; }
         public uint TypeId => typeId;
         public string? ClassName { get; set; }
 

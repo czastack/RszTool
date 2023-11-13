@@ -35,6 +35,14 @@ namespace RszTool
                     value.typeId = uint.Parse(key, NumberStyles.HexNumber);
                     classDict[value.typeId] = value;
                     classNameDict[value.name] = value;
+
+                    foreach (var field in value.fields)
+                    {
+                        if (field.type == RszFieldType.Data)
+                        {
+                            field.GuessDataType();
+                        }
+                    }
                 }
             }
         }
@@ -165,5 +173,18 @@ namespace RszTool
         [JsonConverter(typeof(EnumJsonConverter<RszFieldType>))]
         public RszFieldType type { get; set; }
         public string original_type { get; set; } = "";
+
+        public void GuessDataType()
+        {
+            if (type != RszFieldType.Data) return;
+            type = size switch
+            {
+                64 => RszFieldType.Mat4,
+                16 => align == 8 ? RszFieldType.Guid : RszFieldType.Vec4,
+                8 => align == 8 ? RszFieldType.U64 : RszFieldType.Vec2,
+                1 => RszFieldType.U8,
+                _ => type
+            };
+        }
     }
 }
