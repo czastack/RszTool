@@ -445,7 +445,7 @@ namespace RszTool
     }
 
 
-    public interface IRSZUserDataInfo : IModel
+    public interface IRSZUserDataInfo : IModel, ICloneable
     {
         int InstanceId { get; set; }
         uint TypeId { get; }
@@ -486,6 +486,11 @@ namespace RszTool
         {
             ClassName = parser.GetRSZClassName(typeId);
         }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 
 
@@ -524,6 +529,11 @@ namespace RszTool
         public void ReadClassName(RszParser parser)
         {
             ClassName = parser.GetRSZClassName(typeId);
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 }

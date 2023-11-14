@@ -1,5 +1,6 @@
 namespace RszTool
 {
+    using RszTool.Common;
     using GameObjectInfoModel = StructModel<PfbFile.GameObjectInfo>;
     using GameObjectRefInfoModel = StructModel<PfbFile.GameObjectRefInfo>;
 
@@ -30,6 +31,50 @@ namespace RszTool
             public uint targetId;
         }
 
+        public class GameObjectData
+        {
+            public WeakReference<GameObjectData>? ParentRef;
+            public GameObjectInfoModel? Info;
+            public List<RszInstance> Components = new();
+            public List<GameObjectData> Chidren = new();
+            public RszInstance? Instance;
+
+            public static GameObjectData FromScnGameObject(ScnFile.GameObjectData scnGameObject)
+            {
+                GameObjectData gameObject = new()
+                {
+                    Info = new()
+                    {
+                        Data = new GameObjectInfo
+                        {
+                            // objectId 和 parentId 应该重新生成
+                            componentCount = scnGameObject.Components.Count,
+                        }
+                    },
+                    Components = new(scnGameObject.Components),
+                    Instance = scnGameObject.Instance != null ?
+                        (RszInstance)scnGameObject.Instance.Clone() : null
+                };
+                foreach (var child in scnGameObject.Chidren)
+                {
+                    var newChild = FromScnGameObject(child);
+                    newChild.Parent = gameObject;
+                    gameObject.Chidren.Add(newChild);
+                }
+                return gameObject;
+            }
+
+            public GameObjectData? Parent
+            {
+                get => ParentRef?.GetTarget();
+                set => ParentRef = value != null ? new(value) : null;
+            }
+
+            public string? Name => Instance?.GetFieldValue("v0") as string;
+
+            public int? ObjectId => Info?.Data.objectId;
+        }
+
         // ResourceInfo
         // UserdataInfo
 
@@ -39,6 +84,7 @@ namespace RszTool
         public List<ResourceInfo> ResourceInfoList = new();
         public List<UserdataInfo> UserdataInfoList = new();
         public RSZFile? RSZ { get; private set; }
+        public List<GameObjectData>? GameObjectDatas { get; set; }
 
         public PfbFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
@@ -132,6 +178,123 @@ namespace RszTool
             Header.Rewrite(handler);
 
             return true;
+        }
+
+        /// <summary>
+        /// 解析关联的关系，形成树状结构
+        /// </summary>
+        public void SetupGameObjects()
+        {
+            Dictionary<int, GameObjectData> gameObjectMap = new();
+            GameObjectDatas ??= new();
+            foreach (var info in GameObjectInfoList)
+            {
+                GameObjectData gameObjectData = new()
+                {
+                    Info = info,
+                    Instance = RSZ!.GetGameObject(info.Data.objectId),
+                };
+                for (int i = info.Data.objectId + 1; i < info.Data.objectId + info.Data.componentCount; i++)
+                {
+                    gameObjectData.Components.Add(RSZ!.GetGameObject(i));
+                }
+                gameObjectMap[info.Data.objectId] = gameObjectData;
+                if (info.Data.parentId == -1)
+                {
+                    GameObjectDatas.Add(gameObjectData);
+                }
+            }
+
+            // add children and set parent
+            foreach (var info in GameObjectInfoList)
+            {
+                var gameObject = gameObjectMap[info.Data.objectId];
+                if (gameObjectMap.TryGetValue(info.Data.parentId, out var parent))
+                {
+                    parent.Chidren.Add(gameObject);
+                    gameObject.Parent = parent;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 收集GameObject以及子物体的实例和组件实例
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="rszInstances"></param>
+        public static void CollectGameObjectInstances(GameObjectData gameObject, List<RszInstance> rszInstances)
+        {
+            rszInstances.Add(gameObject.Instance!);
+            foreach (var item in gameObject.Components)
+            {
+                rszInstances.Add(item);
+            }
+            foreach (var child in gameObject.Chidren)
+            {
+                CollectGameObjectInstances(child, rszInstances);
+            }
+        }
+
+        /// <summary>
+        /// 根据GameObjectDatas和FolderDatas重建其他表
+        /// </summary>
+        public void RebuildInfoTable()
+        {
+            if (RSZ == null)
+            {
+                throw new InvalidOperationException("RSZ is null");
+            }
+
+            // 重新生成实例表
+            List<RszInstance> rszInstances = new();
+            if (GameObjectDatas != null)
+            {
+                foreach (var gameObjectData in GameObjectDatas)
+                {
+                    CollectGameObjectInstances(gameObjectData, rszInstances);
+                }
+            }
+
+            RSZ.InstanceListUnflatten(rszInstances);
+            RSZ.InstanceList.Clear();
+            RSZ.InstanceListFlatten(rszInstances);
+            RSZ.RebulidInstanceInfo(false, false);
+            foreach (var instance in rszInstances)
+            {
+                instance.ObjectTableIndex = -1;
+            }
+            RSZ.ObjectTableList.Clear();
+
+            // 重新构建
+            GameObjectInfoList.Clear();
+            if (GameObjectDatas != null)
+            {
+                foreach (var gameObjectData in GameObjectDatas)
+                {
+                    RebuildGameObjectInfoRecursion(gameObjectData);
+                }
+            }
+        }
+
+        private void RebuildGameObjectInfoRecursion(GameObjectData gameObject)
+        {
+            var instance = gameObject.Instance!;
+            if (instance.ObjectTableIndex != -1) return;
+            ref var infoData = ref gameObject.Info!.Data;
+            RSZ!.AddToObjectTable(instance);
+            infoData.objectId = instance.ObjectTableIndex;
+            infoData.componentCount = (short)gameObject.Components.Count;
+            infoData.parentId = gameObject.Parent?.ObjectId ?? -1;
+
+            GameObjectInfoList.Add(gameObject.Info!);
+            foreach (var item in gameObject.Components)
+            {
+                RSZ!.AddToObjectTable(item);
+            }
+            foreach (var child in gameObject.Chidren)
+            {
+                RebuildGameObjectInfoRecursion(child);
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace RszTool
     /// <summary>
     /// 存放RszClass的数据
     /// </summary>
-    public class RszInstance : BaseModel
+    public class RszInstance : BaseModel, ICloneable
     {
         public RszClass RszClass { get; set; }
         public object[] Values { get; set; }
@@ -272,6 +272,43 @@ namespace RszTool
             int index = RszClass.IndexOfField(name);
             if (index == -1) return;
             Values[index] = value;
+        }
+
+        /// <summary>
+        /// 拷贝自身，如果字段值是RszInstance，则拷贝
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            RszInstance copy = (RszInstance)MemberwiseClone();
+            if (RSZUserData != null)
+            {
+                copy.RSZUserData = (IRSZUserDataInfo)RSZUserData.Clone();
+            }
+            for (int i = 0; i < RszClass.fields.Length; i++)
+            {
+                var field = RszClass.fields[i];
+                if (field.type == RszFieldType.Object)
+                {
+                    if (field.array)
+                    {
+                        var newArray = new List<object>((List<object>)copy.Values[i]);
+                        copy.Values[i] = newArray;
+                        for (int j = 0; j < newArray.Count; j++)
+                        {
+                            if (newArray[j] is RszInstance item)
+                            {
+                                newArray[j] = item.Clone();
+                            }
+                        }
+                    }
+                    if (copy.Values[i] is RszInstance instance)
+                    {
+                        copy.Values[i] = instance.Clone();
+                    }
+                }
+            }
+            return copy;
         }
 
         public void Stringify(StringBuilder sb, IList<RszInstance>? instances = null, int indent = 0)

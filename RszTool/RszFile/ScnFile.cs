@@ -316,7 +316,7 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 收集GameObject以及子物体的实例和组件实例
+        /// 收集Folder以及子Folder的实例和组件实例
         /// </summary>
         /// <param name="gameObject"></param>
         /// <param name="rszInstances"></param>
