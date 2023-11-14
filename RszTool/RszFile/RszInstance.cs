@@ -14,6 +14,8 @@ namespace RszTool
         public object[] Values { get; set; }
         public int Index { get; set; }
         public int RSZUserDataIdx { get; set; }
+        // 在ObjectTable中的序号，-1表示不在
+        public int ObjectTableIndex { get; set; } = -1;
         public string Name { get; set; }
         public IRSZUserDataInfo? RSZUserData { get; set; }
 
@@ -25,6 +27,18 @@ namespace RszTool
             RSZUserDataIdx = rszUserDataIdx;
             Name = $"{rszClass.name}[{index}]";
         }
+
+        private RszInstance()
+        {
+            RszClass = RszClass.Empty;
+            Values = Array.Empty<object>();
+            Name = "";
+        }
+
+        /// <summary>
+        /// 一般InstanceList第一个对象是NULL实例
+        /// </summary>
+        public static readonly RszInstance NULL = new();
 
         private void AlignFirstField(FileHandler handler)
         {

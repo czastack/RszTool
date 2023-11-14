@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace RszTool.Common
@@ -80,6 +78,17 @@ namespace RszTool.Common
         {
             reference.TryGetTarget(out T? target);
             return target;
+        }
+
+        public static int GetIndexOrAdd<T>(this List<T> list, T obj)
+        {
+            int index = list.IndexOf(obj);
+            if (index == -1)
+            {
+                index = list.Count;
+                list.Add(obj);
+            }
+            return index;
         }
 
         public static void AppendIndent(this StringBuilder sb, int indent)

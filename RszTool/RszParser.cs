@@ -5,6 +5,9 @@ using RszTool.Common;
 
 namespace RszTool
 {
+    /// <summary>
+    /// Rsz json parser
+    /// </summary>
     public class RszParser
     {
         private static readonly Dictionary<string, RszParser> instanceDict = new();
@@ -149,6 +152,8 @@ namespace RszTool
         public RszField[] fields { get; set; } = EmptyFiedls;
 
         public static RszField[] EmptyFiedls = Array.Empty<RszField>();
+
+        public static readonly RszClass Empty = new();
 
         public int IndexOfField(string name)
         {

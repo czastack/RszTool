@@ -1,4 +1,5 @@
 using System.Text;
+using RszTool.Common;
 
 namespace RszTool
 {
@@ -116,6 +117,12 @@ namespace RszTool
                 }
                 InstanceList.Add(instance);
             }
+
+            for (int i = 0; i < ObjectTableList.Count; i++)
+            {
+                StructModel<ObjectTable>? item = ObjectTableList[i];
+                InstanceList[item.Data.instanceId].ObjectTableIndex = i;
+            }
             return true;
         }
 
@@ -166,6 +173,8 @@ namespace RszTool
             return true;
         }
 
+        // 下面的函数用于重新构建数据，基本读写功能都在上面
+
         public RszInstance GetGameObject(int objectIndex)
         {
             return InstanceList[ObjectTableList[objectIndex].Data.instanceId];
@@ -205,16 +214,15 @@ namespace RszTool
             return instance;
         }
 
+        /// <summary>
+        /// 检查实例索引正确，如果不正确，替换成正确序号，如果不在实例列表中，插入到列表
+        /// </summary>
+        /// <param name="instance"></param>
         public void CheckInstanceIndex(RszInstance instance)
         {
             if (instance.Index == -1 || instance.Index >= InstanceList.Count || InstanceList[instance.Index] != instance)
             {
-                instance.Index = InstanceList.IndexOf(instance);
-                if (instance.Index == -1)
-                {
-                    instance.Index = InstanceList.Count;
-                    InstanceList.Add(instance);
-                }
+                instance.Index = InstanceList.GetIndexOrAdd(instance);
             }
         }
 
@@ -269,7 +277,18 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 实例的字段值，如果是对象，替换成实例序号
+        /// 所有实例的字段值，如果是对象序号，替换成对应的实例对象
+        /// </summary>
+        public void InstanceListUnflatten(IEnumerable<RszInstance> list)
+        {
+            foreach (var instance in list)
+            {
+                InstanceUnflatten(instance);
+            }
+        }
+
+        /// <summary>
+        /// 实例的字段值，如果是对象，替换成实例序号，实例自身的Index也会修正
         /// </summary>
         /// <param name="instance"></param>
         public void InstanceFlatten(RszInstance instance, bool recursive = true)
@@ -317,7 +336,7 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 所有实例的字段值，如果是对象，替换成实例序号
+        /// 所有实例的字段值，如果是对象，替换成实例序号，实例自身的Index也会修正
         /// </summary>
         public void InstanceListFlatten()
         {
@@ -328,10 +347,21 @@ namespace RszTool
         }
 
         /// <summary>
+        /// 所有实例的字段值，如果是对象，替换成实例序号，实例自身的Index也会修正
+        /// </summary>
+        public void InstanceListFlatten(IEnumerable<RszInstance> list)
+        {
+            foreach (var instance in list)
+            {
+                InstanceFlatten(instance);
+            }
+        }
+
+        /// <summary>
         /// 根据实例列表，重建InstanceInfo
         /// </summary>
         /// <param name="flatten">是否先进行flatten</param>
-        public void RebulidInstanceInfo(bool flatten = true)
+        public void RebulidInstanceInfo(bool flatten = true, bool rebuildObjectTable = true)
         {
             if (flatten)
             {
@@ -339,6 +369,7 @@ namespace RszTool
             }
             InstanceInfoList.Clear();
             RSZUserDataInfoList.Clear();
+            List<RszInstance> instanceInTable = new();
             foreach (var instance in InstanceList)
             {
                 InstanceInfoList.Add(new InstanceInfo
@@ -350,7 +381,39 @@ namespace RszTool
                 {
                     RSZUserDataInfoList.Add(instance.RSZUserData);
                 }
+                if (rebuildObjectTable && instance.ObjectTableIndex != -1)
+                {
+                    instanceInTable.Add(instance);
+                }
             }
+            if (rebuildObjectTable)
+            {
+                // Rebuild ObjectTableList
+                ObjectTableList.Clear();
+                instanceInTable.Sort((a, b) => a.ObjectTableIndex.CompareTo(b.ObjectTableIndex));
+                for (int i = 0; i < instanceInTable.Count; i++)
+                {
+                    RszInstance instance = instanceInTable[i];
+                    instance.ObjectTableIndex = i;
+                    var objectTableInfo = new StructModel<ObjectTable>();
+                    objectTableInfo.Data.instanceId = instance.Index;
+                    ObjectTableList.Add(objectTableInfo);
+                }
+            }
+        }
+
+        public void AddToObjectTable(RszInstance instance)
+        {
+            if (instance.ObjectTableIndex >= 0 && instance.ObjectTableIndex < ObjectTableList.Count &&
+                ObjectTableList[instance.ObjectTableIndex].Data.instanceId == instance.Index)
+            {
+                return;
+            }
+            var objectTableItem = new StructModel<ObjectTable>();
+            CheckInstanceIndex(instance);
+            objectTableItem.Data.instanceId = instance.Index;
+            instance.ObjectTableIndex = ObjectTableList.Count;
+            ObjectTableList.Add(objectTableItem);
         }
     }
 
@@ -381,12 +444,14 @@ namespace RszTool
         }
     }
 
+
     public interface IRSZUserDataInfo : IModel
     {
         int InstanceId { get; set; }
         uint TypeId { get; }
         string? ClassName { get; }
     }
+
 
     public class RSZUserDataInfo : BaseModel, IRSZUserDataInfo
     {
@@ -422,6 +487,7 @@ namespace RszTool
             ClassName = parser.GetRSZClassName(typeId);
         }
     }
+
 
     public class RSZUserDataInfo_TDB_LE_67 : BaseModel, IRSZUserDataInfo
     {

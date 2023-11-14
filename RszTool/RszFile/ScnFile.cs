@@ -3,6 +3,7 @@ namespace RszTool
     using GameObjectInfoModel = StructModel<ScnFile.GameObjectInfo>;
     using FolderInfoModel = StructModel<ScnFile.FolderInfo>;
     using RszTool.Common;
+    using System.Reflection.Metadata.Ecma335;
 
     public class ScnFile : BaseRszFile
     {
@@ -65,13 +66,15 @@ namespace RszTool
             public FolderInfoModel? Info;
             public List<FolderData> Chidren = new();
             public List<GameObjectData> GameObjects = new();
-            public RszInstance? RszInstance;
+            public RszInstance? Instance;
 
             public FolderData? Parent
             {
                 get => ParentRef?.GetTarget();
                 set => ParentRef = value != null ? new(value) : null;
             }
+
+            public int? ObjectId => Info?.Data.objectId;
         }
 
 
@@ -98,6 +101,8 @@ namespace RszTool
             }
 
             public string? Name => Instance?.GetFieldValue("v0") as string;
+
+            public int? ObjectId => Info?.Data.objectId;
         }
 
         public StructModel<HeaderStruct> Header { get; } = new();
@@ -233,7 +238,7 @@ namespace RszTool
                     FolderData folderData = new()
                     {
                         Info = info,
-                        RszInstance = RSZ!.GetGameObject(info.Data.objectId),
+                        Instance = RSZ!.GetGameObject(info.Data.objectId),
                     };
                     if (info.Data.parentId == -1)
                     {
@@ -293,21 +298,138 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 根据GameObjectDatas重建其他表
+        /// 收集GameObject以及子物体的实例和组件实例
         /// </summary>
-        public void RebuildByGameObjectDatas()
+        /// <param name="gameObject"></param>
+        /// <param name="rszInstances"></param>
+        public static void CollectGameObjectInstances(GameObjectData gameObject, List<RszInstance> rszInstances)
         {
-            if (GameObjectDatas == null)
+            rszInstances.Add(gameObject.Instance!);
+            foreach (var item in gameObject.Components)
             {
-                throw new InvalidOperationException("GameObjectDatas is null");
+                rszInstances.Add(item);
             }
+            foreach (var child in gameObject.Chidren)
+            {
+                CollectGameObjectInstances(child, rszInstances);
+            }
+        }
+
+        /// <summary>
+        /// 收集GameObject以及子物体的实例和组件实例
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="rszInstances"></param>
+        public static void CollectFolderGameObjectInstances(FolderData folder, List<RszInstance> rszInstances)
+        {
+            rszInstances.Add(folder.Instance!);
+            foreach (var gameObject in folder.GameObjects)
+            {
+                CollectGameObjectInstances(gameObject, rszInstances);
+            }
+            foreach (var child in folder.Chidren)
+            {
+                CollectFolderGameObjectInstances(child, rszInstances);
+            }
+        }
+
+        /// <summary>
+        /// 根据GameObjectDatas和FolderDatas重建其他表
+        /// </summary>
+        public void RebuildInfoTable()
+        {
+            if (RSZ == null)
+            {
+                throw new InvalidOperationException("RSZ is null");
+            }
+
+            // 重新生成实例表
+            List<RszInstance> rszInstances = new();
+            if (GameObjectDatas != null)
+            {
+                foreach (var gameObjectData in GameObjectDatas)
+                {
+                    CollectGameObjectInstances(gameObjectData, rszInstances);
+                }
+            }
+
+            if (FolderDatas != null)
+            {
+                foreach (var folder in FolderDatas)
+                {
+                    CollectFolderGameObjectInstances(folder, rszInstances);
+                }
+            }
+
+            RSZ.InstanceListUnflatten(rszInstances);
+            RSZ.InstanceList.Clear();
+            RSZ.InstanceListFlatten(rszInstances);
+            RSZ.RebulidInstanceInfo(false, false);
+            foreach (var instance in rszInstances)
+            {
+                instance.ObjectTableIndex = -1;
+            }
+            RSZ.ObjectTableList.Clear();
+
+            // 重新构建
             GameObjectInfoList.Clear();
             FolderInfoList.Clear();
             PrefabInfoList.Clear();
-
-            foreach (var gameObjectData in GameObjectDatas)
+            if (GameObjectDatas != null)
             {
-                // TODO
+                foreach (var gameObjectData in GameObjectDatas)
+                {
+                    RebuildGameObjectInfoRecursion(gameObjectData);
+                }
+            }
+
+            if (FolderDatas != null)
+            {
+                foreach (var folder in FolderDatas)
+                {
+                    RebuildFolderInfoRecursion(folder);
+                }
+            }
+        }
+
+        private void RebuildGameObjectInfoRecursion(GameObjectData gameObject)
+        {
+            var instance = gameObject.Instance!;
+            if (instance.ObjectTableIndex != -1) return;
+            int prefabId = gameObject.Prefab == null ? -1 :
+                PrefabInfoList.GetIndexOrAdd(gameObject.Prefab);;
+            ref var infoData = ref gameObject.Info!.Data;
+            RSZ!.AddToObjectTable(instance);
+            infoData.objectId = instance.ObjectTableIndex;
+            infoData.componentCount = (short)gameObject.Components.Count;
+            infoData.parentId = gameObject.Parent?.ObjectId ?? gameObject.Folder?.ObjectId ?? -1;
+            infoData.prefabId = prefabId;
+
+            GameObjectInfoList.Add(gameObject.Info!);
+            foreach (var item in gameObject.Components)
+            {
+                RSZ!.AddToObjectTable(item);
+            }
+            foreach (var child in gameObject.Chidren)
+            {
+                RebuildGameObjectInfoRecursion(child);
+            }
+        }
+
+        private void RebuildFolderInfoRecursion(FolderData folder)
+        {
+            RSZ!.AddToObjectTable(folder.Instance!);
+            ref var infoData = ref folder.Info!.Data;
+            infoData.objectId = folder.Instance!.ObjectTableIndex;
+            infoData.parentId = folder.Parent?.ObjectId ?? -1;
+            FolderInfoList.Add(folder.Info!);
+            foreach (var gameObject in folder.GameObjects)
+            {
+                RebuildGameObjectInfoRecursion(gameObject);
+            }
+            foreach (var child in folder.Chidren)
+            {
+                RebuildFolderInfoRecursion(child);
             }
         }
 
@@ -343,33 +465,14 @@ namespace RszTool
                 return false;
             }
 
-            List<RszInstance> refInstances = new();
-
-            void GetGameObjectInstances(GameObjectData gameObject)
-            {
-                refInstances.Add(gameObject.Instance!);
-                foreach (var item in gameObject.Components)
-                {
-                    refInstances.Add(item);
-                }
-                foreach (var child in gameObject.Chidren)
-                {
-                    GetGameObjectInstances(child);
-                }
-            }
+            List<RszInstance> rszInstances = new();
 
             // self InstanceUnflatten
-            GetGameObjectInstances(gameObject);
-            foreach (var instance in refInstances)
-            {
-                RSZ.InstanceUnflatten(instance);
-            }
+            CollectGameObjectInstances(gameObject, rszInstances);
+            RSZ.InstanceListUnflatten(rszInstances);
 
             // new InstanceFlatten
-            foreach (var instance in refInstances)
-            {
-                newRSZ.InstanceFlatten(instance);
-            }
+            newRSZ.InstanceListFlatten(rszInstances);
 
             newRSZ.RebulidInstanceInfo(false);
             // foreach (var item in newRSZ.InstanceList)
@@ -380,16 +483,10 @@ namespace RszTool
             newRSZ.Write();
 
             // new InstanceUnflatten
-            foreach (var instance in refInstances)
-            {
-                newRSZ.InstanceUnflatten(instance);
-            }
+            newRSZ.InstanceListUnflatten(rszInstances);
 
             // self InstanceFlatten
-            foreach (var instance in refInstances)
-            {
-                RSZ.InstanceFlatten(instance);
-            }
+            RSZ.InstanceListFlatten(rszInstances);
             return true;
         }
     }
