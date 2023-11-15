@@ -76,6 +76,7 @@ namespace RszTool
         {
             RSZ!.RebuildInstanceInfo();
             RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);
+            RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ);
         }
     }
 }

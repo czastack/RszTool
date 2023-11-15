@@ -279,6 +279,7 @@ namespace RszTool
             }
 
             RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);
+            RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ);
         }
 
         private void RebuildGameObjectInfoRecursion(GameObjectData gameObject)
