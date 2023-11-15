@@ -398,6 +398,10 @@ namespace RszTool
             }
         }
 
+        /// <summary>
+        /// 添加到ObjectTable，会自动修正instance.ObjectTableIndex
+        /// </summary>
+        /// <param name="instance"></param>
         public void AddToObjectTable(RszInstance instance)
         {
             if (instance.ObjectTableIndex >= 0 && instance.ObjectTableIndex < ObjectTableList.Count &&
@@ -410,6 +414,37 @@ namespace RszTool
             objectTableItem.Data.instanceId = instance.Index;
             instance.ObjectTableIndex = ObjectTableList.Count;
             ObjectTableList.Add(objectTableItem);
+        }
+
+        /// <summary>
+        /// 导入实例，需要先InstanceUnflatten
+        /// </summary>
+        /// <param name="instances"></param>
+        /// <param name="addToObjectTable"></param>
+        /// <returns>导入的副本列表，如果clone为false，返回null</returns>
+        public void ImportInstance(IEnumerable<RszInstance> instances, bool clone = true, bool addToObjectTable = false)
+        {
+            foreach (var instance in instances)
+            {
+                var newInstance = clone ? (RszInstance)instance.Clone() : instance;
+                InstanceFlatten(newInstance);
+                InstanceInfoList.Add(new InstanceInfo
+                {
+                    typeId = newInstance.RszClass.typeId,
+                    CRC = newInstance.RszClass.crc
+                });
+                if (newInstance.RSZUserData != null)
+                {
+                    RSZUserDataInfoList.Add(newInstance.RSZUserData);
+                }
+                if (addToObjectTable)
+                {
+                    newInstance.ObjectTableIndex = ObjectTableList.Count;
+                    var objectTableInfo = new StructModel<ObjectTable>();
+                    objectTableInfo.Data.instanceId = newInstance.Index;
+                    ObjectTableList.Add(objectTableInfo);
+                }
+            }
         }
     }
 

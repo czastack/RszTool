@@ -274,7 +274,7 @@ namespace RszTool
             {
                 foreach (var gameObjectData in GameObjectDatas)
                 {
-                    RebuildGameObjectInfoRecursion(gameObjectData);
+                    AddGameObjectInfoRecursion(gameObjectData);
                 }
             }
 
@@ -282,7 +282,7 @@ namespace RszTool
             RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ);
         }
 
-        private void RebuildGameObjectInfoRecursion(GameObjectData gameObject)
+        private void AddGameObjectInfoRecursion(GameObjectData gameObject)
         {
             var instance = gameObject.Instance!;
             if (instance.ObjectTableIndex != -1) return;
@@ -299,7 +299,7 @@ namespace RszTool
             }
             foreach (var child in gameObject.Chidren)
             {
-                RebuildGameObjectInfoRecursion(child);
+                AddGameObjectInfoRecursion(child);
             }
         }
 
