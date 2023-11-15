@@ -39,6 +39,12 @@ namespace RszTool
             public List<GameObjectData> Chidren = new();
             public RszInstance? Instance;
 
+            /// <summary>
+            /// 从ScnFile.GameObjectData生成GameObjectData
+            /// 调用前需要先在Scn中UnFlatten
+            /// </summary>
+            /// <param name="scnGameObject"></param>
+            /// <returns></returns>
             public static GameObjectData FromScnGameObject(ScnFile.GameObjectData scnGameObject)
             {
                 GameObjectData gameObject = new()
@@ -51,7 +57,7 @@ namespace RszTool
                             componentCount = scnGameObject.Components.Count,
                         }
                     },
-                    Components = new(scnGameObject.Components),
+                    Components = scnGameObject.Components.Select(item => (RszInstance)item.Clone()).ToList(),
                     Instance = scnGameObject.Instance != null ?
                         (RszInstance)scnGameObject.Instance.Clone() : null
                 };
@@ -142,40 +148,40 @@ namespace RszTool
         protected override bool DoWrite()
         {
             FileHandler handler = FileHandler;
-
+            ref var header = ref Header.Data;
             handler.Seek(Header.Size);
-            handler.Align(16);
             GameObjectInfoList.Write(handler);
 
-            if (Header.Data.gameObjectRefInfoCount > 0)
+            if (header.gameObjectRefInfoCount > 0)
             {
                 // handler.Align(16);
-                Header.Data.gameObjectRefInfoOffset = handler.Tell();
+                header.gameObjectRefInfoOffset = handler.Tell();
                 GameObjectRefInfoList.Write(handler);
             }
 
             handler.Align(16);
-            Header.Data.resourceInfoOffset = handler.Tell();
+            header.resourceInfoOffset = handler.Tell();
             ResourceInfoList.Write(handler);
 
             if (UserdataInfoList.Count > 0)
             {
                 handler.Align(16);
-                Header.Data.userdataInfoOffset = handler.Tell();
+                header.userdataInfoOffset = handler.Tell();
                 UserdataInfoList.Write(handler);
             }
 
             handler.StringTableFlush();
 
             handler.Align(16);
-            Header.Data.dataOffset = handler.Tell();
-            RSZ!.WriteTo(FileHandler.WithOffset(Header.Data.dataOffset));
+            header.dataOffset = handler.Tell();
+            RSZ!.WriteTo(FileHandler.WithOffset(header.dataOffset));
 
-            Header.Data.infoCount = GameObjectInfoList.Count;
-            Header.Data.resourceCount = ResourceInfoList.Count;
-            Header.Data.gameObjectRefInfoCount = GameObjectRefInfoList.Count;
-            Header.Data.userdataCount = UserdataInfoList.Count;
-            Header.Rewrite(handler);
+            header.magic = Magic;
+            header.infoCount = GameObjectInfoList.Count;
+            header.resourceCount = ResourceInfoList.Count;
+            header.gameObjectRefInfoCount = GameObjectRefInfoList.Count;
+            header.userdataCount = UserdataInfoList.Count;
+            Header.Write(handler, 0);
 
             return true;
         }
@@ -240,13 +246,10 @@ namespace RszTool
         /// </summary>
         public void RebuildInfoTable()
         {
-            if (RSZ == null)
-            {
-                throw new InvalidOperationException("RSZ is null");
-            }
+            RSZ ??= new(Option, FileHandler);
 
             // 重新生成实例表
-            List<RszInstance> rszInstances = new();
+            List<RszInstance> rszInstances = new() { RszInstance.NULL };
             if (GameObjectDatas != null)
             {
                 foreach (var gameObjectData in GameObjectDatas)
@@ -258,7 +261,7 @@ namespace RszTool
             RSZ.InstanceListUnflatten(rszInstances);
             RSZ.InstanceList.Clear();
             RSZ.InstanceListFlatten(rszInstances);
-            RSZ.RebulidInstanceInfo(false, false);
+            RSZ.RebuildInstanceInfo(false, false);
             foreach (var instance in rszInstances)
             {
                 instance.ObjectTableIndex = -1;
@@ -274,6 +277,8 @@ namespace RszTool
                     RebuildGameObjectInfoRecursion(gameObjectData);
                 }
             }
+
+            RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);
         }
 
         private void RebuildGameObjectInfoRecursion(GameObjectData gameObject)
@@ -283,10 +288,10 @@ namespace RszTool
             ref var infoData = ref gameObject.Info!.Data;
             RSZ!.AddToObjectTable(instance);
             infoData.objectId = instance.ObjectTableIndex;
-            infoData.componentCount = (short)gameObject.Components.Count;
             infoData.parentId = gameObject.Parent?.ObjectId ?? -1;
+            infoData.componentCount = (short)gameObject.Components.Count;
 
-            GameObjectInfoList.Add(gameObject.Info!);
+            GameObjectInfoList.Add(gameObject.Info);
             foreach (var item in gameObject.Components)
             {
                 RSZ!.AddToObjectTable(item);
@@ -295,6 +300,26 @@ namespace RszTool
             {
                 RebuildGameObjectInfoRecursion(child);
             }
+        }
+
+        /// <summary>
+        /// 从ScnFile.GameObjectData生成Pfb
+        /// 调用前需要先在Scn中UnFlatten
+        /// </summary>
+        /// <param name="scnGameObject"></param>
+        public void PfbFromScnGameObject(ScnFile.GameObjectData scnGameObject)
+        {
+            GameObjectData gameObject = GameObjectData.FromScnGameObject(scnGameObject);
+            if (GameObjectDatas == null)
+            {
+                GameObjectDatas = new();
+            }
+            else
+            {
+                GameObjectDatas.Clear();
+            }
+            GameObjectDatas.Add(gameObject);
+            RebuildInfoTable();
         }
     }
 }

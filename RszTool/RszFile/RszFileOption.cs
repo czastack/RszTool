@@ -15,6 +15,19 @@ namespace RszTool
                 _ => 71,
             };
             RszParser = RszParser.GetInstance($"rsz{gameName}.json");
+            PostInit();
+        }
+
+        public void PostInit()
+        {
+            if (GameName == "re4")
+            {
+                var GameObject = RszParser.GetRSZClass("via.GameObject");
+                if (GameObject?.GetField("v4") is RszField v4 && v4.type == RszFieldType.Data && v4.size == 4)
+                {
+                    v4.type = RszFieldType.F32;
+                }
+            }
         }
     }
 }

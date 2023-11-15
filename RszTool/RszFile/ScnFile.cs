@@ -144,26 +144,27 @@ namespace RszTool
         {
             FileHandler handler = FileHandler;
             if (!Header.Read(handler)) return false;
-            if (Header.Data.magic != Magic)
+            ref var header = ref Header.Data;
+            if (header.magic != Magic)
             {
                 throw new InvalidDataException($"{handler.FilePath} Not a SCN file");
             }
 
-            GameObjectInfoList.Read(handler, Header.Data.infoCount);
+            GameObjectInfoList.Read(handler, header.infoCount);
 
-            handler.Seek(Header.Data.folderInfoOffset);
-            FolderInfoList.Read(handler, Header.Data.folderCount);
+            handler.Seek(header.folderInfoOffset);
+            FolderInfoList.Read(handler, header.folderCount);
 
-            handler.Seek(Header.Data.resourceInfoOffset);
-            ResourceInfoList.Read(handler, Header.Data.resourceCount);
+            handler.Seek(header.resourceInfoOffset);
+            ResourceInfoList.Read(handler, header.resourceCount);
 
-            handler.Seek(Header.Data.prefabInfoOffset);
-            PrefabInfoList.Read(handler, Header.Data.prefabCount);
+            handler.Seek(header.prefabInfoOffset);
+            PrefabInfoList.Read(handler, header.prefabCount);
 
-            handler.Seek(Header.Data.userdataInfoOffset);
-            UserdataInfoList.Read(handler, Header.Data.userdataCount);
+            handler.Seek(header.userdataInfoOffset);
+            UserdataInfoList.Read(handler, header.userdataCount);
 
-            RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
+            RSZ = new RSZFile(Option, FileHandler.WithOffset(header.dataOffset));
             RSZ.Read(0, false);
             if (RSZ.ObjectTableList.Count > 0)
             {
@@ -176,52 +177,47 @@ namespace RszTool
         protected override bool DoWrite()
         {
             FileHandler handler = FileHandler;
-
+            ref var header = ref Header.Data;
             handler.Seek(Header.Size);
-            handler.Align(16);
             GameObjectInfoList.Write(handler);
 
             if (FolderInfoList.Count > 0)
             {
                 handler.Align(16);
-                Header.Data.folderInfoOffset = handler.Tell();
+                header.folderInfoOffset = handler.Tell();
                 FolderInfoList.Write(handler);
             }
 
             handler.Align(16);
-            Header.Data.resourceInfoOffset = handler.Tell();
+            header.resourceInfoOffset = handler.Tell();
             ResourceInfoList.Write(handler);
 
             if (PrefabInfoList.Count > 0)
             {
                 handler.Align(16);
-                Header.Data.prefabInfoOffset = handler.Tell();
+                header.prefabInfoOffset = handler.Tell();
                 PrefabInfoList.Write(handler);
             }
 
             handler.Align(16);
-            Header.Data.userdataInfoOffset = handler.Tell();
+            header.userdataInfoOffset = handler.Tell();
             UserdataInfoList.Write(handler);
 
             handler.StringTableFlush();
 
             handler.Align(16);
-            Header.Data.dataOffset = handler.Tell();
-            RSZ!.WriteTo(FileHandler.WithOffset(Header.Data.dataOffset));
+            header.dataOffset = handler.Tell();
+            RSZ!.WriteTo(FileHandler.WithOffset(header.dataOffset));
 
-            Header.Data.infoCount = GameObjectInfoList.Count;
-            Header.Data.folderCount = FolderInfoList.Count;
-            Header.Data.resourceCount = ResourceInfoList.Count;
-            Header.Data.prefabCount = PrefabInfoList.Count;
-            Header.Data.userdataCount = UserdataInfoList.Count;
-            Header.Rewrite(handler);
+            header.magic = Magic;
+            header.infoCount = GameObjectInfoList.Count;
+            header.folderCount = FolderInfoList.Count;
+            header.resourceCount = ResourceInfoList.Count;
+            header.prefabCount = PrefabInfoList.Count;
+            header.userdataCount = UserdataInfoList.Count;
+            Header.Write(handler, 0);
 
             return true;
-        }
-
-        public void SaveAsPfb(string path)
-        {
-
         }
 
         /// <summary>
@@ -257,9 +253,9 @@ namespace RszTool
                     Info = info,
                     Instance = RSZ!.GetGameObject(info.Data.objectId),
                 };
-                for (int i = info.Data.objectId + 1; i < info.Data.objectId + info.Data.componentCount; i++)
+                for (int i = 0; i < info.Data.componentCount; i++)
                 {
-                    gameObjectData.Components.Add(RSZ!.GetGameObject(i));
+                    gameObjectData.Components.Add(RSZ!.GetGameObject(info.Data.objectId + 1 + i));
                 }
                 if (info.Data.prefabId >= 0 && info.Data.prefabId < PrefabInfoList.Count)
                 {
@@ -344,7 +340,7 @@ namespace RszTool
             }
 
             // 重新生成实例表
-            List<RszInstance> rszInstances = new();
+            List<RszInstance> rszInstances = new() { RszInstance.NULL };
             if (GameObjectDatas != null)
             {
                 foreach (var gameObjectData in GameObjectDatas)
@@ -364,7 +360,7 @@ namespace RszTool
             RSZ.InstanceListUnflatten(rszInstances);
             RSZ.InstanceList.Clear();
             RSZ.InstanceListFlatten(rszInstances);
-            RSZ.RebulidInstanceInfo(false, false);
+            RSZ.RebuildInstanceInfo(false, false);
             foreach (var instance in rszInstances)
             {
                 instance.ObjectTableIndex = -1;
@@ -390,6 +386,7 @@ namespace RszTool
                     RebuildFolderInfoRecursion(folder);
                 }
             }
+            RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);
         }
 
         private void RebuildGameObjectInfoRecursion(GameObjectData gameObject)
@@ -434,31 +431,79 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 提取某个游戏对象，构造新的RSZ
-        /// 暂时只支持没有Parent的GameObject
+        /// 根据名字查找游戏对象
         /// </summary>
-        /// <param name="name"></param>
-        public bool ExtractGameObjectRSZ(string name, RSZFile newRSZ)
+        /// <param name="name">对象名称</param>
+        /// <param name="parent">父对象</param>
+        /// <param name="recursive">查找游戏对象的子对象</param>
+        /// <returns></returns>
+        public GameObjectData? FindGameObject(string name, GameObjectData? parent = null, bool recursive = false)
         {
-            if (GameObjectDatas == null)
+            var children = parent?.Chidren ?? GameObjectDatas;
+            if (children == null)
             {
-                Console.Error.WriteLine("GameObjectDatas is null");
-                return false;
+                Console.Error.WriteLine("GameObjectDatas and parent is null");
+                return null;
             }
-            GameObjectData? gameObject = null;
-            foreach (var item in GameObjectDatas)
+            foreach (var child in children)
             {
-                if (item.Name == name)
+                if (child.Name == name) return child;
+            }
+            if (recursive)
+            {
+                foreach (var child in children)
                 {
-                    gameObject = item;
-                    break;
+                    var result = FindGameObject(name, child);
+                    if (result != null) return result;
                 }
             }
-            if (gameObject == null)
+            Console.Error.WriteLine($"GameObject {name} not found");
+            return null;
+        }
+
+        /// <summary>
+        /// 在文件夹中根据名字查找游戏对象
+        /// </summary>
+        /// <param name="name">对象名称</param>
+        /// <param name="parent">父文件夹，如果为空则从根文件夹开始</param>
+        /// <param name="recursive">递归在子文件夹中查找</param>
+        /// <param name="gameObjectRecursive">查找游戏对象的子对象</param>
+        /// <returns></returns>
+        public GameObjectData? FindGameObjectInFolder(
+            string name, FolderData? parent = null, bool recursive = false, bool gameObjectRecursive = false)
+        {
+            if (FolderDatas == null || parent == null)
             {
-                Console.Error.WriteLine($"GameObject {name} not found");
-                return false;
+                Console.Error.WriteLine("GameObjectDatas and parent is null");
+                return null;
             }
+            var folders = parent?.Chidren ?? FolderDatas;
+            foreach (var folder in folders)
+            {
+                foreach (var gameObject in folder.GameObjects)
+                {
+                    var result = FindGameObject(name, gameObject, gameObjectRecursive);
+                    if (result != null) return result;
+                }
+            }
+            if (recursive)
+            {
+                foreach (var folder in folders)
+                {
+                    var result = FindGameObjectInFolder(name, folder, recursive, gameObjectRecursive);
+                    if (result != null) return result;
+                }
+            }
+            Console.Error.WriteLine($"GameObject {name} not found");
+            return null;
+        }
+
+        /// <summary>
+        /// 提取某个游戏对象，构造新的RSZ
+        /// </summary>
+        /// <param name="name"></param>
+        public bool ExtractGameObjectRSZ(GameObjectData gameObject, RSZFile newRSZ)
+        {
             if (RSZ == null)
             {
                 Console.Error.WriteLine($"RSZ is null");
@@ -474,7 +519,7 @@ namespace RszTool
             // new InstanceFlatten
             newRSZ.InstanceListFlatten(rszInstances);
 
-            newRSZ.RebulidInstanceInfo(false);
+            newRSZ.RebuildInstanceInfo(false);
             // foreach (var item in newRSZ.InstanceList)
             // {
             //     Console.WriteLine(newRSZ.InstanceStringify(item));
@@ -484,6 +529,41 @@ namespace RszTool
 
             // new InstanceUnflatten
             newRSZ.InstanceListUnflatten(rszInstances);
+
+            // self InstanceFlatten
+            RSZ.InstanceListFlatten(rszInstances);
+            return true;
+        }
+
+        /// <summary>
+        /// 提取某个游戏对象，构造新的RSZ
+        /// 暂时只支持没有Parent的GameObject
+        /// </summary>
+        /// <param name="name"></param>
+        public bool ExtractGameObjectRSZ(string name, RSZFile newRSZ)
+        {
+            GameObjectData? gameObject = FindGameObject(name);
+            if (gameObject == null) return false;
+            return ExtractGameObjectRSZ(gameObject, newRSZ);
+        }
+
+
+        /// <summary>
+        /// 提取某个游戏对象，生成Pfb
+        /// </summary>
+        /// <param name="name"></param>
+        public bool ExtractGameObjectToPfb(string name, PfbFile pfbFile)
+        {
+            GameObjectData? gameObject = FindGameObject(name);
+            if (gameObject == null) return false;
+
+            List<RszInstance> rszInstances = new();
+            CollectGameObjectInstances(gameObject, rszInstances);
+            // self InstanceUnflatten
+            RSZ!.InstanceListUnflatten(rszInstances);
+
+            pfbFile.PfbFromScnGameObject(gameObject);
+            pfbFile.RSZ!.Header.Data.version = RSZ.Header.Data.version;
 
             // self InstanceFlatten
             RSZ.InstanceListFlatten(rszInstances);

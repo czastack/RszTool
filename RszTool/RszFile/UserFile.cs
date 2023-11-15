@@ -49,26 +49,33 @@ namespace RszTool
         protected override bool DoWrite()
         {
             var handler = FileHandler;
-
+            ref var header = ref Header.Data;
             handler.Seek(Header.Size);
             handler.Align(16);
-            Header.Data.resourceInfoOffset = handler.Tell();
+            header.resourceInfoOffset = handler.Tell();
             ResourceInfoList.Write(handler);
 
             handler.Align(16);
-            Header.Data.userdataInfoOffset = handler.Tell();
+            header.userdataInfoOffset = handler.Tell();
             UserdataInfoList.Write(handler);
 
             handler.StringTableFlush();
 
-            Header.Data.dataOffset = handler.Tell();
+            header.dataOffset = handler.Tell();
             // 内部偏移是从0开始算的
-            RSZ!.WriteTo(FileHandler.WithOffset(Header.Data.dataOffset));
+            RSZ!.WriteTo(FileHandler.WithOffset(header.dataOffset));
 
-            Header.Data.resourceCount = ResourceInfoList.Count;
-            Header.Data.userdataCount = UserdataInfoList.Count;
-            Header.Rewrite(handler);
+            header.magic = Magic;
+            header.resourceCount = ResourceInfoList.Count;
+            header.userdataCount = UserdataInfoList.Count;
+            Header.Write(handler, 0);
             return true;
+        }
+
+        public void RebuildInfoTable()
+        {
+            RSZ!.RebuildInstanceInfo();
+            RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);
         }
     }
 }

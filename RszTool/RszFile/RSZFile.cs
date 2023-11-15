@@ -106,12 +106,9 @@ namespace RszTool
                 {
                     userDataIdx = -1;
                 }
-                RszInstance instance = new(rszClass, i, userDataIdx);
-                if (userDataIdx != -1)
-                {
-                    instance.RSZUserData = RSZUserDataInfoList[userDataIdx];
-                }
-                else
+                RszInstance instance = new(rszClass, i, userDataIdx != -1 ?
+                    RSZUserDataInfoList[userDataIdx] : null);
+                if (instance.RSZUserData == null)
                 {
                     instance.Read(handler);
                 }
@@ -129,18 +126,16 @@ namespace RszTool
         protected override bool DoWrite()
         {
             var handler = FileHandler;
-
+            ref var header = ref Header.Data;
             handler.Seek(Header.Size);
-
-            handler.Align(16);
             ObjectTableList.Write(handler);
 
             handler.Align(16);
-            Header.Data.instanceOffset = handler.Tell();
+            header.instanceOffset = handler.Tell();
             InstanceInfoList.Write(handler);
 
             handler.Align(16);
-            Header.Data.userdataOffset = handler.Tell();
+            header.userdataOffset = handler.Tell();
             RSZUserDataInfoList.Write(handler);
 
             handler.Align(16);
@@ -163,13 +158,14 @@ namespace RszTool
             }
 
             handler.Align(16);
-            Header.Data.dataOffset = handler.Tell();
+            header.dataOffset = handler.Tell();
             InstanceList.Write(handler);
 
-            Header.Data.objectCount = ObjectTableList.Count;
-            Header.Data.instanceCount = InstanceList.Count;
-            Header.Data.userdataCount = RSZUserDataInfoList.Count;
-            Header.Rewrite(handler);
+            header.magic = Magic;
+            header.objectCount = ObjectTableList.Count;
+            header.instanceCount = InstanceList.Count;
+            header.userdataCount = RSZUserDataInfoList.Count;
+            Header.Write(handler, 0);
             return true;
         }
 
@@ -236,7 +232,7 @@ namespace RszTool
             for (int i = 0; i < instance.RszClass.fields.Length; i++)
             {
                 var field = instance.RszClass.fields[i];
-                if (field.type == RszFieldType.Object)
+                if (field.IsReference)
                 {
                     if (field.array)
                     {
@@ -298,7 +294,7 @@ namespace RszTool
                 for (int i = 0; i < instance.RszClass.fields.Length; i++)
                 {
                     var field = instance.RszClass.fields[i];
-                    if (field.type == RszFieldType.Object)
+                    if (field.IsReference)
                     {
                         if (field.array)
                         {
@@ -361,7 +357,7 @@ namespace RszTool
         /// 根据实例列表，重建InstanceInfo
         /// </summary>
         /// <param name="flatten">是否先进行flatten</param>
-        public void RebulidInstanceInfo(bool flatten = true, bool rebuildObjectTable = true)
+        public void RebuildInstanceInfo(bool flatten = true, bool rebuildObjectTable = true)
         {
             if (flatten)
             {
@@ -490,6 +486,17 @@ namespace RszTool
         public object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public UserdataInfo ToUserdataInfo(RszParser parser)
+        {
+            UserdataInfo info = new()
+            {
+                typeId = typeId,
+                path = path,
+                CRC = parser.GetRSZClassCRC(typeId),
+            };
+            return info; 
         }
     }
 

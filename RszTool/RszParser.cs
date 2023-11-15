@@ -70,6 +70,11 @@ namespace RszTool
             return classNameDict.TryGetValue(className, out var rszClass) ? rszClass : null;
         }
 
+        public uint GetRSZClassCRC(uint classHash)
+        {
+            return classDict.TryGetValue(classHash, out var rszClass) ? rszClass.crc : 0;
+        }
+
         public int GetFieldCount(uint classHash)
         {
             return classDict.TryGetValue(classHash, out var rszClass) ? rszClass.fields.Length : -1;
@@ -166,6 +171,13 @@ namespace RszTool
             }
             return -1;
         }
+
+        public RszField? GetField(string fieldName)
+        {
+            int index = IndexOfField(fieldName);
+            if (index != -1) return fields[index];
+            return null;
+        }
     }
 
     public class RszField
@@ -191,5 +203,7 @@ namespace RszTool
                 _ => type
             };
         }
+
+        public bool IsReference => type == RszFieldType.Object || type == RszFieldType.UserData;
     }
 }

@@ -13,18 +13,17 @@ namespace RszTool
         public RszClass RszClass { get; set; }
         public object[] Values { get; set; }
         public int Index { get; set; }
-        public int RSZUserDataIdx { get; set; }
         // 在ObjectTable中的序号，-1表示不在
         public int ObjectTableIndex { get; set; } = -1;
         public string Name { get; set; }
         public IRSZUserDataInfo? RSZUserData { get; set; }
 
-        public RszInstance(RszClass rszClass, int index, int rszUserDataIdx = -1)
+        public RszInstance(RszClass rszClass, int index, IRSZUserDataInfo? userData = null)
         {
             RszClass = rszClass;
-            Values = new object[rszClass.fields.Length];
+            Values = userData == null ? new object[rszClass.fields.Length] : Array.Empty<object>();
             Index = index;
-            RSZUserDataIdx = rszUserDataIdx;
+            RSZUserData = userData;
             Name = $"{rszClass.name}[{index}]";
         }
 
@@ -275,7 +274,7 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 拷贝自身，如果字段值是RszInstance，则拷贝
+        /// 拷贝自身，如果字段值是RszInstance，则递归拷贝
         /// </summary>
         /// <returns></returns>
         public object Clone()
@@ -285,30 +284,72 @@ namespace RszTool
             {
                 copy.RSZUserData = (IRSZUserDataInfo)RSZUserData.Clone();
             }
-            for (int i = 0; i < RszClass.fields.Length; i++)
+            else
             {
-                var field = RszClass.fields[i];
-                if (field.type == RszFieldType.Object)
+                for (int i = 0; i < RszClass.fields.Length; i++)
                 {
-                    if (field.array)
+                    var field = RszClass.fields[i];
+                    if (field.IsReference)
                     {
-                        var newArray = new List<object>((List<object>)copy.Values[i]);
-                        copy.Values[i] = newArray;
-                        for (int j = 0; j < newArray.Count; j++)
+                        if (field.array)
                         {
-                            if (newArray[j] is RszInstance item)
+                            var newArray = new List<object>((List<object>)copy.Values[i]);
+                            copy.Values[i] = newArray;
+                            for (int j = 0; j < newArray.Count; j++)
                             {
-                                newArray[j] = item.Clone();
+                                if (newArray[j] is RszInstance item)
+                                {
+                                    newArray[j] = item.Clone();
+                                }
                             }
                         }
-                    }
-                    if (copy.Values[i] is RszInstance instance)
-                    {
-                        copy.Values[i] = instance.Clone();
+                        if (copy.Values[i] is RszInstance instance)
+                        {
+                            copy.Values[i] = instance.Clone();
+                        }
                     }
                 }
             }
             return copy;
+        }
+
+        /// <summary>
+        /// 检查是否已经是树形结构
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckUnflattened(bool recursive = true)
+        {
+            for (int i = 0; i < RszClass.fields.Length; i++)
+            {
+                var field = RszClass.fields[i];
+                if (field.IsReference)
+                {
+                    if (field.array)
+                    {
+                        var array = (List<object>)Values[i];
+                        for (int j = 0; j < array.Count; j++)
+                        {
+                            if (array[j] is int)
+                            {
+                                return false;
+                            }
+                            else if (recursive && array[j] is RszInstance instance)
+                            {
+                                if (!instance.CheckUnflattened(recursive)) return false;
+                            }
+                        }
+                    }
+                    if (Values[i] is int)
+                    {
+                        return false;
+                    }
+                    else if (recursive && Values[i] is RszInstance instance)
+                    {
+                        if (!instance.CheckUnflattened(recursive)) return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public void Stringify(StringBuilder sb, IList<RszInstance>? instances = null, int indent = 0)
@@ -323,7 +364,7 @@ namespace RszTool
 
             void ValueStringify(RszField field, object value)
             {
-                if (field.type == RszFieldType.Object)
+                if (field.IsReference)
                 {
                     if (field.array)
                     {
@@ -351,6 +392,11 @@ namespace RszTool
 
             if (RSZUserData != null)
             {
+                if (RSZUserData is RSZUserDataInfo info)
+                {
+                    sb.AppendIndent(indent + 1);
+                    sb.AppendLine($"RSZUserDataPath = {info.path}");
+                }
             }
             else
             {
@@ -383,7 +429,7 @@ namespace RszTool
                 }
             }
             sb.AppendIndent(indent);
-            sb.Append("}");
+            sb.Append('}');
         }
 
         public string Stringify(IList<RszInstance>? instances = null, int indent = 0)

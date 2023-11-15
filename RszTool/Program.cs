@@ -10,9 +10,11 @@ namespace RszTool
             TestParseUser();
             // TestParseUserRead();
             // TestParsePfb();
+            // TestParsePfbRead();
             // TestParseScn();
             // TestParseScnRead();
-            // TestParseScnExtractGameObjectRSZ();
+            // TestScnExtractGameObjectRSZ();
+            // TestScnExtractGameObjectToPfb();
             // TestParseMdf();
             // TestMurMur3Hash();
             // TestParseEnum();
@@ -87,6 +89,34 @@ namespace RszTool
             }
         }
 
+        static void TestParsePfbRead()
+        {
+            string path = "test/railcarcrossbowshellgenerator.pfb.17";
+            RszFileOption option = new("re4");
+            PfbFile pfbFile = new(option, new FileHandler(path));
+            pfbFile.Read();
+
+            foreach (var item in pfbFile.UserdataInfoList)
+            {
+                Console.WriteLine(item.pathOffset.ToString("X"));
+            }
+            foreach (var item in pfbFile.RSZ!.RSZUserDataInfoList)
+            {
+                if (item is RSZUserDataInfo userDataInfo)
+                {
+                    Console.WriteLine(userDataInfo.pathOffset.ToString("X"));
+                }
+            }
+
+            if (pfbFile.RSZ != null)
+            {
+                foreach (var item in pfbFile.RSZ.InstanceList)
+                {
+                    Console.WriteLine(pfbFile.RSZ.InstanceStringify(item));
+                }
+            }
+        }
+
         static void TestParseScn()
         {
             string path = "test/gimmick_st66_101.scn.20";
@@ -131,7 +161,7 @@ namespace RszTool
             }
         }
 
-        static void TestParseScnExtractGameObjectRSZ()
+        static void TestScnExtractGameObjectRSZ()
         {
             string path = "test/gimmick_st66_101.scn.20";
             RszFileOption option = new("re4");
@@ -147,6 +177,23 @@ namespace RszTool
                 bool success = scnFile.ExtractGameObjectRSZ("設置機銃砦１", newRSZ);
                 Console.WriteLine(success);
             }
+        }
+
+        static void TestScnExtractGameObjectToPfb()
+        {
+            string path = "test/gimmick_st66_101.scn.20";
+            string pfbPath = "test/gimmick_st66_101_new.pfb.17";
+            RszFileOption option = new("re4");
+            ScnFile scnFile = new(option, new FileHandler(path));
+            scnFile.Read();
+            scnFile.SetupGameObjects();
+            PfbFile pfbFile = new(option, new FileHandler(pfbPath));
+            bool success = scnFile.ExtractGameObjectToPfb("設置機銃砦１", pfbFile);
+            if (success)
+            {
+                pfbFile.Write();
+            }
+            Console.WriteLine(success);
         }
 
         static void TestParseMdf()

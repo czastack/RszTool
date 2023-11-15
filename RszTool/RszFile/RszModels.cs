@@ -26,14 +26,14 @@ namespace RszTool
         public uint typeId;
         public uint CRC;
         public ulong pathOffset;
-        public string? userdataPath;
+        public string? path;
 
         protected override bool DoRead(FileHandler handler)
         {
             handler.Read(ref typeId);
             handler.Read(ref CRC);
             handler.Read(ref pathOffset);
-            userdataPath = handler.ReadWString((long)pathOffset);
+            path = handler.ReadWString((long)pathOffset);
             return true;
         }
 
@@ -41,7 +41,7 @@ namespace RszTool
         {
             handler.Write(ref typeId);
             handler.Write(ref CRC);
-            handler.StringTableAdd(userdataPath);
+            handler.StringTableAdd(path);
             handler.Write(ref pathOffset);
             return true;
         }
