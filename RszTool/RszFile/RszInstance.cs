@@ -186,12 +186,16 @@ namespace RszTool
                 string valueStr = (string)value;
                 return handler.Write(valueStr.Length + 1) && handler.WriteWString(valueStr);
             }
+            else if (field.type == RszFieldType.Object || field.type == RszFieldType.UserData)
+            {
+                return handler.Write(value is RszInstance instance ? instance.Index : (int)value);
+            }
             else
             {
                 long startPos = handler.Tell();
                 _ = field.type switch
                 {
-                    RszFieldType.S32 or RszFieldType.Object or RszFieldType.UserData => handler.Write((int)value),
+                    RszFieldType.S32 => handler.Write((int)value),
                     RszFieldType.U32 => handler.Write((uint)value),
                     RszFieldType.S64 => handler.Write((long)value),
                     RszFieldType.U64 => handler.Write((ulong)value),
@@ -277,7 +281,7 @@ namespace RszTool
         /// 拷贝自身，如果字段值是RszInstance，则递归拷贝
         /// </summary>
         /// <returns></returns>
-        public object Clone()
+        public override object Clone()
         {
             RszInstance copy = (RszInstance)MemberwiseClone();
             if (RSZUserData != null)
@@ -312,44 +316,50 @@ namespace RszTool
             }
             return copy;
         }
-
-        /// <summary>
-        /// 检查是否已经是树形结构
-        /// </summary>
-        /// <returns></returns>
-        public bool CheckUnflattened(bool recursive = true)
+        
+        public IEnumerable<RszInstance> Flatten()
         {
-            for (int i = 0; i < RszClass.fields.Length; i++)
+            if (RSZUserData == null)
             {
-                var field = RszClass.fields[i];
-                if (field.IsReference)
+                var fields = RszClass.fields;
+                for (int i = 0; i < fields.Length; i++)
                 {
-                    if (field.array)
+                    var field = fields[i];
+                    if (field.IsReference)
                     {
-                        var array = (List<object>)Values[i];
-                        for (int j = 0; j < array.Count; j++)
+                        if (field.array)
                         {
-                            if (array[j] is int)
+                            var items = (List<object>)Values[i];
+                            for (int j = 0; j < items.Count; j++)
                             {
-                                return false;
-                            }
-                            else if (recursive && array[j] is RszInstance instance)
-                            {
-                                if (!instance.CheckUnflattened(recursive)) return false;
+                                if (items[j] is RszInstance instanceValue)
+                                {
+                                    foreach (var item in instanceValue.Flatten())
+                                    {
+                                        yield return item;
+                                    }
+                                }
+                                else
+                                {
+                                    throw new InvalidDataException("Instance should unflatten first");
+                                }
                             }
                         }
-                    }
-                    if (Values[i] is int)
-                    {
-                        return false;
-                    }
-                    else if (recursive && Values[i] is RszInstance instance)
-                    {
-                        if (!instance.CheckUnflattened(recursive)) return false;
+                        else if (Values[i] is RszInstance instanceValue)
+                        {
+                            foreach (var item in instanceValue.Flatten())
+                            {
+                                yield return item;
+                            }
+                        }
+                        else
+                        {
+                            throw new InvalidDataException("Instance should unflatten first");
+                        }
                     }
                 }
             }
-            return true;
+            yield return this;
         }
 
         public void Stringify(StringBuilder sb, IList<RszInstance>? instances = null, int indent = 0)

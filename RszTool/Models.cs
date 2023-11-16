@@ -237,7 +237,7 @@ namespace RszTool
     }
 
 
-    public class StructModel<T> : IModel where T : struct
+    public class StructModel<T> : ICloneable, IModel where T : struct
     {
         public T Data = default;
         public long Start { get; set; } = -1;
@@ -255,10 +255,15 @@ namespace RszTool
             Start = handler.Tell();
             return handler.Write(ref Data);
         }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 
 
-    public abstract class BaseModel : IModel
+    public abstract class BaseModel : IModel, ICloneable
     {
         public long Start { get; set; }
         public long Size { get; protected set; }
@@ -283,5 +288,10 @@ namespace RszTool
         protected abstract bool DoRead(FileHandler handler);
 
         protected abstract bool DoWrite(FileHandler handler);
+
+        public virtual object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

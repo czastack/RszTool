@@ -41,7 +41,6 @@ namespace RszTool
 
             /// <summary>
             /// 从ScnFile.GameObjectData生成GameObjectData
-            /// 调用前需要先在Scn中UnFlatten
             /// </summary>
             /// <param name="scnGameObject"></param>
             /// <returns></returns>
@@ -258,9 +257,8 @@ namespace RszTool
                 }
             }
 
-            RSZ.InstanceListUnflatten(rszInstances);
             RSZ.InstanceList.Clear();
-            RSZ.InstanceListFlatten(rszInstances);
+            RSZ.FixInstanceListIndex(rszInstances);
             RSZ.RebuildInstanceInfo(false, false);
             foreach (var instance in rszInstances)
             {
@@ -305,7 +303,6 @@ namespace RszTool
 
         /// <summary>
         /// 从ScnFile.GameObjectData生成Pfb
-        /// 调用前需要先在Scn中UnFlatten
         /// </summary>
         /// <param name="scnGameObject"></param>
         public void PfbFromScnGameObject(ScnFile.GameObjectData scnGameObject)

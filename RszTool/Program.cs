@@ -15,6 +15,7 @@ namespace RszTool
             // TestParseScnRead();
             // TestScnExtractGameObjectRSZ();
             // TestScnExtractGameObjectToPfb();
+            // TestImportGameObject();
             // TestParseMdf();
             // TestMurMur3Hash();
             // TestParseEnum();
@@ -194,6 +195,31 @@ namespace RszTool
                 pfbFile.Write();
             }
             Console.WriteLine(success);
+        }
+
+        static void TestImportGameObject()
+        {
+            string path = "test/gimmick_st66_101.scn.20";
+            string pathImportTo = "test/level_loc40_200.scn.20";
+            string pathImportToNew = "test/level_loc40_200_new.scn.20";
+            RszFileOption option = new("re4");
+
+            ScnFile scnFile = new(option, new FileHandler(path));
+            scnFile.Read();
+            scnFile.SetupGameObjects();
+            ScnFile scnImportTo = new(option, new FileHandler(pathImportTo));
+            scnImportTo.Read();
+            scnImportTo.SetupGameObjects();
+            var gameObject = scnFile.FindGameObject("設置機銃砦１");
+            if (gameObject != null)
+            {
+                scnImportTo.ImportGameObject(gameObject);
+                scnImportTo.WriteTo(new FileHandler(pathImportToNew));
+            }
+            else
+            {
+                Console.Error.WriteLine("GameObject not found");
+            }
         }
 
         static void TestParseMdf()

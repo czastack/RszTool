@@ -110,7 +110,8 @@ namespace RszTool
                 {
                     Info = Info != null ? new() { Data = Info.Data } : null,
                     Components = Components.Select(item => (RszInstance)item.Clone()).ToList(),
-                    Instance = Instance != null ? (RszInstance)Instance.Clone() : null
+                    Instance = Instance != null ? (RszInstance)Instance.Clone() : null,
+                    Prefab = Prefab != null ? (PrefabInfo)Prefab.Clone() : null
                 };
                 foreach (var child in Chidren)
                 {
@@ -374,9 +375,8 @@ namespace RszTool
                 }
             }
 
-            RSZ.InstanceListUnflatten(rszInstances);
             RSZ.InstanceList.Clear();
-            RSZ.InstanceListFlatten(rszInstances);
+            RSZ.FixInstanceListIndex(rszInstances);
             RSZ.RebuildInstanceInfo(false, false);
             foreach (var instance in rszInstances)
             {
@@ -407,12 +407,16 @@ namespace RszTool
             RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ);
         }
 
-        private void AddGameObjectInfoRecursion(GameObjectData gameObject)
+        /// <summary>
+        /// 添加GameObject到Info表，并把Instance添加到RSZ的ObjectTable
+        /// </summary>
+        /// <param name="gameObject"></param>
+        private void AddGameObjectInfo(GameObjectData gameObject)
         {
             var instance = gameObject.Instance!;
             if (instance.ObjectTableIndex != -1) return;
             int prefabId = gameObject.Prefab == null ? -1 :
-                PrefabInfoList.GetIndexOrAdd(gameObject.Prefab);;
+                PrefabInfoList.GetIndexOrAdd(gameObject.Prefab);
             ref var infoData = ref gameObject.Info!.Data;
             // AddToObjectTable会修正ObjectTableIndex
             RSZ!.AddToObjectTable(instance);
@@ -426,12 +430,25 @@ namespace RszTool
             {
                 RSZ!.AddToObjectTable(item);
             }
+        }
+
+        /// <summary>
+        /// 递归添加GameObject到Info表，并把Instance添加到RSZ的ObjectTable
+        /// </summary>
+        /// <param name="gameObject"></param>
+        private void AddGameObjectInfoRecursion(GameObjectData gameObject)
+        {
+            AddGameObjectInfo(gameObject);
             foreach (var child in gameObject.Chidren)
             {
                 AddGameObjectInfoRecursion(child);
             }
         }
 
+        /// <summary>
+        /// 递归添加文件夹和其中的GameObject到Info表，并把Instance添加到RSZ的ObjectTable
+        /// </summary>
+        /// <param name="gameObject"></param>
         private void AddFolderInfoRecursion(FolderData folder)
         {
             RSZ!.AddToObjectTable(folder.Instance!);
@@ -528,18 +545,11 @@ namespace RszTool
                 Console.Error.WriteLine($"RSZ is null");
                 return false;
             }
-
             List<RszInstance> rszInstances = new();
 
-            // 下面的操作没有拷贝instance，先Unflatten再Flatten的，需要更多测试
-
-            // self InstanceUnflatten
+            // 下面的操作没有拷贝instance，需要更多测试
             CollectGameObjectInstances(gameObject, rszInstances);
-            RSZ.InstanceListUnflatten(rszInstances);
-
-            // new InstanceFlatten
-            newRSZ.InstanceListFlatten(rszInstances);
-
+            newRSZ.FixInstanceListIndex(rszInstances);
             newRSZ.RebuildInstanceInfo(false);
             // foreach (var item in newRSZ.InstanceList)
             // {
@@ -547,12 +557,7 @@ namespace RszTool
             // }
             // write
             newRSZ.Write();
-
-            // new InstanceUnflatten
-            newRSZ.InstanceListUnflatten(rszInstances);
-
-            // self InstanceFlatten
-            RSZ.InstanceListFlatten(rszInstances);
+            RSZ.FixInstanceListIndex(rszInstances);
             return true;
         }
 
@@ -568,7 +573,6 @@ namespace RszTool
             return ExtractGameObjectRSZ(gameObject, newRSZ);
         }
 
-
         /// <summary>
         /// 提取某个游戏对象，生成Pfb
         /// </summary>
@@ -580,45 +584,56 @@ namespace RszTool
 
             List<RszInstance> rszInstances = new();
             CollectGameObjectInstances(gameObject, rszInstances);
-            // self InstanceUnflatten
-            RSZ!.InstanceListUnflatten(rszInstances);
 
             // 这里有拷贝instance
             pfbFile.PfbFromScnGameObject(gameObject);
-            pfbFile.RSZ!.Header.Data.version = RSZ.Header.Data.version;
+            pfbFile.RSZ!.Header.Data.version = RSZ!.Header.Data.version;
 
-            // self InstanceFlatten
-            RSZ.InstanceListFlatten(rszInstances);
+            RSZ.FixInstanceListIndex(rszInstances);
             return true;
         }
 
         /// <summary>
-        /// 倒入外部的游戏对象
-        /// 调用前需要InstanceUnflatten
+        /// 导入外部的游戏对象
         /// </summary>
         /// <param name="gameObject"></param>
-        public void ImportGameObject(IEnumerable<GameObjectData> gameObjects)
+        public void ImportGameObject(GameObjectData gameObject)
         {
-            List<RszInstance> rszInstances = new();
-            foreach (var gameObject in gameObjects)
-            {
-                CollectGameObjectInstances(gameObject, rszInstances);
-            }
-            foreach (var instance in rszInstances)
-            {
-                instance.ObjectTableIndex = -1;
-            }
+            gameObject = (GameObjectData)gameObject.Clone();
             int instanceAddStart = RSZ!.InstanceList.Count;
-            int userDataAddStart = RSZ!.RSZUserDataInfoList.Count;
-            RSZ.ImportInstance(rszInstances, false);
+            int userDataAddStart = RSZ.RSZUserDataInfoList.Count;
 
-            foreach (var gameObjectData in gameObjects)
+            void RecurseGameObject(GameObjectData gameObject)
             {
-                AddGameObjectInfoRecursion(gameObjectData);
+                gameObject.Instance!.ObjectTableIndex = -1;
+                RSZ.ImportInstance(gameObject.Instance, false);
+                foreach (var component in gameObject.Components)
+                {
+                    RSZ.ImportInstance(component, false);
+                }
+                AddGameObjectInfo(gameObject);
+                foreach (var child in gameObject.Chidren)
+                {
+                    RecurseGameObject(child);
+                }
             }
 
+            RecurseGameObject(gameObject);
             RszUtils.AddUserDataFromRsz(UserdataInfoList, RSZ, userDataAddStart);
             RszUtils.AddResourceFromRsz(ResourceInfoList, RSZ, instanceAddStart);
+        }
+
+        /// <summary>
+        /// 导入外部的游戏对象
+        /// 批量添加建议直接GameObjectDatas添加，最后再RebuildInfoTable
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public void ImportGameObjects(IEnumerable<GameObjectData> gameObjects)
+        {
+            foreach (var gameObject in gameObjects)
+            {
+                ImportGameObject(gameObject);
+            }
         }
     }
 }
