@@ -120,6 +120,7 @@ namespace RszTool
                     RszFieldType.U8 => handler.ReadByte(),
                     RszFieldType.S16 => handler.ReadShort(),
                     RszFieldType.U16 => handler.ReadUShort(),
+                    RszFieldType.Data => handler.ReadBytes(field.size),
                     RszFieldType.Mat4 => handler.Read<via.mat4>(),
                     RszFieldType.Vec2 or RszFieldType.Float2 => handler.Read<Vector2>(),
                     RszFieldType.Vec3 or RszFieldType.Float3 => handler.Read<Vector3>(),
@@ -129,7 +130,7 @@ namespace RszTool
                     RszFieldType.Color => handler.Read<Color>(),
                     RszFieldType.Range => handler.Read<via.Range>(),
                     RszFieldType.Quaternion => handler.Read<Quaternion>(),
-                    RszFieldType.Data => handler.ReadBytes(field.size),
+                    RszFieldType.Sphere => handler.Read<via.Sphere>(),
                     _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
                 /* if (field.size != handler.Tell() - startPos)
@@ -206,6 +207,7 @@ namespace RszTool
                     RszFieldType.U8 => handler.Write((byte)value),
                     RszFieldType.S16 => handler.Write((short)value),
                     RszFieldType.U16 => handler.Write((ushort)value),
+                    RszFieldType.Data => handler.WriteBytes((byte[])value),
                     RszFieldType.Mat4 => handler.Write((via.mat4)value),
                     RszFieldType.Vec2 or RszFieldType.Float2 => handler.Write((Vector2)value),
                     RszFieldType.Vec3 or RszFieldType.Float3 => handler.Write((Vector3)value),
@@ -215,7 +217,7 @@ namespace RszTool
                     RszFieldType.Color => handler.Write((Color)value),
                     RszFieldType.Range => handler.Write((via.Range)value),
                     RszFieldType.Quaternion => handler.Write((Quaternion)value),
-                    RszFieldType.Data => handler.WriteBytes((byte[])value),
+                    RszFieldType.Sphere => handler.Write((via.Sphere)value),
                     _ => throw new InvalidDataException($"Not support type {field.type}"),
                 };
                 handler.Seek(startPos + field.size);
@@ -238,6 +240,7 @@ namespace RszTool
                 RszFieldType.U8 => typeof(byte),
                 RszFieldType.S16 => typeof(short),
                 RszFieldType.U16 => typeof(ushort),
+                RszFieldType.Data => typeof(byte[]),
                 RszFieldType.Mat4 => typeof(via.mat4),
                 RszFieldType.Vec2 or RszFieldType.Float2 => typeof(Vector2),
                 RszFieldType.Vec3 or RszFieldType.Float3 => typeof(Vector3),
@@ -247,7 +250,7 @@ namespace RszTool
                 RszFieldType.Color => typeof(Color),
                 RszFieldType.Range => typeof(via.Range),
                 RszFieldType.Quaternion => typeof(Quaternion),
-                RszFieldType.Data => typeof(byte[]),
+                RszFieldType.Sphere => typeof(via.Sphere),
                 RszFieldType.String or RszFieldType.Resource => typeof(string),
                 _ => throw new InvalidDataException($"Not support type {field.type}"),
             };
@@ -316,7 +319,7 @@ namespace RszTool
             }
             return copy;
         }
-        
+
         public IEnumerable<RszInstance> Flatten()
         {
             if (RSZUserData == null)

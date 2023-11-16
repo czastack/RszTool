@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace RszTool.via
 {
     public struct Range
@@ -11,6 +13,7 @@ namespace RszTool.via
         }
     }
 
+
     public struct RangeI
     {
         public int r;
@@ -21,6 +24,7 @@ namespace RszTool.via
             return $"Range({r}, {s})";
         }
     }
+
 
     public struct mat4 {
         public float m00;
@@ -39,5 +43,11 @@ namespace RszTool.via
         public float m31;
         public float m32;
         public float m33;
+    }
+
+    public struct Sphere
+    {
+        public Vector3 pos;
+        public float r;
     }
 }
