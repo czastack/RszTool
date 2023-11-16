@@ -66,6 +66,7 @@ namespace RszTool
             public FolderInfoModel? Info;
             public List<FolderData> Chidren = new();
             public List<GameObjectData> GameObjects = new();
+            public List<PrefabInfo> Prefabs = new();
             public RszInstance? Instance;
 
             public FolderData? Parent
@@ -309,6 +310,14 @@ namespace RszTool
                     folder.Chidren.Add(folderIdxMap[info.Data.objectId]);
                 }
             }
+
+            foreach (var info in PrefabInfoList)
+            {
+                if (info.prefabPath != null && folderIdxMap.TryGetValue(info.parentId, out var folder))
+                {
+                    folder.Prefabs.Add(info);
+                }
+            }
         }
 
         /// <summary>
@@ -463,6 +472,11 @@ namespace RszTool
             foreach (var child in folder.Chidren)
             {
                 AddFolderInfoRecursion(child);
+            }
+            foreach (var prefab in folder.Prefabs)
+            {
+                prefab.parentId = infoData.objectId;
+                // PrefabInfoList.GetIndexOrAdd(prefab);
             }
         }
 
