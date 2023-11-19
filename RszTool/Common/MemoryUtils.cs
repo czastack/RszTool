@@ -67,7 +67,11 @@ namespace RszTool.Common
             {
                 buffer = new byte[size];
             }
+#if NET8_0_OR_GREATER
+            MemoryMarshal.Write(buffer, in value);
+#else
             MemoryMarshal.Write(buffer, ref value);
+#endif
             return buffer;
         }
 

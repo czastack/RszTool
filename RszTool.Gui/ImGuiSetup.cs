@@ -3,7 +3,7 @@ using Veldrid;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 
-namespace RszTool
+namespace RszTool.Gui
 {
     public class ImGuiSetup
     {

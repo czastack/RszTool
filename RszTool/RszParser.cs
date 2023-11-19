@@ -154,9 +154,7 @@ namespace RszTool
         public uint crc { get; set; }
         public string name { get; set; } = "";
         public bool native { get; set; }
-        public RszField[] fields { get; set; } = EmptyFiedls;
-
-        public static RszField[] EmptyFiedls = Array.Empty<RszField>();
+        public RszField[] fields { get; set; } = [];
 
         public static readonly RszClass Empty = new();
 

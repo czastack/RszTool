@@ -11,6 +11,16 @@ namespace RszTool.via
         {
             return $"Range({r}, {s})";
         }
+
+        public static explicit operator Range(Vector2 vector)
+        {
+            return new Range { r = vector.X, s = vector.Y };
+        }
+
+        public static explicit operator Vector2(Range range)
+        {
+            return new Vector2(range.r, range.s);
+        }
     }
 
 
@@ -44,6 +54,15 @@ namespace RszTool.via
         public float m32;
         public float m33;
     }
+
+
+    public struct OBB
+    {
+        public mat4 coord;
+        public Vector3 extent;
+        public float _padding;
+    }
+
 
     public struct Sphere
     {

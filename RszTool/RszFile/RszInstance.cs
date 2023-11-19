@@ -12,16 +12,33 @@ namespace RszTool
     {
         public RszClass RszClass { get; set; }
         public object[] Values { get; set; }
-        public int Index { get; set; }
+        private int index;
+        public int Index
+        {
+            get => index;
+            set
+            {
+                index = value;
+                Name = $"{RszClass.name}[{index}]";
+            }
+        }
         // 在ObjectTable中的序号，-1表示不在
         public int ObjectTableIndex { get; set; } = -1;
         public string Name { get; set; }
         public IRSZUserDataInfo? RSZUserData { get; set; }
+        public RszField[] Fields => RszClass.fields;
 
-        public RszInstance(RszClass rszClass, int index, IRSZUserDataInfo? userData = null)
+        public RszInstance(RszClass rszClass, int index, IRSZUserDataInfo? userData = null, object[]? values = null)
         {
             RszClass = rszClass;
-            Values = userData == null ? new object[rszClass.fields.Length] : Array.Empty<object>();
+            if (userData == null && values != null)
+            {
+                if (values.Length != rszClass.fields.Length)
+                {
+                    throw new ArgumentException($"values length {values.Length} != fields length {rszClass.fields.Length}");
+                }
+            }
+            Values = userData == null ? (values ?? new object[rszClass.fields.Length]) : [];
             Index = index;
             RSZUserData = userData;
             Name = $"{rszClass.name}[{index}]";
@@ -30,7 +47,7 @@ namespace RszTool
         private RszInstance()
         {
             RszClass = RszClass.Empty;
-            Values = Array.Empty<object>();
+            Values = [];
             Name = "";
         }
 
@@ -125,13 +142,13 @@ namespace RszTool
                     RszFieldType.Vec2 or RszFieldType.Float2 => handler.Read<Vector2>(),
                     RszFieldType.Vec3 or RszFieldType.Float3 => handler.Read<Vector3>(),
                     RszFieldType.Vec4 or RszFieldType.Float4 => handler.Read<Vector4>(),
-                    RszFieldType.OBB => handler.ReadArray<float>(20),
+                    RszFieldType.OBB => handler.Read<via.OBB>(),
                     RszFieldType.Guid or RszFieldType.GameObjectRef => handler.Read<Guid>(),
                     RszFieldType.Color => handler.Read<Color>(),
                     RszFieldType.Range => handler.Read<via.Range>(),
                     RszFieldType.Quaternion => handler.Read<Quaternion>(),
                     RszFieldType.Sphere => handler.Read<via.Sphere>(),
-                    _ => throw new InvalidDataException($"Not support type {field.type}"),
+                    _ => throw new NotSupportedException($"Not support type {field.type}"),
                 };
                 /* if (field.size != handler.Tell() - startPos)
                 {
@@ -212,13 +229,13 @@ namespace RszTool
                     RszFieldType.Vec2 or RszFieldType.Float2 => handler.Write((Vector2)value),
                     RszFieldType.Vec3 or RszFieldType.Float3 => handler.Write((Vector3)value),
                     RszFieldType.Vec4 or RszFieldType.Float4 => handler.Write((Vector4)value),
-                    RszFieldType.OBB => handler.WriteArray((float[])value),
+                    RszFieldType.OBB => handler.Write((via.OBB)value),
                     RszFieldType.Guid or RszFieldType.GameObjectRef => handler.Write((Guid)value),
                     RszFieldType.Color => handler.Write((Color)value),
                     RszFieldType.Range => handler.Write((via.Range)value),
                     RszFieldType.Quaternion => handler.Write((Quaternion)value),
                     RszFieldType.Sphere => handler.Write((via.Sphere)value),
-                    _ => throw new InvalidDataException($"Not support type {field.type}"),
+                    _ => throw new NotSupportedException($"Not support type {field.type}"),
                 };
                 handler.Seek(startPos + field.size);
                 return true;
@@ -245,14 +262,14 @@ namespace RszTool
                 RszFieldType.Vec2 or RszFieldType.Float2 => typeof(Vector2),
                 RszFieldType.Vec3 or RszFieldType.Float3 => typeof(Vector3),
                 RszFieldType.Vec4 or RszFieldType.Float4 => typeof(Vector4),
-                RszFieldType.OBB => typeof(float[]),
+                RszFieldType.OBB => typeof(via.OBB),
                 RszFieldType.Guid or RszFieldType.GameObjectRef => typeof(Guid),
                 RszFieldType.Color => typeof(Color),
                 RszFieldType.Range => typeof(via.Range),
                 RszFieldType.Quaternion => typeof(Quaternion),
                 RszFieldType.Sphere => typeof(via.Sphere),
                 RszFieldType.String or RszFieldType.Resource => typeof(string),
-                _ => throw new InvalidDataException($"Not support type {field.type}"),
+                _ => throw new NotSupportedException($"Not support type {field.type}"),
             };
         }
 
@@ -344,7 +361,7 @@ namespace RszTool
                                 }
                                 else
                                 {
-                                    throw new InvalidDataException("Instance should unflatten first");
+                                    throw new InvalidOperationException("Instance should unflatten first");
                                 }
                             }
                         }
@@ -357,7 +374,7 @@ namespace RszTool
                         }
                         else
                         {
-                            throw new InvalidDataException("Instance should unflatten first");
+                            throw new InvalidOperationException("Instance should unflatten first");
                         }
                     }
                 }

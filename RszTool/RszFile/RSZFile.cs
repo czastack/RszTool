@@ -98,7 +98,7 @@ namespace RszTool
                 RszClass? rszClass = RszParser.GetRSZClass(InstanceInfoList[i].typeId);
                 if (rszClass == null)
                 {
-                    // throw new InvalidDataException($"RszClass {InstanceInfoList[i].typeId} not found!");
+                    // throw new Exception($"RszClass {InstanceInfoList[i].typeId} not found!");
                     Console.Error.WriteLine($"RszClass {InstanceInfoList[i].typeId} not found!");
                     continue;
                 }
@@ -519,7 +519,7 @@ namespace RszTool
                 path = path,
                 CRC = parser.GetRSZClassCRC(typeId),
             };
-            return info; 
+            return info;
         }
     }
 

@@ -1,5 +1,4 @@
 ﻿using RszTool.Common;
-using ImGuiNET;
 
 namespace RszTool
 {
@@ -7,7 +6,7 @@ namespace RszTool
     {
         static void Main(string[] args)
         {
-            TestParseUser();
+            // TestParseUser();
             // TestParseUserRead();
             // TestParsePfb();
             // TestParsePfbRead();
@@ -15,7 +14,7 @@ namespace RszTool
             // TestParseScnRead();
             // TestScnExtractGameObjectRSZ();
             // TestScnExtractGameObjectToPfb();
-            // TestImportGameObject();
+            TestImportGameObject();
             // TestParseMdf();
             // TestMurMur3Hash();
             // TestParseEnum();
@@ -202,6 +201,8 @@ namespace RszTool
             string path = "test/gimmick_st66_101.scn.20";
             string pathImportTo = "test/level_loc40_200.scn.20";
             string pathImportToNew = "test/level_loc40_200_new.scn.20";
+            // string pathImportTo = "test/gimmick_st40_200_p001.scn.20";
+            // string pathImportToNew = "test/gimmick_st40_200_p001_new.scn.20";
             RszFileOption option = new("re4");
 
             ScnFile scnFile = new(option, new FileHandler(path));
@@ -270,48 +271,6 @@ namespace RszTool
             string value = "A | B";
             TestEnum result = Enum.Parse<TestEnum>(value.Replace("|", ","));
             Console.WriteLine(result);
-        }
-
-        private static void SubmitUI()
-        {
-            // Demo code adapted from the official Dear ImGui demo program:
-            // https://github.com/ocornut/imgui/blob/master/examples/example_win32_directx11/main.cpp#L172
-
-            // 1. Show a simple window.
-            // Tip: if we don't call ImGui.BeginWindow()/ImGui.EndWindow() the widgets automatically appears in a window called "Debug".
-            {
-                ImGui.Text("Hello, world!");
-            }
-
-            if (ImGui.TreeNode("Tabs"))
-            {
-                if (ImGui.TreeNode("Basic"))
-                {
-                    ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags.None;
-                    if (ImGui.BeginTabBar("MyTabBar", tab_bar_flags))
-                    {
-                        if (ImGui.BeginTabItem("Avocado"))
-                        {
-                            ImGui.Text("This is the Avocado tab!\nblah blah blah blah blah");
-                            ImGui.EndTabItem();
-                        }
-                        if (ImGui.BeginTabItem("Broccoli"))
-                        {
-                            ImGui.Text("This is the Broccoli tab!\nblah blah blah blah blah");
-                            ImGui.EndTabItem();
-                        }
-                        if (ImGui.BeginTabItem("Cucumber"))
-                        {
-                            ImGui.Text("This is the Cucumber tab!\nblah blah blah blah blah");
-                            ImGui.EndTabItem();
-                        }
-                        ImGui.EndTabBar();
-                    }
-                    ImGui.Separator();
-                    ImGui.TreePop();
-                }
-                ImGui.TreePop();
-            }
         }
     }
 }

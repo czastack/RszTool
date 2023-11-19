@@ -10,7 +10,7 @@
         /// <summary>查找表</summary>
         private readonly int[] bc = new int[256];
         /// <summary>模板串</summary>
-        private byte[] pattern = Array.Empty<byte>();
+        private byte[] pattern = [];
         /// <summary>是否支持通配符(*)</summary>
         private bool wildcard = false;
 
