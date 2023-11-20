@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 
 namespace RszTool.App.ViewModels
@@ -29,20 +30,34 @@ namespace RszTool.App.ViewModels
     }
 
 
-    public class UserFileViewModel(UserFile userFile) : BaseRszFileViewModel
+    public class UserFileViewModel(UserFile file) : BaseRszFileViewModel
     {
-        public override UserFile File { get; } = userFile;
+        public override UserFile File { get; } = file;
+
+        public RszViewModel RszViewModel { get; set; } = new(file.RSZ!);
     }
 
 
-    public class PfbFileViewModel(PfbFile pfbFile) : BaseRszFileViewModel
+    public class PfbFileViewModel(PfbFile file) : BaseRszFileViewModel
     {
-        public override PfbFile File { get; } = pfbFile;
+        public override PfbFile File { get; } = file;
+        public RszViewModel RszViewModel { get; set; } = new(file.RSZ!);
     }
 
 
-    public class ScnFileViewModel(ScnFile scnFile) : BaseRszFileViewModel
+    public class ScnFileViewModel(ScnFile file) : BaseRszFileViewModel
     {
-        public override  ScnFile File { get; } = scnFile;
+        public override ScnFile File { get; } = file;
+        public RszViewModel RszViewModel { get; set; } = new(file.RSZ!);
+    }
+
+
+    public class RszViewModel(RSZFile rsz)
+    {
+        public ObservableCollection<RszInstanceViewModel> Instances { get; } =
+            new(rsz.InstanceList.Select(x => new RszInstanceViewModel(x)));
+
+        public ObservableCollection<RszInstanceViewModel> Objects { get; } =
+            new(rsz.ObjectInstances().Select(x => new RszInstanceViewModel(x)));
     }
 }

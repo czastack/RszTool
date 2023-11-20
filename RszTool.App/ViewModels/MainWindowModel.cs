@@ -39,7 +39,10 @@ namespace RszTool.App.ViewModels
             }
             if (fileViewModel != null && content != null)
             {
-                fileViewModel.File.Read();
+                if (!fileViewModel.File.Read())
+                {
+                    return;
+                }
                 content.DataContext = fileViewModel;
                 HeaderedItemViewModel header = new(
                     fileViewModel.FileName!, content, true);

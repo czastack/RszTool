@@ -179,6 +179,14 @@ namespace RszTool
             return InstanceList[ObjectTableList[objectIndex].Data.instanceId];
         }
 
+        public IEnumerable<RszInstance> ObjectInstances()
+        {
+            foreach (var item in ObjectTableList)
+            {
+                yield return InstanceList[item.Data.instanceId];
+            }
+        }
+
         public string InstanceStringify(RszInstance instance)
         {
             StringBuilder sb = new();
