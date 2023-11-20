@@ -18,10 +18,6 @@ namespace RszTool
             // TestParseMdf();
             // TestMurMur3Hash();
             // TestParseEnum();
-
-            // ImGuiSetup setup = new();
-            // setup.SubmitUI += SubmitUI;
-            // setup.Loop();
         }
 
         private static void TestRszParser()
@@ -38,10 +34,10 @@ namespace RszTool
         {
             string path = "test/AccessoryEffectSettingUserdata.user.2";
             string newPath = "test/AccessoryEffectSettingUserdata_new.user.2";
-            RszFileOption option = new("re4");
+            RszFileOption option = new(GameName.re4);
             UserFile userFile = new(option, new FileHandler(path));
             userFile.Read();
-            using FileHandler newFileHandler = new(newPath);
+            using FileHandler newFileHandler = new(newPath, true);
             userFile.WriteTo(newFileHandler);
 
             UserFile newUserFile = new(option, newFileHandler);
@@ -58,7 +54,7 @@ namespace RszTool
         static void TestParseUserRead()
         {
             string path = "test/AccessoryEffectSettingUserdata.user.2";
-            RszFileOption option = new("re4");
+            RszFileOption option = new(GameName.re4);
             UserFile userFile = new(option, new FileHandler(path));
             userFile.Read();
             if (userFile.RSZ != null)
@@ -71,10 +67,10 @@ namespace RszTool
         {
             string path = "test/railcarcrossbowshellgenerator.pfb.17";
             string newPath = "test/railcarcrossbowshellgenerator_new.pfb.17";
-            RszFileOption option = new("re4");
+            RszFileOption option = new(GameName.re4);
             PfbFile pfbFile = new(option, new FileHandler(path));
             pfbFile.Read();
-            using FileHandler newFileHandler = new(newPath);
+            using FileHandler newFileHandler = new(newPath, true);
             pfbFile.WriteTo(newFileHandler);
 
             PfbFile newPfbFile = new(option, newFileHandler);
@@ -92,7 +88,7 @@ namespace RszTool
         static void TestParsePfbRead()
         {
             string path = "test/railcarcrossbowshellgenerator.pfb.17";
-            RszFileOption option = new("re4");
+            RszFileOption option = new(GameName.re4);
             PfbFile pfbFile = new(option, new FileHandler(path));
             pfbFile.Read();
 
@@ -121,10 +117,10 @@ namespace RszTool
         {
             string path = "test/gimmick_st66_101.scn.20";
             string newPath = "test/gimmick_st66_101_new.scn.20";
-            RszFileOption option = new("re4");
+            RszFileOption option = new(GameName.re4);
             ScnFile scnFile = new(option, new FileHandler(path));
             scnFile.Read();
-            using FileHandler newFileHandler = new(newPath);
+            using FileHandler newFileHandler = new(newPath, true);
             scnFile.WriteTo(newFileHandler);
 
             ScnFile newScnFile = new(option, newFileHandler);
@@ -142,7 +138,7 @@ namespace RszTool
         static void TestParseScnRead()
         {
             string path = "test/gimmick_st66_101.scn.20";
-            RszFileOption option = new("re4");
+            RszFileOption option = new(GameName.re4);
             ScnFile scnFile = new(option, new FileHandler(path));
             scnFile.Read();
 
@@ -164,7 +160,7 @@ namespace RszTool
         static void TestScnExtractGameObjectRSZ()
         {
             string path = "test/gimmick_st66_101.scn.20";
-            RszFileOption option = new("re4");
+            RszFileOption option = new(GameName.re4);
             ScnFile scnFile = new(option, new FileHandler(path));
             scnFile.Read();
 
@@ -183,7 +179,7 @@ namespace RszTool
         {
             string path = "test/gimmick_st66_101.scn.20";
             string pfbPath = "test/gimmick_st66_101_new.pfb.17";
-            RszFileOption option = new("re4");
+            RszFileOption option = new(GameName.re4);
             ScnFile scnFile = new(option, new FileHandler(path));
             scnFile.Read();
             scnFile.SetupGameObjects();
@@ -203,7 +199,7 @@ namespace RszTool
             string pathImportToNew = "test/level_loc40_200_new.scn.20";
             // string pathImportTo = "test/gimmick_st40_200_p001.scn.20";
             // string pathImportToNew = "test/gimmick_st40_200_p001_new.scn.20";
-            RszFileOption option = new("re4");
+            RszFileOption option = new(GameName.re4);
 
             ScnFile scnFile = new(option, new FileHandler(path));
             scnFile.Read();
@@ -227,10 +223,10 @@ namespace RszTool
         {
             string path = "test/cha200_20.mdf2.32";
             string newPath = "test/cha200_20_new.mdf2.32";
-            RszFileOption option = new("re4");
+            RszFileOption option = new(GameName.re4);
             MdfFile mdfFile = new(option, new FileHandler(path));
             mdfFile.Read();
-            using FileHandler newFileHandler = new(newPath);
+            using FileHandler newFileHandler = new(newPath, true);
             mdfFile.WriteTo(newFileHandler);
 
             // MdfFile newMdfFile = new(option, newFileHandler);

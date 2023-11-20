@@ -7,10 +7,10 @@ namespace RszTool
 {
     public class FileHandler : IDisposable
     {
-        public string? FilePath { get; }
-        public Stream Stream { get; }
-        public bool IsMemory { get; }
+        public string? FilePath { get; private set; }
+        public Stream Stream { get; private set; }
         public long Offset { get; set; }
+        public bool IsMemory => Stream is MemoryStream;
         private StringTable? StringTable;
         private Sunday? searcher = new();
 
@@ -20,12 +20,11 @@ namespace RszTool
         {
         }
 
-        public FileHandler(string path, bool isMemory = false)
+        public FileHandler(string path, bool holdFile = false)
         {
             FilePath = path;
-            IsMemory = isMemory;
             FileStream fileStream = new(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-            if (isMemory) {
+            if (!holdFile) {
                 Stream = new MemoryStream();
                 fileStream.CopyTo(Stream);
                 fileStream.Dispose();
@@ -37,7 +36,6 @@ namespace RszTool
 
         public FileHandler(Stream stream)
         {
-            IsMemory = stream is MemoryStream;
             Stream = stream;
         }
 
@@ -91,6 +89,24 @@ namespace RszTool
                 Stream.Position = 0;
                 Stream.CopyTo(fileStream);
                 Stream.Position = pos;
+            }
+        }
+
+        public void SaveAs(string path)
+        {
+            FilePath = path;
+            FileStream fileStream = File.Create(path);
+            long pos = Stream.Position;
+            Stream.Position = 0;
+            Stream.CopyTo(fileStream);
+            Stream.Position = pos;
+            if (!IsMemory)
+            {
+                Stream = fileStream;
+            }
+            else
+            {
+                fileStream.Dispose();
             }
         }
 

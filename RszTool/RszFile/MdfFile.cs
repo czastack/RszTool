@@ -249,14 +249,14 @@ namespace RszTool
         {
             return Option.GameName switch
             {
-                "re2" => Option.TdbVersion == 66 ? ".10" : ".21",
-                "re3" => Option.TdbVersion == 68 ? ".13" : ".21",
-                "re4" => ".32",
-                "re8" => ".19",
-                "re7" => Option.TdbVersion == 49 ? ".6" : ".17",
-                "dmc5" =>".10",
-                "mhrise" => ".23",
-                "sf6" => ".31",
+                GameName.re2 => Option.TdbVersion == 66 ? ".10" : ".21",
+                GameName.re3 => Option.TdbVersion == 68 ? ".13" : ".21",
+                GameName.re4 => ".32",
+                GameName.re8 => ".19",
+                GameName.re7 => Option.TdbVersion == 49 ? ".6" : ".17",
+                GameName.dmc5 =>".10",
+                GameName.mhrise => ".23",
+                GameName.sf6 => ".31",
                 _ => null
             };
         }

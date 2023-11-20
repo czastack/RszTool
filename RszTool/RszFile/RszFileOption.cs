@@ -2,16 +2,16 @@ namespace RszTool
 {
     public class RszFileOption
     {
-        public string GameName { get; set; }
+        public GameName GameName { get; set; }
         public int TdbVersion { get; set; }
         public RszParser RszParser { get; set; }
 
-        public RszFileOption(string gameName)
+        public RszFileOption(GameName gameName)
         {
             GameName = gameName;
             TdbVersion = gameName switch
             {
-                "re4" => 71,
+                GameName.re4 => 71,
                 _ => 71,
             };
             RszParser = RszParser.GetInstance($"rsz{gameName}.json");
@@ -20,7 +20,7 @@ namespace RszTool
 
         public void PostInit()
         {
-            if (GameName == "re4")
+            if (GameName == GameName.re4)
             {
                 var GameObject = RszParser.GetRSZClass("via.GameObject");
                 if (GameObject?.GetField("v4") is RszField v4 && v4.type == RszFieldType.Data && v4.size == 4)

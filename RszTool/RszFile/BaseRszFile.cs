@@ -87,7 +87,7 @@ namespace RszTool
 
         protected abstract bool DoWrite();
 
-        public bool WriteTo(FileHandler handler)
+        public bool WriteTo(FileHandler handler, bool saveFile = true)
         {
             FileHandler originHandler = FileHandler;
             if (handler == originHandler)
@@ -95,11 +95,15 @@ namespace RszTool
                 return Write();
             }
             // save as new file
-            bool result = true;
+            bool result;
             try
             {
                 FileHandler = handler;
-                Write();
+                result = Write();
+                if (result && saveFile)
+                {
+                    handler.Save();
+                }
             }
             catch (Exception e)
             {
@@ -107,6 +111,18 @@ namespace RszTool
                 result = false;
             }
             FileHandler = originHandler;
+            return result;
+        }
+
+        public bool WriteTo(string path)
+        {
+            return WriteTo(new FileHandler(path, true));
+        }
+
+        public bool SaveAs(string path)
+        {
+            bool result = Write();
+            FileHandler.SaveAs(path);
             return result;
         }
     }

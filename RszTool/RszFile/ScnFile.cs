@@ -125,12 +125,11 @@ namespace RszTool
         }
 
         public StructModel<HeaderStruct> Header { get; } = new();
-        public List<GameObjectInfoModel> GameObjectInfoList = new();
-        // public Dictionary<int, GameObjectInfoModel> GameObjectInfoIdMap = new();
-        public List<FolderInfoModel> FolderInfoList = new();
-        public List<ResourceInfo> ResourceInfoList = new();
-        public List<PrefabInfo> PrefabInfoList = new();
-        public List<UserdataInfo> UserdataInfoList = new();
+        public List<GameObjectInfoModel> GameObjectInfoList { get; } = new();
+        public List<FolderInfoModel> FolderInfoList { get; } = new();
+        public List<ResourceInfo> ResourceInfoList { get; } = new();
+        public List<PrefabInfo> PrefabInfoList { get; } = new();
+        public List<UserdataInfo> UserdataInfoList { get; } = new();
         public RSZFile? RSZ { get; private set; }
 
         public List<FolderData>? FolderDatas { get; set; }
@@ -138,23 +137,27 @@ namespace RszTool
 
         public ScnFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
+            if (fileHandler.FilePath != null)
+            {
+                RszUtils.CheckFileExtension(fileHandler.FilePath, Extension2, GetVersionExt());
+            }
         }
 
         public const uint Magic = 0x4e4353;
         public const string Extension2 = ".scn";
 
-        public string? GetExtension()
+        public string? GetVersionExt()
         {
             return Option.GameName switch
             {
-                "re2" => Option.TdbVersion == 66 ? ".19" : ".20",
-                "re3" => ".20",
-                "re4" => ".20",
-                "re8" => ".20",
-                "re7" => Option.TdbVersion == 49 ? ".18" : ".20",
-                "dmc5" =>".19",
-                "mhrise" => ".20",
-                "sf6" => ".20",
+                GameName.re2 => Option.TdbVersion == 66 ? ".19" : ".20",
+                GameName.re3 => ".20",
+                GameName.re4 => ".20",
+                GameName.re8 => ".20",
+                GameName.re7 => Option.TdbVersion == 49 ? ".18" : ".20",
+                GameName.dmc5 =>".19",
+                GameName.mhrise => ".20",
+                GameName.sf6 => ".20",
                 _ => null
             };
         }

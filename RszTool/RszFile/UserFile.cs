@@ -12,19 +12,31 @@ namespace RszTool
             public long dataOffset;
         };
 
-        public StructModel<HeaderStruct> Header = new();
-        public List<ResourceInfo> ResourceInfoList = new();
-        public List<UserdataInfo> UserdataInfoList = new();
+        public StructModel<HeaderStruct> Header { get; } = new();
+        public List<ResourceInfo> ResourceInfoList { get; } = new();
+        public List<UserdataInfo> UserdataInfoList { get; } = new();
         public RSZFile? RSZ { get; private set; }
 
 
         public UserFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
+            if (fileHandler.FilePath != null)
+            {
+                RszUtils.CheckFileExtension(fileHandler.FilePath, Extension2, GetVersionExt());
+            }
         }
 
         public const uint Magic = 0x525355;
         public const string Extension = ".2";
         public const string Extension2 = ".user";
+
+        public string? GetVersionExt()
+        {
+            return Option.GameName switch
+            {
+                _ => Extension
+            };
+        }
 
         protected override bool DoRead()
         {

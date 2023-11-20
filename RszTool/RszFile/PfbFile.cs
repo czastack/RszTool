@@ -83,33 +83,37 @@ namespace RszTool
         // ResourceInfo
         // UserdataInfo
 
-        public StructModel<HeaderStruct> Header = new();
-        public List<GameObjectInfoModel> GameObjectInfoList = new();
-        public List<GameObjectRefInfoModel> GameObjectRefInfoList = new();
-        public List<ResourceInfo> ResourceInfoList = new();
-        public List<UserdataInfo> UserdataInfoList = new();
+        public StructModel<HeaderStruct> Header { get; } = new();
+        public List<GameObjectInfoModel> GameObjectInfoList { get; } = new();
+        public List<GameObjectRefInfoModel> GameObjectRefInfoList { get; } = new();
+        public List<ResourceInfo> ResourceInfoList { get; } = new();
+        public List<UserdataInfo> UserdataInfoList { get; } = new();
         public RSZFile? RSZ { get; private set; }
         public List<GameObjectData>? GameObjectDatas { get; set; }
 
         public PfbFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
+            if (fileHandler.FilePath != null)
+            {
+                RszUtils.CheckFileExtension(fileHandler.FilePath, Extension2, GetVersionExt());
+            }
         }
 
         public const uint Magic = 0x424650;
         public const string Extension2 = ".pfb";
 
-        public string? GetExtension()
+        public string? GetVersionExt()
         {
             return Option.GameName switch
             {
-                "re2" => Option.TdbVersion == 66 ? ".16" : ".17",
-                "re3" => ".17",
-                "re4" => ".17",
-                "re8" => ".17",
-                "re7" => Option.TdbVersion == 49 ? ".16" : ".17",
-                "dmc5" =>".16",
-                "mhrise" => ".17",
-                "sf6" => ".17",
+                GameName.re2 => Option.TdbVersion == 66 ? ".16" : ".17",
+                GameName.re3 => ".17",
+                GameName.re4 => ".17",
+                GameName.re8 => ".17",
+                GameName.re7 => Option.TdbVersion == 49 ? ".16" : ".17",
+                GameName.dmc5 =>".16",
+                GameName.mhrise => ".17",
+                GameName.sf6 => ".17",
                 _ => null
             };
         }

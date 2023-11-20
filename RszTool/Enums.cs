@@ -104,4 +104,35 @@ namespace RszTool
         id_uvar = 1918989941,
         id_fchr = 1919443814,
     }
+
+
+    public enum FileType
+    {
+        unknown,
+        user,
+        scn,
+        pfb,
+        mdf2,
+        gui,
+    }
+
+
+    public enum GameName
+    {
+        unknown,
+        re2,
+        re3,
+        re4,
+        re8,
+        re7,
+        dmc5,
+        mhrise,
+        sf6,
+    }
+
+
+    public static class RszDefines
+    {
+        public static GameName[] GameNames { get; } = Enum.GetValues<GameName>();
+    }
 }

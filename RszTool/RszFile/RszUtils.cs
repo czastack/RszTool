@@ -96,5 +96,36 @@ namespace RszTool
             resourcesInfos.Clear();
             AddResourceFromRsz(resourcesInfos, rsz);
         }
+
+        public static void GetFileExtension(string path, out string extension, out string version)
+        {
+            version = Path.GetExtension(path);
+            extension = Path.GetExtension(path[0..^version.Length]);
+        }
+
+        public static FileType GetFileType(string path)
+        {
+            GetFileExtension(path, out string extension, out _);
+            return extension switch {
+                ".user" => FileType.user,
+                ".pfb" => FileType.pfb,
+                ".scn" => FileType.scn,
+                ".mdf2" => FileType.mdf2,
+                _ => FileType.unknown,
+            };
+        }
+
+        public static void CheckFileExtension(string path, string extension, string? version)
+        {
+            GetFileExtension(path, out string realExtension, out string realVersion);
+            if (extension != realExtension)
+            {
+                Console.Error.WriteLine($"extension should be {extension}, got {realExtension}");
+            }
+            if (version != realVersion)
+            {
+                Console.Error.WriteLine($"extension should be {version}, got {realVersion}");
+            }
+        }
     }
 }
