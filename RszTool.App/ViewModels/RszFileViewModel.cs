@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using RszTool.App.Common;
 
 namespace RszTool.App.ViewModels
@@ -19,7 +20,7 @@ namespace RszTool.App.ViewModels
             }
         }
 
-        public bool Save() => File.Write();
+        public bool Save() => File.Save();
 
         public bool SaveAs(string path)
         {
@@ -32,6 +33,11 @@ namespace RszTool.App.ViewModels
         }
 
         public virtual void PostRead() {}
+
+        public void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
 
@@ -63,16 +69,38 @@ namespace RszTool.App.ViewModels
         public IEnumerable<ScnFile.FolderData>? Folders => File.FolderDatas;
         public IEnumerable<ScnFile.GameObjectData>? GameObjects => File.GameObjectDatas;
 
+        public static List<ScnFile.GameObjectData>? CopiedGameObjects { get; private set; }
+
         public override void PostRead()
         {
             File.SetupGameObjects();
         }
 
         public RelayCommand CopyGameObject => new(OnCopyGameObject);
+        public RelayCommand DeleteGameObject => new(OnDeleteGameObject);
+        public RelayCommand PasetGameObject => new(OnPasetGameObject);
 
         public void OnCopyGameObject(object arg)
         {
+            CopiedGameObjects ??= new();
+            var gameObject = (ScnFile.GameObjectData)arg;
+            CopiedGameObjects.Remove(gameObject);
+            CopiedGameObjects.Add(gameObject);
+        }
+
+        public void OnDeleteGameObject(object arg)
+        {
             Console.WriteLine(arg);
+        }
+
+        public void OnPasetGameObject(object arg)
+        {
+            if (CopiedGameObjects != null && CopiedGameObjects.Count > 0)
+            {
+                var gameObject = CopiedGameObjects[^1];
+                File.ImportGameObject(gameObject);
+                OnPropertyChanged(nameof(GameObjects));
+            }
         }
     }
 

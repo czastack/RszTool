@@ -619,6 +619,7 @@ namespace RszTool
             gameObject = (GameObjectData)gameObject.Clone();
             int instanceAddStart = RSZ!.InstanceList.Count;
             int userDataAddStart = RSZ.RSZUserDataInfoList.Count;
+            GameObjectDatas ??= new();
 
             void RecurseGameObject(GameObjectData gameObject)
             {
@@ -635,6 +636,7 @@ namespace RszTool
                 }
             }
 
+            GameObjectDatas.Add(gameObject);
             RecurseGameObject(gameObject);
             RszUtils.AddUserDataFromRsz(UserdataInfoList, RSZ, userDataAddStart);
             RszUtils.AddResourceFromRsz(ResourceInfoList, RSZ, instanceAddStart);
