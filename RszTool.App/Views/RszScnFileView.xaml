@@ -5,17 +5,28 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:RszTool.App.Views"
              xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
+             xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type=viewmodels:RszPageViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ScnFileViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
-        <ResourceDictionary Source="TreeViewStyles.xaml" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="TreeViewStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <viewmodels:ScnGameObjectDataSubItemsConverter x:Key="ScnGameObjectDataSubItemsConverter"/>
+            <HierarchicalDataTemplate DataType="{x:Type rsztool:ScnFile+GameObjectData}"
+                                      ItemsSource="{Binding ., Converter={StaticResource ScnGameObjectDataSubItemsConverter}}">
+                <TextBlock Text="{Binding Path=Name}"/>
+            </HierarchicalDataTemplate>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <DockPanel>
         <TreeView>
-            <TreeViewItem ItemsSource="{Binding Path=InstancesList.ListItems}" Header="Instances" />
+            <TreeViewItem ItemsSource="{Binding Path=GameObjects}" Header="GameObjects" />
         </TreeView>
     </DockPanel>
 </UserControl>

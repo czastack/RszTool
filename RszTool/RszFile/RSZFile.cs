@@ -490,7 +490,7 @@ namespace RszTool
         public int instanceId;
         public uint typeId;
         public ulong pathOffset;
-        public string? path;
+        public string? Path { get; set; }
 
         public int InstanceId { get => instanceId; set => instanceId = value; }
         public uint TypeId => typeId;
@@ -501,7 +501,7 @@ namespace RszTool
             handler.Read(ref instanceId);
             handler.Read(ref typeId);
             handler.Read(ref pathOffset);
-            path = handler.ReadWString((long)pathOffset);
+            Path = handler.ReadWString((long)pathOffset);
             return true;
         }
 
@@ -509,7 +509,7 @@ namespace RszTool
         {
             handler.Write(instanceId);
             handler.Write(typeId);
-            handler.StringTableAdd(path);
+            handler.StringTableAdd(Path);
             handler.Write(pathOffset);
             return true;
         }
@@ -524,7 +524,7 @@ namespace RszTool
             UserdataInfo info = new()
             {
                 typeId = typeId,
-                path = path,
+                Path = Path,
                 CRC = parser.GetRSZClassCRC(typeId),
             };
             return info;

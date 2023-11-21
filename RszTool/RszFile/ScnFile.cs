@@ -39,20 +39,20 @@ namespace RszTool
 
         public class PrefabInfo : BaseModel {
             public uint pathOffset;
-            public string? prefabPath;
+            public string? Path { get; set; }
             public int parentId;
 
             protected override bool DoRead(FileHandler handler)
             {
                 handler.Read(ref pathOffset);
                 handler.Read(ref parentId);
-                prefabPath = handler.ReadWString(pathOffset);
+                Path = handler.ReadWString(pathOffset);
                 return true;
             }
 
             protected override bool DoWrite(FileHandler handler)
             {
-                handler.StringTableAdd(prefabPath);
+                handler.StringTableAdd(Path);
                 handler.Write(ref pathOffset);
                 handler.Write(ref parentId);
                 return true;
@@ -84,10 +84,10 @@ namespace RszTool
             private WeakReference<FolderData>? FolderRef;
             public WeakReference<GameObjectData>? ParentRef;
             public GameObjectInfoModel? Info;
+            public PrefabInfo? Prefab;
+            public RszInstance? Instance;
             public List<RszInstance> Components = new();
             public List<GameObjectData> Chidren = new();
-            public RszInstance? Instance;
-            public PrefabInfo? Prefab;
 
             public FolderData? Folder
             {
@@ -316,7 +316,7 @@ namespace RszTool
 
             foreach (var info in PrefabInfoList)
             {
-                if (info.prefabPath != null && folderIdxMap.TryGetValue(info.parentId, out var folder))
+                if (info.Path != null && folderIdxMap.TryGetValue(info.parentId, out var folder))
                 {
                     folder.Prefabs.Add(info);
                 }

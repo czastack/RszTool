@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Dragablz;
 using RszTool.App.Views;
 
 namespace RszTool.App.ViewModels
@@ -43,47 +43,50 @@ namespace RszTool.App.ViewModels
                 {
                     return;
                 }
+                fileViewModel.PostRead();
                 content.DataContext = fileViewModel;
                 HeaderedItemViewModel header = new(
-                    fileViewModel.FileName!, content, true);
+                    fileViewModel.FileName!, content);
                 Items.Add(header);
-            }
-        }
-
-        private void DragOver(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                e.Effects = DragDropEffects.All;
             }
             else
             {
-                e.Effects = DragDropEffects.None;
+                MessageBox.Show("不支持的文件类型", "提示");
             }
-            e.Handled = false;
         }
 
-        private void Drop(object sender, DragEventArgs e)
+        public void OnDropFile(string[] files)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            foreach (var file in files)
             {
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                foreach (var file in files)
+                try
                 {
                     OnDropFile(file);
                 }
+                catch (Exception e)
+                {
+                    App.ShowUnhandledException(e, "OnDropFile");
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// Helper class to create view models, particularly for tool/MDI windows.
-    /// </summary>
-    public class HeaderedItemViewModel(object header, object content, bool isSelected = false) : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler? PropertyChanged;
-        public object Header { get; set; } = header;
-        public object Content { get; set; } = content;
-        public bool IsSelected { get; set; } = isSelected;
+        public ItemActionCallback ClosingTabItemHandler
+        {
+            get { return ClosingTabItemHandlerImpl; }
+        }
+
+        /// <summary>
+        /// Callback to handle tab closing.
+        /// </summary>
+        private static void ClosingTabItemHandlerImpl(ItemActionCallbackArgs<TabablzControl> args)
+        {
+            //in here you can dispose stuff or cancel the close
+
+            //here's your view model:
+            var viewModel = args.DragablzItem.DataContext as HeaderedItemViewModel;
+
+            //here's how you can cancel stuff:
+            //args.Cancel(); 
+        }
     }
 }

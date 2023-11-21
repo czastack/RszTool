@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:RszTool.App.Views"
              xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type=viewmodels:RszPageViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewmodels:UserFileViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
@@ -15,7 +15,8 @@
 
     <DockPanel>
         <TreeView>
-            <TreeViewItem ItemsSource="{Binding Path=InstancesList.ListItems}" Header="Instances" />
+            <TreeViewItem ItemsSource="{Binding Path=RszViewModel.Instances}" Header="Instances" />
+            <TreeViewItem ItemsSource="{Binding Path=RszViewModel.Objects}" Header="Objects" />
         </TreeView>
     </DockPanel>
 </UserControl>

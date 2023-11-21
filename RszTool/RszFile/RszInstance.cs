@@ -425,7 +425,7 @@ namespace RszTool
                 if (RSZUserData is RSZUserDataInfo info)
                 {
                     sb.AppendIndent(indent + 1);
-                    sb.AppendLine($"RSZUserDataPath = {info.path}");
+                    sb.AppendLine($"RSZUserDataPath = {info.Path}");
                 }
             }
             else

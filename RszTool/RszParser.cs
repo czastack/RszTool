@@ -188,6 +188,7 @@ namespace RszTool
         [JsonConverter(typeof(EnumJsonConverter<RszFieldType>))]
         public RszFieldType type { get; set; }
         public string original_type { get; set; } = "";
+        public string DisplayType => string.IsNullOrEmpty(original_type) ? type.ToString() : original_type;
 
         public void GuessDataType()
         {

@@ -27,6 +27,8 @@ namespace RszTool.App.ViewModels
             }
             return result;
         }
+
+        public virtual void PostRead() {}
     }
 
 
@@ -34,21 +36,34 @@ namespace RszTool.App.ViewModels
     {
         public override UserFile File { get; } = file;
 
-        public RszViewModel RszViewModel { get; set; } = new(file.RSZ!);
+        public RszViewModel RszViewModel => new(File.RSZ!);
     }
 
 
     public class PfbFileViewModel(PfbFile file) : BaseRszFileViewModel
     {
         public override PfbFile File { get; } = file;
-        public RszViewModel RszViewModel { get; set; } = new(file.RSZ!);
+        public RszViewModel RszViewModel => new(File.RSZ!);
+        public IEnumerable<PfbFile.GameObjectData>? GameObjects => File.GameObjectDatas;
+
+        public override void PostRead()
+        {
+            File.SetupGameObjects();
+        }
     }
 
 
     public class ScnFileViewModel(ScnFile file) : BaseRszFileViewModel
     {
         public override ScnFile File { get; } = file;
-        public RszViewModel RszViewModel { get; set; } = new(file.RSZ!);
+        public RszViewModel RszViewModel => new(File.RSZ!);
+        public IEnumerable<ScnFile.FolderData>? Folders => File.FolderDatas;
+        public IEnumerable<ScnFile.GameObjectData>? GameObjects => File.GameObjectDatas;
+
+        public override void PostRead()
+        {
+            File.SetupGameObjects();
+        }
     }
 
 
@@ -56,6 +71,6 @@ namespace RszTool.App.ViewModels
     {
         public List<RszInstance> Instances => rsz.InstanceList;
 
-        public List<RszInstance> Objects { get; } = rsz.ObjectInstances().ToList();
+        public IEnumerable<RszInstance> Objects => rsz.ObjectInstances();
     }
 }

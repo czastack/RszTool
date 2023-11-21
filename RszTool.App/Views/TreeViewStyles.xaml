@@ -17,6 +17,10 @@
         <TextBlock Text="{Binding Path=Name}"/>
     </HierarchicalDataTemplate>
 
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:BaseTreeItemViewModel}" ItemsSource="{Binding Path=Items}">
+        <TextBlock Text="{Binding Path=Name}"/>
+    </HierarchicalDataTemplate>
+
     <DataTemplate DataType="{x:Type viewmodels:RszFieldNormalViewModel}">
         <local:FieldValueEdit DataContext="{Binding}" />
     </DataTemplate>
@@ -85,7 +89,7 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            Padding="0,5,0,5">
+                            Padding="0,2,0,2">
                             <ContentPresenter x:Name="PART_Header"
                                 ContentSource="Header"
                                 HorizontalAlignment="Stretch" />

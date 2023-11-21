@@ -46,9 +46,9 @@ namespace RszTool
             HashSet<string> addedPath = new();
             foreach (var item in resourcesInfos)
             {
-                if (item.resourcePath != null)
+                if (item.Path != null)
                 {
-                    addedPath.Add(item.resourcePath);
+                    addedPath.Add(item.Path);
                 }
             }
             void CheckResouce(string path)
@@ -56,7 +56,7 @@ namespace RszTool
                 if (path.Contains('/') && !addedPath.Contains(path))
                 {
                     addedPath.Add(path);
-                    resourcesInfos.Add(new ResourceInfo { resourcePath = path });
+                    resourcesInfos.Add(new ResourceInfo { Path = path });
                 }
             }
 

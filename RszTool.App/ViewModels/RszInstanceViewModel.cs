@@ -5,9 +5,9 @@ namespace RszTool.App.ViewModels
 {
     public interface IFieldValueViewModel
     {
+        RszField Field {  get; }
         string Name { get; }
         object Value { get; set; }
-        RszField Field {  get; }
     }
 
 
@@ -21,7 +21,7 @@ namespace RszTool.App.ViewModels
         public int Index { get; } = index;
 
         public RszField Field => instance.RszClass.fields[Index];
-        public string Name => Field.name;
+        public virtual string Name => Field.name;
         public RszFieldType Type => Field.type;
         public string OriginalType => Field.original_type;
 
@@ -54,19 +54,20 @@ namespace RszTool.App.ViewModels
     public class RszFieldInstanceViewModel(RszInstance instance, int index) :
         BaseRszFieldViewModel(instance, index)
     {
+        public RszInstance Instance => (RszInstance)instance.Values[Index];
+        public override string Name => $"{Field.name} : {Instance.Name}";
         public override object Value =>
-            RszInstanceToFieldViewModels.InstanceToFieldViewModels((RszInstance)instance.Values[Index]);
+            RszInstanceToFieldViewModels.Convert(Instance);
     }
 
 
     /// <summary>
     /// array字段
     /// </summary>
-    public class RszFieldArrayViewModel : BaseRszFieldViewModel
+    public class RszFieldArrayViewModel(RszInstance instance, int index) :
+        BaseRszFieldViewModel(instance, index)
     {
-        public RszFieldArrayViewModel(RszInstance instance, int index) : base(instance, index)
-        {
-        }
+        public override string Name => $"{Field.name} : {OriginalType}";
 
         public override object Value
         {
@@ -101,7 +102,7 @@ namespace RszTool.App.ViewModels
         public int Index { get; } = arrayIndex;
 
         public RszField Field { get; } = field;
-        public string Name => $"{Index}: {OriginalType}";
+        public virtual string Name => $"{Index}:";
         protected List<object> Values { get; } = values;
 
         public RszFieldType Type => Field.type;
@@ -136,7 +137,9 @@ namespace RszTool.App.ViewModels
     public class RszFieldArrayInstanceItemViewModel(RszField field, List<object> values, int arrayIndex) :
         BaseRszFieldArrayItemViewModel(field, values, arrayIndex)
     {
+        public RszInstance Instance => (RszInstance)Values[Index];
+        public override string Name => $"{Index}: {Instance.Name}";
         public override object Value =>
-            RszInstanceToFieldViewModels.InstanceToFieldViewModels((RszInstance)Values[Index]);
+            RszInstanceToFieldViewModels.Convert(Instance);
     }
 }
