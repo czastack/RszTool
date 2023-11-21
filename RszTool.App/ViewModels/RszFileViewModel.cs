@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using RszTool.App.Common;
 
 namespace RszTool.App.ViewModels
 {
@@ -17,6 +18,8 @@ namespace RszTool.App.ViewModels
                 return path != null ? Path.GetFileName(path) : null;
             }
         }
+
+        public bool Save() => File.Write();
 
         public bool SaveAs(string path)
         {
@@ -63,6 +66,13 @@ namespace RszTool.App.ViewModels
         public override void PostRead()
         {
             File.SetupGameObjects();
+        }
+
+        public RelayCommand CopyGameObject => new(OnCopyGameObject);
+
+        public void OnCopyGameObject(object arg)
+        {
+            Console.WriteLine(arg);
         }
     }
 

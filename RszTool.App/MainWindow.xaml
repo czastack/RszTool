@@ -42,7 +42,17 @@
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel>
-        <dragablz:TabablzControl Margin="8" Style="{StaticResource TabablzControlStyle}">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
+                <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
+                <MenuItem Header="_Close" Command="{Binding CloseCommand}" InputGestureText="Ctrl+W" />
+                <Separator />
+                <MenuItem Header="_Quit" Command="{Binding QuitCommand}" InputGestureText="Ctrl+Q" />
+            </MenuItem>
+        </Menu>
+        <dragablz:TabablzControl Margin="8" Style="{StaticResource TabablzControlStyle}"
+                                 SelectedItem="{Binding SelectedTabItem}">
             <dragablz:TabablzControl.InterTabController>
                 <dragablz:InterTabController />
             </dragablz:TabablzControl.InterTabController>

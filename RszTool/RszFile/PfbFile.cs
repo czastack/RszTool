@@ -203,9 +203,9 @@ namespace RszTool
                     Info = info,
                     Instance = RSZ!.GetGameObject(info.Data.objectId),
                 };
-                for (int i = info.Data.objectId + 1; i < info.Data.objectId + info.Data.componentCount; i++)
+                for (int i = 0; i < info.Data.componentCount; i++)
                 {
-                    gameObjectData.Components.Add(RSZ!.GetGameObject(i));
+                    gameObjectData.Components.Add(RSZ!.GetGameObject(info.Data.objectId + 1 + i));
                 }
                 gameObjectMap[info.Data.objectId] = gameObjectData;
                 if (info.Data.parentId == -1)

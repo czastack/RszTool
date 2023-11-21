@@ -19,7 +19,13 @@
             <viewmodels:ScnGameObjectDataSubItemsConverter x:Key="ScnGameObjectDataSubItemsConverter"/>
             <HierarchicalDataTemplate DataType="{x:Type rsztool:ScnFile+GameObjectData}"
                                       ItemsSource="{Binding ., Converter={StaticResource ScnGameObjectDataSubItemsConverter}}">
-                <TextBlock Text="{Binding Path=Name}"/>
+                <TextBlock Text="{Binding Path=Name}">
+                    <TextBlock.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="_Copy" Command="{Binding CopyGameObject, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        </ContextMenu>
+                    </TextBlock.ContextMenu>
+                </TextBlock>
             </HierarchicalDataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>

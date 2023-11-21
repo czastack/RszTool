@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using Dragablz;
+using Microsoft.Win32;
+using RszTool.App.Common;
 using RszTool.App.Views;
 
 namespace RszTool.App.ViewModels
@@ -12,13 +14,19 @@ namespace RszTool.App.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
         public ObservableCollection<HeaderedItemViewModel> Items { get; } = new();
         public GameName GameName { get; set; } = GameName.re4;
+        public HeaderedItemViewModel? SelectedTabItem { get; set; }
+
+        private BaseRszFileViewModel? CurrentFile =>
+            SelectedTabItem is FileTabItemViewModel fileTabItemViewModel ?
+            fileTabItemViewModel.FileViewModel : null;
 
         /// <summary>
-        /// 文件拖放
+        /// 打开文件
         /// </summary>
         /// <param name="path"></param>
-        public void OnDropFile(string path)
+        public void OpenFile(string path)
         {
+            // TODO check file opened
             BaseRszFileViewModel? fileViewModel = null;
             ContentControl? content = null;
             RszFileOption option = new(GameName);
@@ -45,9 +53,9 @@ namespace RszTool.App.ViewModels
                 }
                 fileViewModel.PostRead();
                 content.DataContext = fileViewModel;
-                HeaderedItemViewModel header = new(
-                    fileViewModel.FileName!, content);
+                HeaderedItemViewModel header = new FileTabItemViewModel(fileViewModel, content);
                 Items.Add(header);
+                SelectedTabItem = header;
             }
             else
             {
@@ -61,7 +69,7 @@ namespace RszTool.App.ViewModels
             {
                 try
                 {
-                    OnDropFile(file);
+                    OpenFile(file);
                 }
                 catch (Exception e)
                 {
@@ -88,5 +96,73 @@ namespace RszTool.App.ViewModels
             //here's how you can cancel stuff:
             //args.Cancel(); 
         }
+
+        
+
+        public RelayCommand OpenCommand => new(OnOpen);
+        public RelayCommand SaveCommand => new(OnSave);
+        public RelayCommand CloseCommand => new(OnClose);
+        public RelayCommand QuitCommand => new(OnQuit);
+
+        private static readonly (string, string)[] SupportedFile = {
+            ("User file", "*.user.*"),
+            ("Scene file", "*.scn.*"),
+            ("Prefab file", "*.pfb.*"),
+        };
+
+        private static readonly string OpenFileFilter =
+            $"All file|{string.Join(";", SupportedFile.Select(item => item.Item2))}|{
+                string.Join("|", SupportedFile.Select(item => $"{item.Item1}|{item.Item2}"))
+            }";
+
+        private void OnOpen(object arg)
+        {
+            // Configure open file dialog box
+            var dialog = new OpenFileDialog
+            {
+                FileName = "Document", // Default file name
+                DefaultExt = ".txt", // Default file extension
+                // Filter files by extension
+                Filter = OpenFileFilter
+            };
+
+            // Show open file dialog box
+            bool? result = dialog.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                // Open document
+                string filename = dialog.FileName;
+                OpenFile(filename);
+            }
+        }
+
+        private void OnSave(object arg)
+        {
+            CurrentFile?.Save();
+        }
+
+        private void OnClose(object arg)
+        {
+
+        }
+
+        private void OnQuit(object arg)
+        {
+
+        }
+    }
+
+
+    public class FileTabItemViewModel : HeaderedItemViewModel
+    {
+        public FileTabItemViewModel(BaseRszFileViewModel fileViewModel, object content, bool isSelected = false)
+            : base(fileViewModel.FileName!, content, isSelected)
+        {
+            FileViewModel = fileViewModel;
+        }
+
+        public BaseRszFileViewModel FileViewModel { get; set; }
     }
 }

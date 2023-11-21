@@ -119,6 +119,16 @@ namespace RszTool
             return WriteTo(new FileHandler(path, true));
         }
 
+        public bool Save()
+        {
+            if (Write())
+            {
+                FileHandler.Save();
+                return true;
+            }
+            return false;
+        }
+
         public bool SaveAs(string path)
         {
             bool result = Write();
