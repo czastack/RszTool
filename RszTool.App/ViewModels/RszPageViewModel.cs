@@ -12,10 +12,10 @@ namespace RszTool.App.ViewModels
     {
         public RszPageViewModel()
         {
-            InstancesList = new RszInstancesViewModel(InstanceTestData.GetItems());
+            InstanceList = InstanceTestData.GetItems().ToList();
         }
 
-        public RszInstancesViewModel InstancesList { get; }
+        public List<RszInstance> InstanceList { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
     }

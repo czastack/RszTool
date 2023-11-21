@@ -1,8 +1,11 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:RszTool.App.Views"
-                    xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels">
-    <HierarchicalDataTemplate DataType="{x:Type viewmodels:RszInstanceViewModel}" ItemsSource="{Binding Path=ValueItems}">
+                    xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
+                    xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool">
+    <viewmodels:RszInstanceToFieldViewModels x:Key="RszInstanceToFieldViewModels"/>
+
+    <HierarchicalDataTemplate DataType="{x:Type rsztool:RszInstance}" ItemsSource="{Binding ., Converter={StaticResource RszInstanceToFieldViewModels}}">
         <TextBlock Text="{Binding Path=Name}"/>
     </HierarchicalDataTemplate>
 

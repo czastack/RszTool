@@ -54,10 +54,8 @@ namespace RszTool.App.ViewModels
 
     public class RszViewModel(RSZFile rsz)
     {
-        public ObservableCollection<RszInstanceViewModel> Instances { get; } =
-            new(rsz.InstanceList.Select(x => new RszInstanceViewModel(x)));
+        public List<RszInstance> Instances => rsz.InstanceList;
 
-        public ObservableCollection<RszInstanceViewModel> Objects { get; } =
-            new(rsz.ObjectInstances().Select(x => new RszInstanceViewModel(x)));
+        public List<RszInstance> Objects { get; } = rsz.ObjectInstances().ToList();
     }
 }

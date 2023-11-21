@@ -19,7 +19,7 @@ namespace RszTool.App.Views
 
         private void Test(object sender, System.Windows.RoutedEventArgs e)
         {
-            TestContent.Text = rszPageViewModel.InstancesList.ListItems[0].Instance.Stringify();
+            TestContent.Text = rszPageViewModel.InstanceList[0].Stringify();
         }
     }
 }

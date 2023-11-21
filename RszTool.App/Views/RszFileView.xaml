@@ -23,7 +23,7 @@
         <Button Content="测试" DockPanel.Dock="Bottom" Click="Test" />
         <TextBox x:Name="TestContent" DockPanel.Dock="Bottom" Height="100" />
         <TreeView>
-            <TreeViewItem ItemsSource="{Binding Path=InstancesList.ListItems}" Header="Instances" />
+            <TreeViewItem ItemsSource="{Binding Path=InstanceList}" Header="Instances" />
         </TreeView>
     </DockPanel>
 </UserControl>

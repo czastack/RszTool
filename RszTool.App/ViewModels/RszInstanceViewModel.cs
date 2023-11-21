@@ -42,7 +42,8 @@ namespace RszTool.App.ViewModels
     /// <summary>
     /// 普通字段
     /// </summary>
-    public class RszFieldNormalViewModel(RszInstance instance, int index) : BaseRszFieldViewModel(instance, index), IFieldValueViewModel
+    public class RszFieldNormalViewModel(RszInstance instance, int index) :
+        BaseRszFieldViewModel(instance, index), IFieldValueViewModel
     {
     }
 
@@ -50,18 +51,11 @@ namespace RszTool.App.ViewModels
     /// <summary>
     /// object字段
     /// </summary>
-    public class RszFieldInstanceViewModel(RszInstance instance, int index) : BaseRszFieldViewModel(instance, index)
+    public class RszFieldInstanceViewModel(RszInstance instance, int index) :
+        BaseRszFieldViewModel(instance, index)
     {
-        public override object Value
-        {
-            get
-            {
-                instanceViewModel ??= new((RszInstance)instance.Values[Index]);
-                return instanceViewModel.ValueItems;
-            }
-        }
-
-        private RszInstanceViewModel? instanceViewModel;
+        public override object Value =>
+            RszInstanceToFieldViewModels.InstanceToFieldViewModels((RszInstance)instance.Values[Index]);
     }
 
 
@@ -101,7 +95,8 @@ namespace RszTool.App.ViewModels
     /// <summary>
     /// 数组的项
     /// </summary>
-    public class BaseRszFieldArrayItemViewModel(RszField field, List<object> values, int arrayIndex) : INotifyPropertyChanged
+    public class BaseRszFieldArrayItemViewModel(
+            RszField field, List<object> values, int arrayIndex) : INotifyPropertyChanged
     {
         public int Index { get; } = arrayIndex;
 
@@ -138,54 +133,10 @@ namespace RszTool.App.ViewModels
     /// <summary>
     /// object数组的项
     /// </summary>
-    public class RszFieldArrayInstanceItemViewModel(RszField field, List<object> values, int arrayIndex) : BaseRszFieldArrayItemViewModel(field, values, arrayIndex)
+    public class RszFieldArrayInstanceItemViewModel(RszField field, List<object> values, int arrayIndex) :
+        BaseRszFieldArrayItemViewModel(field, values, arrayIndex)
     {
-        public override object Value
-        {
-            get
-            {
-                instanceViewModel ??= new((RszInstance)base.Value);
-                return instanceViewModel.ValueItems;
-            }
-        }
-
-        private RszInstanceViewModel? instanceViewModel;
-    }
-
-
-
-    public class RszInstanceViewModel
-    {
-        public RszInstanceViewModel(RszInstance instance)
-        {
-            Instance = instance;
-            if (instance.Values.Length > 0)
-            {
-                ValueItems = new BaseRszFieldViewModel[instance.Values.Length];
-                for (int i = 0; i < instance.Values.Length; i++)
-                {
-                    var field = instance.RszClass.fields[i];
-                    ValueItems[i] = field.array ?
-                        new RszFieldArrayViewModel(instance, i) :
-                        field.IsReference ? new RszFieldInstanceViewModel(instance, i) :
-                                            new RszFieldNormalViewModel(instance, i);
-                }
-            }
-            else
-            {
-                ValueItems = [];
-            }
-        }
-
-        public RszInstance Instance { get; }
-        public BaseRszFieldViewModel[] ValueItems { get; }
-        public string Name => Instance.Name;
-    }
-
-
-    public class RszInstancesViewModel(IEnumerable<RszInstance> items)
-    {
-        public ObservableCollection<RszInstanceViewModel> ListItems { get; } =
-            new(items.Select(x => new RszInstanceViewModel(x)));
+        public override object Value =>
+            RszInstanceToFieldViewModels.InstanceToFieldViewModels((RszInstance)Values[Index]);
     }
 }
