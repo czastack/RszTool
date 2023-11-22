@@ -57,7 +57,7 @@
                 <dragablz:InterTabController />
             </dragablz:TabablzControl.InterTabController>
             <!-- <TabItem Header="Tab No. 1" IsSelected="True">
-                <views:RszFileView/>
+                <views:RszTestView/>
             </TabItem> -->
         </dragablz:TabablzControl>
     </DockPanel>

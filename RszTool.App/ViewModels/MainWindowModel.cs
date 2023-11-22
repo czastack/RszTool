@@ -111,9 +111,8 @@ namespace RszTool.App.ViewModels
         };
 
         private static readonly string OpenFileFilter =
-            $"All file|{string.Join(";", SupportedFile.Select(item => item.Item2))}|{
-                string.Join("|", SupportedFile.Select(item => $"{item.Item1}|{item.Item2}"))
-            }";
+            $"All file|{string.Join(";", SupportedFile.Select(item => item.Item2))}|" +
+            string.Join("|", SupportedFile.Select(item => $"{item.Item1}|{item.Item2}"));
 
         private void OnOpen(object arg)
         {

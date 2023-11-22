@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace RszTool.App.ViewModels
 {
-    public class RszPageViewModel : INotifyPropertyChanged
+    public class RszTestViewModel : INotifyPropertyChanged
     {
-        public RszPageViewModel()
+        public RszTestViewModel()
         {
             InstanceList = InstanceTestData.GetItems().ToList();
         }
