@@ -48,13 +48,54 @@ namespace RszTool.App.ViewModels
             {
                 yield return new TreeItemViewModel("Chidren", gameObject.Chidren);
             }
-            // TODO Prefab
+            if (gameObject.Prefab != null)
+            {
+                yield return new ClassViewModel(gameObject.Prefab, ["Path"]);
+            }
         }
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             var gameObject = (ScnFile.GameObjectData)value;
             return Convert(gameObject);
+        }
+
+        public object? ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+
+    [ValueConversion(typeof(ScnFile.FolderData), typeof(IEnumerable<BaseTreeItemViewModel>))]
+    public class ScnFolderDataSubItemsConverter : IValueConverter
+    {
+        public static IEnumerable<BaseTreeItemViewModel> Convert(ScnFile.FolderData folder)
+        {
+            if (folder.Instance != null)
+            {
+                yield return new TreeItemDelegate(folder.Instance.Name,
+                    () => RszInstanceToFieldViewModels.Convert(folder.Instance));
+            }
+            if (folder.Chidren.Count > 0)
+            {
+                yield return new TreeItemViewModel("Chidren", folder.Chidren);
+            }
+            if (folder.GameObjects.Count > 0)
+            {
+                yield return new TreeItemViewModel("GameObjects", folder.GameObjects);
+            }
+            if (folder.Prefabs.Count > 0)
+            {
+                yield return new TreeItemViewModel("Prefabs",
+                    folder.Prefabs.Select(item => new ClassViewModel(item, ["Path"])));
+            }
+        }
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var folder = (ScnFile.FolderData)value;
+            return Convert(folder);
         }
 
         public object? ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

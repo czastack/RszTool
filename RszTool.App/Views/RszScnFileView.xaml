@@ -16,7 +16,14 @@
                 <ResourceDictionary Source="TreeViewStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <viewmodels:ScnFolderDataSubItemsConverter x:Key="ScnFolderDataSubItemsConverter"/>
             <viewmodels:ScnGameObjectDataSubItemsConverter x:Key="ScnGameObjectDataSubItemsConverter"/>
+
+            <HierarchicalDataTemplate DataType="{x:Type rsztool:ScnFile+FolderData}"
+                                      ItemsSource="{Binding ., Converter={StaticResource ScnFolderDataSubItemsConverter}}">
+                <TextBlock Text="{Binding Path=Name}" />
+            </HierarchicalDataTemplate>
+
             <HierarchicalDataTemplate DataType="{x:Type rsztool:ScnFile+GameObjectData}"
                                       ItemsSource="{Binding ., Converter={StaticResource ScnGameObjectDataSubItemsConverter}}">
                 <TextBlock Text="{Binding Path=Name}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
@@ -36,6 +43,7 @@
             <Button Content="Paste Game Object" Command="{Binding PasetGameObject}" />
         </StackPanel>
         <TreeView>
+            <TreeViewItem ItemsSource="{Binding Path=Folders}" Header="Folders" />
             <TreeViewItem ItemsSource="{Binding Path=GameObjects}" Header="GameObjects" />
         </TreeView>
     </DockPanel>

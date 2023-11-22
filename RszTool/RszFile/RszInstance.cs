@@ -242,7 +242,7 @@ namespace RszTool
             }
         }
 
-        public static Type FieldTypeToSharpType(RszField field)
+        public static Type RszFieldTypeToCSharpType(RszField field)
         {
             return field.type switch
             {
@@ -272,6 +272,41 @@ namespace RszTool
                 _ => throw new NotSupportedException($"Not support type {field.type}"),
             };
         }
+
+        /*
+        private static readonly Dictionary<Type, RszFieldType> CSharpTypeToRszFieldFieldTypeDict = new()
+        {
+            [typeof(int)] = RszFieldType.S32,
+            [typeof(uint)] = RszFieldType.U32,
+            [typeof(long)] = RszFieldType.S64,
+            [typeof(ulong)] = RszFieldType.U64,
+            [typeof(float)] = RszFieldType.F32,
+            [typeof(double)] = RszFieldType.F64,
+            [typeof(bool)] = RszFieldType.Bool,
+            [typeof(sbyte)] = RszFieldType.S8,
+            [typeof(byte)] = RszFieldType.U8,
+            [typeof(short)] = RszFieldType.S16,
+            [typeof(ushort)] = RszFieldType.U16,
+            [typeof(byte[])] = RszFieldType.Data,
+            [typeof(via.mat4)] = RszFieldType.Mat4,
+            [typeof(Vector2)] = RszFieldType.Vec2,
+            [typeof(Vector3)] = RszFieldType.Vec3,
+            [typeof(Vector4)] = RszFieldType.Vec4,
+            [typeof(via.OBB)] = RszFieldType.OBB,
+            [typeof(Guid)] = RszFieldType.Guid,
+            [typeof(Color)] = RszFieldType.Color,
+            [typeof(via.Range)] = RszFieldType.Range,
+            [typeof(Quaternion)] = RszFieldType.Quaternion,
+            [typeof(via.Sphere)] = RszFieldType.Sphere,
+            [typeof(string)] = RszFieldType.String,
+        };
+
+        public static RszFieldType CSharpTypeToRszFieldFieldType(Type type)
+        {
+            RszFieldType fieldType = RszFieldType.ukn_type;
+            CSharpTypeToRszFieldFieldTypeDict.TryGetValue(type, out fieldType);
+            return fieldType;
+        } */
 
         /// <summary>
         /// 获取字段值

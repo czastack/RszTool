@@ -77,6 +77,7 @@ namespace RszTool
             }
 
             public int? ObjectId => Info?.Data.objectId;
+            public string? Name => Instance?.GetFieldValue("v0") as string;
         }
 
 

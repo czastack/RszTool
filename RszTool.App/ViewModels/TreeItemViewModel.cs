@@ -1,7 +1,10 @@
+using System.ComponentModel;
+
 namespace RszTool.App.ViewModels
 {
-    public abstract class BaseTreeItemViewModel(string name)
+    public abstract class BaseTreeItemViewModel(string name) : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
         public string Name { get; set; } = name;
         public abstract IEnumerable<object>? Items { get; }
     }

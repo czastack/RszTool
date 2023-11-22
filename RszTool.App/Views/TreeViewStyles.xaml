@@ -29,6 +29,10 @@
         <local:FieldValueEdit DataContext="{Binding}" />
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type viewmodels:ClassPropertyViewModel}">
+        <local:ClassPropertyEdit DataContext="{Binding}" />
+    </DataTemplate>
+
     <!--<Style TargetType="{x:Type TreeViewItem}" x:Key="TreeViewItemStyle">
     <Style.Resources>
         <Style TargetType="{x:Type Border}">
