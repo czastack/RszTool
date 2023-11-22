@@ -204,5 +204,6 @@ namespace RszTool
         }
 
         public bool IsReference => type == RszFieldType.Object || type == RszFieldType.UserData;
+        public bool IsString => type == RszFieldType.String || type == RszFieldType.Resource;
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using Dragablz;
@@ -19,6 +20,8 @@ namespace RszTool.App.ViewModels
         private BaseRszFileViewModel? CurrentFile =>
             SelectedTabItem is FileTabItemViewModel fileTabItemViewModel ?
             fileTabItemViewModel.FileViewModel : null;
+
+        public CustomInterTabClient InterTabClient { get; } = new();
 
         /// <summary>
         /// 打开文件
@@ -67,7 +70,11 @@ namespace RszTool.App.ViewModels
         {
             foreach (var file in files)
             {
-                try
+                if (Debugger.IsAttached)
+                {
+                    OpenFile(file);
+                }
+                else try
                 {
                     OpenFile(file);
                 }
@@ -94,10 +101,10 @@ namespace RszTool.App.ViewModels
             var viewModel = args.DragablzItem.DataContext as HeaderedItemViewModel;
 
             //here's how you can cancel stuff:
-            //args.Cancel(); 
+            //args.Cancel();
         }
 
-        
+
 
         public RelayCommand OpenCommand => new(OnOpen);
         public RelayCommand SaveCommand => new(OnSave);

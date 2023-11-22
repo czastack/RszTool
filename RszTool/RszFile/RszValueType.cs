@@ -69,4 +69,13 @@ namespace RszTool.via
         public Vector3 pos;
         public float r;
     }
+
+
+    public struct AABB
+    {
+        public Vector3 minpos;
+        public float _padding;
+        public Vector3 maxpos;
+        public float _padding2;
+    }
 }

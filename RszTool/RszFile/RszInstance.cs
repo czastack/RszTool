@@ -100,6 +100,10 @@ namespace RszTool
                 if (count > 0) handler.Align(field.align);
                 for (int i = 0; i < count; i++)
                 {
+                    if (field.IsString)
+                    {
+                        handler.Align(4);
+                    }
                     arrayItems.Add(ReadNormalField(handler, field));
                 }
                 return arrayItems;
@@ -112,7 +116,7 @@ namespace RszTool
 
         public static object ReadNormalField(FileHandler handler, RszField field)
         {
-            if (field.type == RszFieldType.String || field.type == RszFieldType.Resource)
+            if (field.IsString)
             {
                 int charCount = handler.ReadInt();
                 long stringStart = handler.Tell();
@@ -143,6 +147,7 @@ namespace RszTool
                     RszFieldType.Vec3 or RszFieldType.Float3 => handler.Read<Vector3>(),
                     RszFieldType.Vec4 or RszFieldType.Float4 => handler.Read<Vector4>(),
                     RszFieldType.OBB => handler.Read<via.OBB>(),
+                    RszFieldType.AABB => handler.Read<via.AABB>(),
                     RszFieldType.Guid or RszFieldType.GameObjectRef => handler.Read<Guid>(),
                     RszFieldType.Color => handler.Read<Color>(),
                     RszFieldType.Range => handler.Read<via.Range>(),
@@ -186,6 +191,10 @@ namespace RszTool
                     handler.Align(field.align);
                     foreach (var value in list)
                     {
+                        if (field.IsString)
+                        {
+                            handler.Align(4);
+                        }
                         WriteNormalField(handler, field, value);
                     }
                 }
@@ -199,7 +208,7 @@ namespace RszTool
 
         public static bool WriteNormalField(FileHandler handler, RszField field, object value)
         {
-            if (field.type == RszFieldType.String || field.type == RszFieldType.Resource)
+            if (field.IsString)
             {
                 string valueStr = (string)value;
                 return handler.Write(valueStr.Length + 1) && handler.WriteWString(valueStr);
@@ -230,6 +239,7 @@ namespace RszTool
                     RszFieldType.Vec3 or RszFieldType.Float3 => handler.Write((Vector3)value),
                     RszFieldType.Vec4 or RszFieldType.Float4 => handler.Write((Vector4)value),
                     RszFieldType.OBB => handler.Write((via.OBB)value),
+                    RszFieldType.AABB => handler.Write((via.AABB)value),
                     RszFieldType.Guid or RszFieldType.GameObjectRef => handler.Write((Guid)value),
                     RszFieldType.Color => handler.Write((Color)value),
                     RszFieldType.Range => handler.Write((via.Range)value),
@@ -262,7 +272,7 @@ namespace RszTool
                 RszFieldType.Vec2 or RszFieldType.Float2 => typeof(Vector2),
                 RszFieldType.Vec3 or RszFieldType.Float3 => typeof(Vector3),
                 RszFieldType.Vec4 or RszFieldType.Float4 => typeof(Vector4),
-                RszFieldType.OBB => typeof(via.OBB),
+                RszFieldType.AABB => typeof(via.AABB),
                 RszFieldType.Guid or RszFieldType.GameObjectRef => typeof(Guid),
                 RszFieldType.Color => typeof(Color),
                 RszFieldType.Range => typeof(via.Range),
@@ -293,6 +303,7 @@ namespace RszTool
             [typeof(Vector3)] = RszFieldType.Vec3,
             [typeof(Vector4)] = RszFieldType.Vec4,
             [typeof(via.OBB)] = RszFieldType.OBB,
+            [typeof(via.AABB)] = RszFieldType.AABB,
             [typeof(Guid)] = RszFieldType.Guid,
             [typeof(Color)] = RszFieldType.Color,
             [typeof(via.Range)] = RszFieldType.Range,

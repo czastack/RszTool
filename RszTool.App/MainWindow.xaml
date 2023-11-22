@@ -54,7 +54,7 @@
         <dragablz:TabablzControl Margin="8" Style="{StaticResource TabablzControlStyle}"
                                  SelectedItem="{Binding SelectedTabItem}">
             <dragablz:TabablzControl.InterTabController>
-                <dragablz:InterTabController />
+                <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
             </dragablz:TabablzControl.InterTabController>
             <!-- <TabItem Header="Tab No. 1" IsSelected="True">
                 <views:RszTestView/>

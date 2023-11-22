@@ -68,7 +68,7 @@ namespace RszTool
                 for (int j = 0; j < fields.Length; j++)
                 {
                     var field = fields[j];
-                    if (field.type == RszFieldType.String || field.type == RszFieldType.Resource)
+                    if (field.IsString)
                     {
                         if (field.array)
                         {

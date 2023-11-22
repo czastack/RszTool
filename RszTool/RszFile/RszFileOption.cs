@@ -22,6 +22,11 @@ namespace RszTool
         {
             if (GameName == GameName.re4)
             {
+                var Null = RszParser.GetRSZClass(0);
+                if (Null != null)
+                {
+                    Null.name = "NULL";
+                }
                 var GameObject = RszParser.GetRSZClass("via.GameObject");
                 if (GameObject?.GetField("v4") is RszField v4 && v4.type == RszFieldType.Data && v4.size == 4)
                 {
