@@ -270,7 +270,7 @@ namespace RszTool
                 {
                     instance.Index = list.IndexOf(instance);
                 }
-                if (instance.Index == -1)
+                if (instance.Index < 0)
                 {
                     instance.Index = list.Count;
                     list.Add(instance);
@@ -300,6 +300,18 @@ namespace RszTool
         }
 
         /// <summary>
+        /// 所有实例的字段值，如果是对象，替换成实例序号，实例自身的Index也会修正
+        /// </summary>
+        public void FixInstanceListIndex(IEnumerable<RszInstance> list)
+        {
+            foreach (var instance in list)
+            {
+                FixInstanceIndexRecurse(instance);
+            }
+            // TODO 确保依赖的instance序号应该比自身小
+        }
+
+        /// <summary>
         /// 重新排序实例，被依赖的实例排在前面
         /// </summary>
         public void ReorderInstances(int start = 0)
@@ -311,51 +323,32 @@ namespace RszTool
             // {
             //     FixInstanceIndexRecurse(oldList[i]);
             // }
-            for (int i = start; i < InstanceList.Count; i++)
+            var list = InstanceList;
+            for (int i = start; i < list.Count; i++)
             {
-                InstanceList[i].Index = -1;
+                // in list but index not setted
+                list[i].Index = -2;
             }
             int index = 0;
-            for (int i = start; i < InstanceList.Count; i++)
+            for (int i = start; i < list.Count; i++)
             {
-                var instance = InstanceList[i];
-                if (instance.Index == -1)
+                var instance = list[i];
+                if (instance.Index != -2) continue;
+                foreach (var item in instance.Flatten())
                 {
-                    foreach (var item in instance.Flatten())
+                    if (item.Index < 0 || item.Index >= list.Count || list[item.Index] != item)
                     {
-                        if (item.Index == -1)
+                        if (item.Index != -2 && !list.Contains(item)) list.Add(item);
+                        item.Index = index++;
+                        if (item.ObjectTableIndex >= 0 && item.ObjectTableIndex < ObjectTableList.Count)
                         {
-                            item.Index = index++;
-                            if (item.ObjectTableIndex >= 0 && item.ObjectTableIndex < ObjectTableList.Count)
-                            {
-                                ObjectTableList[item.ObjectTableIndex].Data.instanceId = item.Index;
-                            }
+                            ObjectTableList[item.ObjectTableIndex].Data.instanceId = item.Index;
                         }
                     }
                 }
             }
-            InstanceList.Sort(start, InstanceList.Count - start,
+            list.Sort(start, list.Count - start,
                 Comparer<RszInstance>.Create((a, b) => a.Index - b.Index));
-        }
-
-        /// <summary>
-        /// 所有实例的字段值，如果是对象，替换成实例序号，实例自身的Index也会修正
-        /// </summary>
-        public void FixInstanceListIndex()
-        {
-            FixInstanceListIndex(InstanceList);
-        }
-
-        /// <summary>
-        /// 所有实例的字段值，如果是对象，替换成实例序号，实例自身的Index也会修正
-        /// </summary>
-        public void FixInstanceListIndex(IEnumerable<RszInstance> list)
-        {
-            foreach (var instance in list)
-            {
-                FixInstanceIndexRecurse(instance);
-            }
-            // TODO 确保依赖的instance序号应该比自身小
         }
 
         /// <summary>
