@@ -66,8 +66,8 @@ namespace RszTool.App.ViewModels
     {
         public override ScnFile File { get; } = file;
         public RszViewModel RszViewModel => new(File.RSZ!);
-        public IEnumerable<ScnFile.FolderData>? Folders => File.FolderDatas;
-        public IEnumerable<ScnFile.GameObjectData>? GameObjects => File.GameObjectDatas;
+        public ObservableCollection<ScnFile.FolderData>? Folders => File.FolderDatas;
+        public ObservableCollection<ScnFile.GameObjectData>? GameObjects => File.GameObjectDatas;
 
         public static List<ScnFile.GameObjectData>? CopiedGameObjects { get; private set; }
 

@@ -1,9 +1,10 @@
+using RszTool.Common;
+using System.Collections.ObjectModel;
+
 namespace RszTool
 {
     using GameObjectInfoModel = StructModel<ScnFile.GameObjectInfo>;
     using FolderInfoModel = StructModel<ScnFile.FolderInfo>;
-    using RszTool.Common;
-    using System.Reflection.Metadata.Ecma335;
 
     public class ScnFile : BaseRszFile
     {
@@ -64,9 +65,9 @@ namespace RszTool
         {
             public WeakReference<FolderData>? ParentRef;
             public FolderInfoModel? Info;
-            public List<FolderData> Chidren = new();
-            public List<GameObjectData> GameObjects = new();
-            public List<PrefabInfo> Prefabs = new();
+            public ObservableCollection<FolderData> Chidren = new();
+            public ObservableCollection<GameObjectData> GameObjects = new();
+            public ObservableCollection<PrefabInfo> Prefabs = new();
             public RszInstance? Instance;
 
             public FolderData? Parent
@@ -86,8 +87,8 @@ namespace RszTool
             public GameObjectInfoModel? Info;
             public PrefabInfo? Prefab;
             public RszInstance? Instance;
-            public List<RszInstance> Components = new();
-            public List<GameObjectData> Chidren = new();
+            public ObservableCollection<RszInstance> Components = new();
+            public ObservableCollection<GameObjectData> Chidren = new();
 
             public FolderData? Folder
             {
@@ -110,7 +111,7 @@ namespace RszTool
                 GameObjectData gameObject = new()
                 {
                     Info = Info != null ? new() { Data = Info.Data } : null,
-                    Components = Components.Select(item => (RszInstance)item.Clone()).ToList(),
+                    Components = new(Components.Select(item => (RszInstance)item.Clone())),
                     Instance = Instance != null ? (RszInstance)Instance.Clone() : null,
                     Prefab = Prefab != null ? (PrefabInfo)Prefab.Clone() : null
                 };
@@ -132,8 +133,8 @@ namespace RszTool
         public List<UserdataInfo> UserdataInfoList { get; } = new();
         public RSZFile? RSZ { get; private set; }
 
-        public List<FolderData>? FolderDatas { get; set; }
-        public List<GameObjectData>? GameObjectDatas { get; set; }
+        public ObservableCollection<FolderData>? FolderDatas { get; set; }
+        public ObservableCollection<GameObjectData>? GameObjectDatas { get; set; }
 
         public ScnFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {

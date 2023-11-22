@@ -1,6 +1,8 @@
+using System.Collections.ObjectModel;
+using RszTool.Common;
+
 namespace RszTool
 {
-    using RszTool.Common;
     using GameObjectInfoModel = StructModel<PfbFile.GameObjectInfo>;
     using GameObjectRefInfoModel = StructModel<PfbFile.GameObjectRefInfo>;
 
@@ -35,8 +37,8 @@ namespace RszTool
         {
             public WeakReference<GameObjectData>? ParentRef;
             public GameObjectInfoModel? Info;
-            public List<RszInstance> Components = new();
-            public List<GameObjectData> Chidren = new();
+            public ObservableCollection<RszInstance> Components = new();
+            public ObservableCollection<GameObjectData> Chidren = new();
             public RszInstance? Instance;
 
             /// <summary>
@@ -56,7 +58,7 @@ namespace RszTool
                             componentCount = scnGameObject.Components.Count,
                         }
                     },
-                    Components = scnGameObject.Components.Select(item => (RszInstance)item.Clone()).ToList(),
+                    Components = new(scnGameObject.Components.Select(item => (RszInstance)item.Clone())),
                     Instance = scnGameObject.Instance != null ?
                         (RszInstance)scnGameObject.Instance.Clone() : null
                 };
@@ -89,7 +91,7 @@ namespace RszTool
         public List<ResourceInfo> ResourceInfoList { get; } = new();
         public List<UserdataInfo> UserdataInfoList { get; } = new();
         public RSZFile? RSZ { get; private set; }
-        public List<GameObjectData>? GameObjectDatas { get; set; }
+        public ObservableCollection<GameObjectData>? GameObjectDatas { get; set; }
 
         public PfbFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
