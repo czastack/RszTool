@@ -258,7 +258,7 @@ namespace RszTool
                     FolderData folderData = new()
                     {
                         Info = info,
-                        Instance = RSZ!.GetGameObject(info.Data.objectId),
+                        Instance = RSZ!.GetObjectInstance(info.Data.objectId),
                     };
                     if (info.Data.parentId == -1)
                     {
@@ -275,11 +275,11 @@ namespace RszTool
                 GameObjectData gameObjectData = new()
                 {
                     Info = info,
-                    Instance = RSZ!.GetGameObject(info.Data.objectId),
+                    Instance = RSZ!.GetObjectInstance(info.Data.objectId),
                 };
                 for (int i = 0; i < info.Data.componentCount; i++)
                 {
-                    gameObjectData.Components.Add(RSZ!.GetGameObject(info.Data.objectId + 1 + i));
+                    gameObjectData.Components.Add(RSZ!.GetObjectInstance(info.Data.objectId + 1 + i));
                 }
                 if (info.Data.prefabId >= 0 && info.Data.prefabId < PrefabInfoList.Count)
                 {

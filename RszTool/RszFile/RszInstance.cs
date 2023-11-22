@@ -242,9 +242,9 @@ namespace RszTool
             }
         }
 
-        public static Type RszFieldTypeToCSharpType(RszField field)
+        public static Type RszFieldTypeToCSharpType(RszFieldType type)
         {
-            return field.type switch
+            return type switch
             {
                 RszFieldType.S32 or RszFieldType.Object or RszFieldType.UserData => typeof(int),
                 RszFieldType.U32 => typeof(uint),
@@ -269,7 +269,7 @@ namespace RszTool
                 RszFieldType.Quaternion => typeof(Quaternion),
                 RszFieldType.Sphere => typeof(via.Sphere),
                 RszFieldType.String or RszFieldType.Resource => typeof(string),
-                _ => throw new NotSupportedException($"Not support type {field.type}"),
+                _ => throw new NotSupportedException($"Not support type {type}"),
             };
         }
 
@@ -468,7 +468,7 @@ namespace RszTool
                 for (int i = 0; i < RszClass.fields.Length; i++)
                 {
                     RszField field = RszClass.fields[i];
-                    string type = field.original_type != "" ? field.original_type : field.type.ToString();
+                    string type = field.DisplayType;
                     sb.AppendIndent(indent + 1);
                     sb.Append($"{type} {field.name} = ");
                     if (field.array)

@@ -29,6 +29,8 @@ namespace RszTool
 
         public List<RszInstance> InstanceList { get; } = new();
         public List<RSZFile>? EmbeddedRSZFileList { get; private set; }
+        // if struct changed, need rebuild
+        public bool StructChanged { get; set; }
 
         public RSZFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
@@ -128,6 +130,11 @@ namespace RszTool
 
         protected override bool DoWrite()
         {
+            if (StructChanged)
+            {
+                StructChanged = false;
+                RebuildInstanceInfo();
+            }
             var handler = FileHandler;
             ref var header = ref Header.Data;
             handler.Seek(Header.Size);
@@ -174,7 +181,7 @@ namespace RszTool
 
         // 下面的函数用于重新构建数据，基本读写功能都在上面
 
-        public RszInstance GetGameObject(int objectIndex)
+        public RszInstance GetObjectInstance(int objectIndex)
         {
             return InstanceList[ObjectTableList[objectIndex].Data.instanceId];
         }
@@ -185,6 +192,51 @@ namespace RszTool
             {
                 yield return InstanceList[item.Data.instanceId];
             }
+        }
+
+        /// <summary>
+        /// 创建RszInstance
+        /// </summary>
+        /// <param name="rszClass">Rsz类型</param>
+        /// <param name="index">instance序号</param>
+        /// <param name="createChildren">创建子对象</param>
+        /// <returns></returns>
+        public RszInstance? CreateInstance(RszClass rszClass, int index = -1, bool createChildren = true)
+        {
+            RszInstance instance = new(rszClass, index);
+            var fields = instance.Fields;
+            for (int i = 0; i < fields.Length; i++)
+            {
+                var field = fields[i];
+                if (field.array)
+                {
+                    instance.Values[i] = new List<object>();
+                }
+                if (field.IsReference)
+                {
+                    if (createChildren)
+                    {
+                        RszClass? fieldClass = RszParser.GetRSZClass(field.original_type) ??
+                            throw new Exception($"RszClass {field.original_type} not found!");
+                        instance.Values[i] = CreateInstance(fieldClass, -1, createChildren) ??
+                            throw new NullReferenceException($"Can not create RszInstance of type {fieldClass.name}");
+                    }
+                }
+                else
+                {
+                    if (field.type == RszFieldType.Data)
+                    {
+                        instance.Values[i] = new byte[field.size];
+                    }
+                    else
+                    {
+                        var type = RszInstance.RszFieldTypeToCSharpType(field.type);
+                        instance.Values[i] = Activator.CreateInstance(type) ??
+                            throw new NullReferenceException($"Can not create instance of type {type.Name}");
+                    }
+                }
+            }
+            return instance;
         }
 
         public string InstanceStringify(RszInstance instance)
@@ -211,10 +263,22 @@ namespace RszTool
         /// <param name="instance"></param>
         public void FixInstanceIndex(RszInstance instance)
         {
-            if (instance.Index < 0 || instance.Index >= InstanceList.Count || InstanceList[instance.Index] != instance)
+            var list = InstanceList;
+            if (instance.Index < 0 || instance.Index >= list.Count || list[instance.Index] != instance)
             {
-                // TODO 确保依赖的instance序号应该比自身小
-                instance.Index = InstanceList.GetIndexOrAdd(instance);
+                if (instance.Index >= 0)
+                {
+                    instance.Index = list.IndexOf(instance);
+                }
+                if (instance.Index == -1)
+                {
+                    instance.Index = list.Count;
+                    list.Add(instance);
+                }
+                if (instance.ObjectTableIndex >= 0 && instance.ObjectTableIndex < ObjectTableList.Count)
+                {
+                    ObjectTableList[instance.ObjectTableIndex].Data.instanceId = instance.Index;
+                }
             }
         }
 
@@ -224,37 +288,74 @@ namespace RszTool
         /// <param name="instance"></param>
         public void FixInstanceIndexRecurse(RszInstance instance)
         {
-            if (instance.RSZUserData == null)
+            foreach (var item in instance.Flatten())
             {
-                var fields = instance.RszClass.fields;
-                for (int i = 0; i < fields.Length; i++)
+                FixInstanceIndex(item);
+
+                if (item.RSZUserData != null)
                 {
-                    var field = fields[i];
-                    if (field.IsReference)
+                    item.RSZUserData.InstanceId = item.Index;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 重新排序实例，被依赖的实例排在前面
+        /// </summary>
+        public void ReorderInstances(int start = 0)
+        {
+            // List<RszInstance> oldList = InstanceList;
+            // List<RszInstance> newList = oldList.Slice(0, start);
+            // InstanceList = newList;
+            // for (int i = start; i < oldList.Count; i++)
+            // {
+            //     FixInstanceIndexRecurse(oldList[i]);
+            // }
+            for (int i = start; i < InstanceList.Count; i++)
+            {
+                InstanceList[i].Index = -1;
+            }
+            int index = 0;
+            for (int i = start; i < InstanceList.Count; i++)
+            {
+                var instance = InstanceList[i];
+                if (instance.Index == -1)
+                {
+                    foreach (var item in instance.Flatten())
                     {
-                        if (field.array)
+                        if (item.Index == -1)
                         {
-                            var items = (List<object>)instance.Values[i];
-                            for (int j = 0; j < items.Count; j++)
+                            item.Index = index++;
+                            if (item.ObjectTableIndex >= 0 && item.ObjectTableIndex < ObjectTableList.Count)
                             {
-                                if (items[j] is RszInstance instanceValue)
-                                {
-                                    FixInstanceIndexRecurse(instanceValue);
-                                }
+                                ObjectTableList[item.ObjectTableIndex].Data.instanceId = item.Index;
                             }
-                        }
-                        else if (instance.Values[i] is RszInstance instanceValue)
-                        {
-                            FixInstanceIndexRecurse(instanceValue);
                         }
                     }
                 }
             }
-            FixInstanceIndex(instance);
-            if (instance.RSZUserData != null && instance.RSZUserData.InstanceId != instance.Index)
+            InstanceList.Sort(start, InstanceList.Count - start,
+                Comparer<RszInstance>.Create((a, b) => a.Index - b.Index));
+        }
+
+        /// <summary>
+        /// 所有实例的字段值，如果是对象，替换成实例序号，实例自身的Index也会修正
+        /// </summary>
+        public void FixInstanceListIndex()
+        {
+            FixInstanceListIndex(InstanceList);
+        }
+
+        /// <summary>
+        /// 所有实例的字段值，如果是对象，替换成实例序号，实例自身的Index也会修正
+        /// </summary>
+        public void FixInstanceListIndex(IEnumerable<RszInstance> list)
+        {
+            foreach (var instance in list)
             {
-                instance.RSZUserData.InstanceId = instance.Index;
+                FixInstanceIndexRecurse(instance);
             }
+            // TODO 确保依赖的instance序号应该比自身小
         }
 
         /// <summary>
@@ -314,34 +415,14 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 所有实例的字段值，如果是对象，替换成实例序号，实例自身的Index也会修正
-        /// </summary>
-        public void FixInstanceListIndex()
-        {
-            FixInstanceListIndex(InstanceList);
-        }
-
-        /// <summary>
-        /// 所有实例的字段值，如果是对象，替换成实例序号，实例自身的Index也会修正
-        /// </summary>
-        public void FixInstanceListIndex(IEnumerable<RszInstance> list)
-        {
-            foreach (var instance in list)
-            {
-                FixInstanceIndexRecurse(instance);
-            }
-            // TODO 确保依赖的instance序号应该比自身小
-        }
-
-        /// <summary>
         /// 根据实例列表，重建InstanceInfo
         /// </summary>
         /// <param name="flatten">是否先进行flatten</param>
-        public void RebuildInstanceInfo(bool fixIndex = true, bool rebuildObjectTable = true)
+        public void RebuildInstanceInfo(bool reorderInstances = true, bool rebuildObjectTable = true)
         {
-            if (fixIndex)
+            if (reorderInstances)
             {
-                FixInstanceListIndex();
+                ReorderInstances();
             }
             InstanceInfoList.Clear();
             RSZUserDataInfoList.Clear();
@@ -402,8 +483,8 @@ namespace RszTool
         /// <param name="instance"></param>
         /// <param name="clone">是否克隆instance</param>
         /// <param name="addToObjectTable">添加到ObjectTable</param>
-        /// <returns>导入的副本列表，如果clone为false，返回null</returns>
-        public void ImportInstance(RszInstance instance, bool clone = true, bool addToObjectTable = false)
+        /// <returns>如果clone为true，返回导入的实例副本，否则返回原始实例</returns>
+        public RszInstance ImportInstance(RszInstance instance, bool clone = true, bool addToObjectTable = false)
         {
             instance = clone ? (RszInstance)instance.Clone() : instance;
             if (!clone && InstanceList.Contains(instance))
@@ -432,6 +513,7 @@ namespace RszTool
                     ObjectTableList.Add(objectTableInfo);
                 }
             }
+            return instance;
         }
 
         /// <summary>
@@ -446,6 +528,19 @@ namespace RszTool
             {
                 ImportInstance(instance, clone, addToObjectTable);
             }
+        }
+
+        public void ArrayInsertElement(RszInstance instance, RszInstance insertItem, int fieldIndex, int toArryIndex = -1)
+        {
+            insertItem = ImportInstance(insertItem);
+            var field = instance.RszClass.fields[fieldIndex];
+            if (!field.array || !field.IsReference)
+            {
+                throw new InvalidOperationException($"{instance.Name}.{field.name} is not object array");
+            }
+            var values = (List<object>)instance.Values[fieldIndex];
+            if (toArryIndex == -1) toArryIndex = values.Count;
+            values.Insert(toArryIndex, insertItem);
         }
     }
 
