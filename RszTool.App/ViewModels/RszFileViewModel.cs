@@ -19,6 +19,7 @@ namespace RszTool.App.ViewModels
                 return path != null ? Path.GetFileName(path) : null;
             }
         }
+        public bool Changed { get; protected set; }
 
         public bool Save() => File.Save();
 

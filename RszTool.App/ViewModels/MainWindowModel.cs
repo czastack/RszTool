@@ -151,12 +151,27 @@ namespace RszTool.App.ViewModels
 
         private void OnClose(object arg)
         {
-
+            if (SelectedTabItem == null || CurrentFile == null) return;
+            if (CurrentFile.Changed)
+            {
+                // Check changed
+            }
+            Items.Remove(SelectedTabItem);
         }
 
         private void OnQuit(object arg)
         {
-
+            foreach (var item in Items)
+            {
+                if (item is FileTabItemViewModel fileTab)
+                {
+                    if (fileTab.FileViewModel.Changed)
+                    {
+                        // Check changed
+                    }
+                }
+            }
+            Application.Current.Shutdown();
         }
     }
 

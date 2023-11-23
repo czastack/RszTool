@@ -41,6 +41,12 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding OpenCommand}" Modifiers="Control" Key="O" />
+        <KeyBinding Command="{Binding SaveCommand}" Modifiers="Control" Key="S" />
+        <KeyBinding Command="{Binding CloseCommand}" Modifiers="Control" Key="W" />
+        <KeyBinding Command="{Binding QuitCommand}" Modifiers="Control" Key="Q" />
+    </Window.InputBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
