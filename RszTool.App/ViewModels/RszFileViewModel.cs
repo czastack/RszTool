@@ -69,7 +69,7 @@ namespace RszTool.App.ViewModels
         public ObservableCollection<ScnFile.FolderData>? Folders => File.FolderDatas;
         public ObservableCollection<ScnFile.GameObjectData>? GameObjects => File.GameObjectDatas;
 
-        public static List<ScnFile.GameObjectData>? CopiedGameObjects { get; private set; }
+        public static ScnFile.GameObjectData? CopiedGameObject { get; private set; }
 
         public override void PostRead()
         {
@@ -78,28 +78,91 @@ namespace RszTool.App.ViewModels
 
         public RelayCommand CopyGameObject => new(OnCopyGameObject);
         public RelayCommand DeleteGameObject => new(OnDeleteGameObject);
+        public RelayCommand DuplicateGameObject => new(OnDuplicateGameObject);
         public RelayCommand PasetGameObject => new(OnPasetGameObject);
+        public RelayCommand PasetGameObjectToFolder => new(OnPasetGameObjectToFolder);
+        public RelayCommand PasetGameObjectToParent => new(OnPasetGameObjectToParent);
 
-        public void OnCopyGameObject(object arg)
+        /// <summary>
+        /// 复制游戏对象
+        /// </summary>
+        /// <param name="arg"></param>
+        public static void OnCopyGameObject(object arg)
         {
-            CopiedGameObjects ??= new();
             var gameObject = (ScnFile.GameObjectData)arg;
-            CopiedGameObjects.Remove(gameObject);
-            CopiedGameObjects.Add(gameObject);
+            CopiedGameObject = gameObject;
         }
 
+        /// <summary>
+        /// 删除游戏对象
+        /// </summary>
+        /// <param name="arg"></param>
         public void OnDeleteGameObject(object arg)
         {
-            Console.WriteLine(arg);
+            var gameObject = (ScnFile.GameObjectData)arg;
+            if (gameObject.Parent != null)
+            {
+                gameObject.Parent.Children.Remove(gameObject);
+                gameObject.Parent = null;
+            }
+            else if (gameObject.Folder != null)
+            {
+                gameObject.Folder.GameObjects.Remove(gameObject);
+                gameObject.Folder = null;
+            }
+            else
+            {
+                File.GameObjectDatas?.Remove(gameObject);
+            }
+            File.StructChanged = true;
         }
 
+        /// <summary>
+        /// 重复游戏对象
+        /// </summary>
+        /// <param name="arg"></param>
+        public void OnDuplicateGameObject(object arg)
+        {
+            var gameObject = (ScnFile.GameObjectData)arg;
+            File.DuplicateGameObject(gameObject);
+        }
+
+        /// <summary>
+        /// 粘贴游戏对象
+        /// </summary>
+        /// <param name="arg"></param>
         public void OnPasetGameObject(object arg)
         {
-            if (CopiedGameObjects != null && CopiedGameObjects.Count > 0)
+            if (CopiedGameObject != null)
             {
-                var gameObject = CopiedGameObjects[^1];
-                File.ImportGameObject(gameObject);
+                File.ImportGameObject(CopiedGameObject);
                 OnPropertyChanged(nameof(GameObjects));
+            }
+        }
+
+        /// <summary>
+        /// 粘贴游戏对象到文件夹
+        /// </summary>
+        /// <param name="arg"></param>
+        public void OnPasetGameObjectToFolder(object arg)
+        {
+            if (CopiedGameObject != null)
+            {
+                var folder = (ScnFile.FolderData)arg;
+                File.ImportGameObject(CopiedGameObject, folder);
+            }
+        }
+
+        /// <summary>
+        /// 粘贴游戏对象到父对象
+        /// </summary>
+        /// <param name="arg"></param>
+        public void OnPasetGameObjectToParent(object arg)
+        {
+            if (CopiedGameObject != null)
+            {
+                var parent = (ScnFile.GameObjectData)arg;
+                File.ImportGameObject(CopiedGameObject, parent: parent);
             }
         }
     }

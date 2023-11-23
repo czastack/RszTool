@@ -38,7 +38,7 @@ namespace RszTool
             public WeakReference<GameObjectData>? ParentRef;
             public GameObjectInfoModel? Info;
             public ObservableCollection<RszInstance> Components = new();
-            public ObservableCollection<GameObjectData> Chidren = new();
+            public ObservableCollection<GameObjectData> Children = new();
             public RszInstance? Instance;
 
             /// <summary>
@@ -62,11 +62,11 @@ namespace RszTool
                     Instance = scnGameObject.Instance != null ?
                         (RszInstance)scnGameObject.Instance.Clone() : null
                 };
-                foreach (var child in scnGameObject.Chidren)
+                foreach (var child in scnGameObject.Children)
                 {
                     var newChild = FromScnGameObject(child);
                     newChild.Parent = gameObject;
-                    gameObject.Chidren.Add(newChild);
+                    gameObject.Children.Add(newChild);
                 }
                 return gameObject;
             }
@@ -222,7 +222,7 @@ namespace RszTool
                 var gameObject = gameObjectMap[info.Data.objectId];
                 if (gameObjectMap.TryGetValue(info.Data.parentId, out var parent))
                 {
-                    parent.Chidren.Add(gameObject);
+                    parent.Children.Add(gameObject);
                     gameObject.Parent = parent;
                 }
             }
@@ -240,7 +240,7 @@ namespace RszTool
             {
                 rszInstances.Add(item);
             }
-            foreach (var child in gameObject.Chidren)
+            foreach (var child in gameObject.Children)
             {
                 CollectGameObjectInstances(child, rszInstances);
             }
@@ -301,7 +301,7 @@ namespace RszTool
             {
                 RSZ!.AddToObjectTable(item);
             }
-            foreach (var child in gameObject.Chidren)
+            foreach (var child in gameObject.Children)
             {
                 AddGameObjectInfoRecursion(child);
             }

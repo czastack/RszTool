@@ -132,8 +132,8 @@ namespace RszTool
         {
             if (StructChanged)
             {
-                StructChanged = false;
                 RebuildInstanceInfo();
+                StructChanged = false;
             }
             var handler = FileHandler;
             ref var header = ref Header.Data;
@@ -523,6 +523,13 @@ namespace RszTool
             }
         }
 
+        /// <summary>
+        /// 数组插入元素
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="insertItem"></param>
+        /// <param name="fieldIndex"></param>
+        /// <param name="toArryIndex"></param>
         public void ArrayInsertElement(RszInstance instance, RszInstance insertItem, int fieldIndex, int toArryIndex = -1)
         {
             insertItem = ImportInstance(insertItem);
@@ -534,6 +541,7 @@ namespace RszTool
             var values = (List<object>)instance.Values[fieldIndex];
             if (toArryIndex == -1) toArryIndex = values.Count;
             values.Insert(toArryIndex, insertItem);
+            StructChanged = true;
         }
     }
 

@@ -13,10 +13,18 @@
         <ResourceDictionary Source="TreeViewStyles.xaml" />
     </UserControl.Resources>
 
-    <DockPanel>
-        <TreeView>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBox Text="{Binding FilePath, Mode=OneWay}" IsReadOnly="True" Margin="0 0 0 5" Grid.Row="0" />
+        <TreeView Grid.Row="1">
             <TreeViewItem ItemsSource="{Binding Path=RszViewModel.Instances}" Header="Instances" />
             <TreeViewItem ItemsSource="{Binding Path=RszViewModel.Objects}" Header="Objects" />
         </TreeView>
-    </DockPanel>
+    </Grid>
 </UserControl>

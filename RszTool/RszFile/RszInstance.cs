@@ -19,12 +19,13 @@ namespace RszTool
             set
             {
                 index = value;
-                Name = $"{RszClass.name}[{index}]";
+                name = null;
             }
         }
         // 在ObjectTable中的序号，-1表示不在
         public int ObjectTableIndex { get; set; } = -1;
-        public string Name { get; set; }
+        private string? name;
+        public string Name => name ??= $"{RszClass.name}[{index}]";
         public IRSZUserDataInfo? RSZUserData { get; set; }
         public RszField[] Fields => RszClass.fields;
 
@@ -39,7 +40,6 @@ namespace RszTool
                 }
             }
             Values = userData == null ? (values ?? new object[rszClass.fields.Length]) : [];
-            Name = "";
             Index = index;
             RSZUserData = userData;
         }
@@ -48,7 +48,6 @@ namespace RszTool
         {
             RszClass = RszClass.Empty;
             Values = [];
-            Name = "";
         }
 
         /// <summary>
@@ -349,12 +348,10 @@ namespace RszTool
         /// <returns></returns>
         public override object Clone()
         {
-            RszInstance copy = (RszInstance)MemberwiseClone();
-            if (RSZUserData != null)
-            {
-                copy.RSZUserData = (IRSZUserDataInfo)RSZUserData.Clone();
-            }
-            else
+            IRSZUserDataInfo? userData = RSZUserData != null ? (IRSZUserDataInfo)RSZUserData.Clone() : null;
+            RszInstance copy = new(RszClass, -1, userData);
+            Array.Copy(Values, copy.Values, Values.Length);
+            if (userData == null)
             {
                 for (int i = 0; i < RszClass.fields.Length; i++)
                 {
