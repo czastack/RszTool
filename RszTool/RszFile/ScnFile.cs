@@ -436,18 +436,31 @@ namespace RszTool
         {
             var instance = gameObject.Instance!;
             if (instance.ObjectTableIndex != -1) return;
-            int prefabId = gameObject.Prefab == null ? -1 :
-                PrefabInfoList.GetIndexOrAdd(gameObject.Prefab);
-            /* int prefabId = -1;
+            // int prefabId = gameObject.Prefab == null ? -1 :
+            //     PrefabInfoList.GetIndexOrAdd(gameObject.Prefab);
+            int prefabId = -1;
             if (gameObject.Prefab != null)
             {
                 prefabId = PrefabInfoList.FindIndex(item => item.Path == gameObject.Prefab.Path);
                 if (prefabId == -1)
                 {
                     prefabId = PrefabInfoList.Count;
+                    if (gameObject.Folder != null)
+                    {
+                        gameObject.Prefab.parentId = gameObject.Folder.ObjectId ?? -1;
+                        gameObject.Folder.Prefabs.Add(gameObject.Prefab);
+                    }
+                    else
+                    {
+                        gameObject.Prefab.parentId = -1;
+                    }
                     PrefabInfoList.Add(gameObject.Prefab);
                 }
-            } */
+                else
+                {
+                    gameObject.Prefab = PrefabInfoList[prefabId];
+                }
+            }
             ref var infoData = ref gameObject.Info!.Data;
             // AddToObjectTable会修正ObjectTableIndex
             RSZ!.AddToObjectTable(instance);
@@ -655,7 +668,7 @@ namespace RszTool
                     RecurseGameObject(child);
                 }
             }
-            
+
             gameObject.Folder = null;
             gameObject.Parent = null;
             if (folder != null)
