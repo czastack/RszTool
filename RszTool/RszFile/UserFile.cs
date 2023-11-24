@@ -38,6 +38,8 @@ namespace RszTool
             };
         }
 
+        public override RSZFile? GetRSZ() => RSZ;
+
         protected override bool DoRead()
         {
             var handler = FileHandler;

@@ -120,6 +120,8 @@ namespace RszTool
             };
         }
 
+        public override RSZFile? GetRSZ() => RSZ;
+
         protected override bool DoRead()
         {
             FileHandler handler = FileHandler;
@@ -143,10 +145,6 @@ namespace RszTool
 
             RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
             RSZ.Read(0, false);
-            if (RSZ.ObjectTableList.Count > 0)
-            {
-                // SetupGameObjects();
-            }
             return true;
         }
 
@@ -203,11 +201,11 @@ namespace RszTool
                 GameObjectData gameObjectData = new()
                 {
                     Info = info,
-                    Instance = RSZ!.GetObjectInstance(info.Data.objectId),
+                    Instance = RSZ!.ObjectList[info.Data.objectId],
                 };
                 for (int i = 0; i < info.Data.componentCount; i++)
                 {
-                    gameObjectData.Components.Add(RSZ!.GetObjectInstance(info.Data.objectId + 1 + i));
+                    gameObjectData.Components.Add(RSZ!.ObjectList[info.Data.objectId + 1 + i]);
                 }
                 gameObjectMap[info.Data.objectId] = gameObjectData;
                 if (info.Data.parentId == -1)
@@ -263,14 +261,14 @@ namespace RszTool
                 }
             }
 
-            RSZ.InstanceList.Clear();
+            RSZ.ClearInstances();
             RSZ.FixInstanceListIndex(rszInstances);
             RSZ.RebuildInstanceInfo(false, false);
             foreach (var instance in rszInstances)
             {
                 instance.ObjectTableIndex = -1;
             }
-            RSZ.ObjectTableList.Clear();
+            RSZ.ClearObjects();
 
             // 重新构建
             GameObjectInfoList.Clear();

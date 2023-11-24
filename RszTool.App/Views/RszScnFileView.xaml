@@ -36,8 +36,8 @@
                     <TextBlock.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="_Copy" Command="{Binding PlacementTarget.Tag.CopyGameObject, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-                            <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteGameObject, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-                            <MenuItem Header="Dupliacate" Command="{Binding PlacementTarget.Tag.DuplicateGameObject, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                            <MenuItem Header="Remove" Command="{Binding PlacementTarget.Tag.RemoveGameObject, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                            <MenuItem Header="Duplicate" Command="{Binding PlacementTarget.Tag.DuplicateGameObject, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
                             <MenuItem Header="Paste Gameobject to children" Command="{Binding PlacementTarget.Tag.PasetGameObjectToParent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
                         </ContextMenu>
                     </TextBlock.ContextMenu>

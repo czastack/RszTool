@@ -166,6 +166,8 @@ namespace RszTool
             };
         }
 
+        public override RSZFile? GetRSZ() => RSZ;
+
         protected override bool DoRead()
         {
             FileHandler handler = FileHandler;
@@ -192,10 +194,6 @@ namespace RszTool
 
             RSZ = new RSZFile(Option, FileHandler.WithOffset(header.dataOffset));
             RSZ.Read(0, false);
-            if (RSZ.ObjectTableList.Count > 0)
-            {
-                // SetupGameObjects();
-            }
 
             return true;
         }
@@ -265,7 +263,7 @@ namespace RszTool
                     FolderData folderData = new()
                     {
                         Info = info,
-                        Instance = RSZ!.GetObjectInstance(info.Data.objectId),
+                        Instance = RSZ!.ObjectList[info.Data.objectId],
                     };
                     if (info.Data.parentId == -1)
                     {
@@ -282,11 +280,11 @@ namespace RszTool
                 GameObjectData gameObjectData = new()
                 {
                     Info = info,
-                    Instance = RSZ!.GetObjectInstance(info.Data.objectId),
+                    Instance = RSZ!.ObjectList[info.Data.objectId],
                 };
                 for (int i = 0; i < info.Data.componentCount; i++)
                 {
-                    gameObjectData.Components.Add(RSZ!.GetObjectInstance(info.Data.objectId + 1 + i));
+                    gameObjectData.Components.Add(RSZ!.ObjectList[info.Data.objectId + 1 + i]);
                 }
                 if (info.Data.prefabId >= 0 && info.Data.prefabId < PrefabInfoList.Count)
                 {
@@ -396,14 +394,14 @@ namespace RszTool
                 }
             }
 
-            RSZ.InstanceList.Clear();
+            RSZ.ClearInstances();
             RSZ.FixInstanceListIndex(rszInstances);
             RSZ.RebuildInstanceInfo(false, false);
             foreach (var instance in rszInstances)
             {
                 instance.ObjectTableIndex = -1;
             }
-            RSZ.ObjectTableList.Clear();
+            RSZ.ClearObjects();
 
             // 重新构建
             GameObjectInfoList.Clear();
@@ -472,7 +470,7 @@ namespace RszTool
             GameObjectInfoList.Add(gameObject.Info);
             foreach (var item in gameObject.Components)
             {
-                RSZ!.AddToObjectTable(item);
+                RSZ.AddToObjectTable(item);
             }
         }
 
@@ -649,9 +647,11 @@ namespace RszTool
         /// <param name="gameObject"></param>
         /// <param name="folder">文件夹</param>
         /// <param name="parent">父对象</param>
-        public void ImportGameObject(GameObjectData gameObject, FolderData? folder = null, GameObjectData? parent = null)
+        /// <param name="isDuplicate">在原对象的位置后面添加</param>
+        public void ImportGameObject(GameObjectData gameObject, FolderData? folder = null,
+                                     GameObjectData? parent = null, bool isDuplicate = false)
         {
-            gameObject = (GameObjectData)gameObject.Clone();
+            GameObjectData newGameObject = (GameObjectData)gameObject.Clone();
             int instanceAddStart = RSZ!.InstanceList.Count;
             int userDataAddStart = RSZ.RSZUserDataInfoList.Count;
 
@@ -669,24 +669,35 @@ namespace RszTool
                 }
             }
 
-            gameObject.Folder = null;
-            gameObject.Parent = null;
+            newGameObject.Folder = null;
+            newGameObject.Parent = null;
+            ObservableCollection<GameObjectData> collection;
             if (folder != null)
             {
-                gameObject.Folder = folder;
-                folder.GameObjects.Add(gameObject);
+                newGameObject.Folder = folder;
+                collection = folder.GameObjects;
             }
             else if (parent != null)
             {
-                gameObject.Parent = parent;
-                parent.Children.Add(gameObject);
+                newGameObject.Parent = parent;
+                collection = parent.Children;
             }
             else
             {
                 GameObjectDatas ??= [];
-                GameObjectDatas.Add(gameObject);
+                collection = GameObjectDatas;
             }
-            RecurseGameObject(gameObject);
+            if (isDuplicate)
+            {
+                int index = collection.IndexOf(gameObject);
+                if (index == -1) index = collection.Count;
+                collection.Insert(index, newGameObject);
+            }
+            else
+            {
+                collection.Add(newGameObject);
+            }
+            RecurseGameObject(newGameObject);
             RszUtils.AddUserDataFromRsz(UserdataInfoList, RSZ, userDataAddStart);
             RszUtils.AddResourceFromRsz(ResourceInfoList, RSZ, instanceAddStart);
         }
@@ -712,7 +723,7 @@ namespace RszTool
         /// <param name="gameObject"></param>
         public void DuplicateGameObject(GameObjectData gameObject)
         {
-            ImportGameObject(gameObject, gameObject.Folder, gameObject.Parent);
+            ImportGameObject(gameObject, gameObject.Folder, gameObject.Parent, true);
         }
     }
 }

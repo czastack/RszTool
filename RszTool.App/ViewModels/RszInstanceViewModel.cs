@@ -103,7 +103,7 @@ namespace RszTool.App.ViewModels
 
         public RszField Field { get; } = field;
         public virtual string Name => $"{Index}:";
-        protected List<object> Values { get; } = values;
+        public List<object> Values { get; } = values;
 
         public RszFieldType Type => Field.type;
         public string OriginalType => Field.original_type;

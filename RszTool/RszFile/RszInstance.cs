@@ -370,7 +370,7 @@ namespace RszTool
                                 }
                             }
                         }
-                        if (copy.Values[i] is RszInstance instance)
+                        else if (copy.Values[i] is RszInstance instance)
                         {
                             copy.Values[i] = instance.Clone();
                         }

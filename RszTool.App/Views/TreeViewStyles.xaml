@@ -14,7 +14,15 @@
     </HierarchicalDataTemplate>
 
     <HierarchicalDataTemplate DataType="{x:Type viewmodels:BaseRszFieldArrayItemViewModel}" ItemsSource="{Binding Path=Value}">
-        <TextBlock Text="{Binding Path=Name}"/>
+        <TextBlock Text="{Binding Path=Name}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="_Copy" Command="{Binding PlacementTarget.Tag.CopyArrayItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="Remove" Command="{Binding PlacementTarget.Tag.RemoveArrayItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="Duplicate" Command="{Binding PlacementTarget.Tag.DuplicateArrayItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+        </TextBlock>
     </HierarchicalDataTemplate>
 
     <HierarchicalDataTemplate DataType="{x:Type viewmodels:BaseTreeItemViewModel}" ItemsSource="{Binding Path=Items}">

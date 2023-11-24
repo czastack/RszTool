@@ -20,6 +20,11 @@ namespace RszTool.App.ViewModels
             }
         }
         public bool Changed { get; protected set; }
+        public RelayCommand CopyArrayItem => new(OnCopyArrayItem);
+        public RelayCommand RemoveArrayItem => new(OnRemoveArrayItem);
+        public RelayCommand DuplicateArrayItem => new(OnDuplicateArrayItem);
+
+        public static RszInstance? CopiedInstance { get; private set; }
 
         public bool Save() => File.Save();
 
@@ -38,6 +43,30 @@ namespace RszTool.App.ViewModels
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected static void OnCopyArrayItem(object arg)
+        {
+            if (arg is RszFieldArrayInstanceItemViewModel item)
+            {
+                CopiedInstance = item.Instance;
+            }
+        }
+
+        protected void OnRemoveArrayItem(object arg)
+        {
+            if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
+            {
+                rsz.ArrayRemoveItem(item.Values, item.Instance);
+            }
+        }
+
+        protected void OnDuplicateArrayItem(object arg)
+        {
+            if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
+            {
+                rsz.ArrayInsertItem(item.Values, item.Instance, isDuplicate: true);
+            }
         }
     }
 
@@ -78,7 +107,7 @@ namespace RszTool.App.ViewModels
         }
 
         public RelayCommand CopyGameObject => new(OnCopyGameObject);
-        public RelayCommand DeleteGameObject => new(OnDeleteGameObject);
+        public RelayCommand RemoveGameObject => new(OnRemoveGameObject);
         public RelayCommand DuplicateGameObject => new(OnDuplicateGameObject);
         public RelayCommand PasetGameObject => new(OnPasetGameObject);
         public RelayCommand PasetGameObjectToFolder => new(OnPasetGameObjectToFolder);
@@ -98,7 +127,7 @@ namespace RszTool.App.ViewModels
         /// 删除游戏对象
         /// </summary>
         /// <param name="arg"></param>
-        public void OnDeleteGameObject(object arg)
+        public void OnRemoveGameObject(object arg)
         {
             var gameObject = (ScnFile.GameObjectData)arg;
             if (gameObject.Parent != null)
@@ -173,6 +202,6 @@ namespace RszTool.App.ViewModels
     {
         public List<RszInstance> Instances => rsz.InstanceList;
 
-        public IEnumerable<RszInstance> Objects => rsz.ObjectInstances();
+        public IEnumerable<RszInstance> Objects => rsz.ObjectList;
     }
 }
