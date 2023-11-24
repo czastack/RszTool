@@ -3,6 +3,7 @@
                     xmlns:local="clr-namespace:RszTool.App.Views"
                     xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
                     xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool">
+
     <viewmodels:RszInstanceToFieldViewModels x:Key="RszInstanceToFieldViewModels"/>
 
     <HierarchicalDataTemplate DataType="{x:Type rsztool:RszInstance}" ItemsSource="{Binding ., Converter={StaticResource RszInstanceToFieldViewModels}}">
@@ -41,13 +42,13 @@
         <local:ClassPropertyEdit DataContext="{Binding}" />
     </DataTemplate>
 
-    <!--<Style TargetType="{x:Type TreeViewItem}" x:Key="TreeViewItemStyle">
-    <Style.Resources>
-        <Style TargetType="{x:Type Border}">
-            <Setter Property="Grid.ColumnSpan" Value="2" />
-        </Style>
-    </Style.Resources>
-</Style>-->
+    <!--<Style TargetType="TreeViewItem" x:Key="TreeViewItemStyle">
+        <Style.Resources>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="Grid.ColumnSpan" Value="2" />
+            </Style>
+        </Style.Resources>
+    </Style>-->
 
     <Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
         <Setter Property="Focusable" Value="False"/>
@@ -151,5 +152,13 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style TargetType="TreeViewItem" x:Key="TreeViewItemHideIfEmpty">
+        <Style.Triggers>
+            <Trigger Property="ItemsControl.HasItems" Value="False">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>

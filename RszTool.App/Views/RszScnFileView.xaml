@@ -20,7 +20,8 @@
             <viewmodels:ScnGameObjectDataSubItemsConverter x:Key="ScnGameObjectDataSubItemsConverter"/>
 
             <HierarchicalDataTemplate DataType="{x:Type rsztool:ScnFile+FolderData}"
-                                      ItemsSource="{Binding ., Converter={StaticResource ScnFolderDataSubItemsConverter}}">
+                                      ItemsSource="{Binding ., Converter={StaticResource ScnFolderDataSubItemsConverter}}"
+                                      ItemContainerStyle="{StaticResource TreeViewItemHideIfEmpty}">
                 <TextBlock Text="{Binding Path=Name}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>
@@ -31,7 +32,8 @@
             </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate DataType="{x:Type rsztool:ScnFile+GameObjectData}"
-                                      ItemsSource="{Binding ., Converter={StaticResource ScnGameObjectDataSubItemsConverter}}">
+                                      ItemsSource="{Binding ., Converter={StaticResource ScnGameObjectDataSubItemsConverter}}"
+                                      ItemContainerStyle="{StaticResource TreeViewItemHideIfEmpty}">
                 <TextBlock Text="{Binding Path=Name}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>

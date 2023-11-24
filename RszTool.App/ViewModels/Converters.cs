@@ -40,14 +40,8 @@ namespace RszTool.App.ViewModels
                 yield return new TreeItemDelegate(gameObject.Instance.Name,
                     () => RszInstanceToFieldViewModels.Convert(gameObject.Instance));
             }
-            if (gameObject.Components.Count > 0)
-            {
-                yield return new TreeItemViewModel("Components", gameObject.Components);
-            }
-            if (gameObject.Children.Count > 0)
-            {
-                yield return new TreeItemViewModel("Children", gameObject.Children);
-            }
+            yield return new TreeItemViewModel("Components", gameObject.Components);
+            yield return new TreeItemViewModel("Children", gameObject.Children);
             if (gameObject.Prefab != null)
             {
                 yield return new ClassViewModel(gameObject.Prefab, ["Path"]);
@@ -77,14 +71,8 @@ namespace RszTool.App.ViewModels
                 yield return new TreeItemDelegate(folder.Instance.Name,
                     () => RszInstanceToFieldViewModels.Convert(folder.Instance));
             }
-            if (folder.Children.Count > 0)
-            {
-                yield return new TreeItemViewModel("Children", folder.Children);
-            }
-            if (folder.GameObjects.Count > 0)
-            {
-                yield return new TreeItemViewModel("GameObjects", folder.GameObjects);
-            }
+            yield return new TreeItemViewModel("Children", folder.Children);
+            yield return new TreeItemViewModel("GameObjects", folder.GameObjects);
             if (folder.Prefabs.Count > 0)
             {
                 yield return new TreeItemViewModel("Prefabs",
