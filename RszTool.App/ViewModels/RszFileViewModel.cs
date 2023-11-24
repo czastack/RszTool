@@ -119,8 +119,7 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         public static void OnCopyGameObject(object arg)
         {
-            var gameObject = (ScnFile.GameObjectData)arg;
-            CopiedGameObject = gameObject;
+            CopiedGameObject = (ScnFile.GameObjectData)arg;
         }
 
         /// <summary>
@@ -129,22 +128,7 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         public void OnRemoveGameObject(object arg)
         {
-            var gameObject = (ScnFile.GameObjectData)arg;
-            if (gameObject.Parent != null)
-            {
-                gameObject.Parent.Children.Remove(gameObject);
-                gameObject.Parent = null;
-            }
-            else if (gameObject.Folder != null)
-            {
-                gameObject.Folder.GameObjects.Remove(gameObject);
-                gameObject.Folder = null;
-            }
-            else
-            {
-                File.GameObjectDatas?.Remove(gameObject);
-            }
-            File.StructChanged = true;
+            File.RemoveGameObject((ScnFile.GameObjectData)arg);
         }
 
         /// <summary>
@@ -153,8 +137,7 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         public void OnDuplicateGameObject(object arg)
         {
-            var gameObject = (ScnFile.GameObjectData)arg;
-            File.DuplicateGameObject(gameObject);
+            File.DuplicateGameObject((ScnFile.GameObjectData)arg);
         }
 
         /// <summary>

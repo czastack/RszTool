@@ -39,7 +39,6 @@ namespace RszTool
         public List<RszInstance> ObjectList { get; private set; } = new();
         public List<RSZFile>? EmbeddedRSZFileList { get; private set; }
         // if struct changed, need rebuild
-        public bool StructChanged { get; set; }
 
         public RSZFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {

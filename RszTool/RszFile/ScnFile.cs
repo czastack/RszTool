@@ -137,8 +137,6 @@ namespace RszTool
         public ObservableCollection<FolderData>? FolderDatas { get; set; }
         public ObservableCollection<GameObjectData>? GameObjectDatas { get; set; }
 
-        public bool StructChanged { get; set; }
-
         public ScnFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
             if (fileHandler.FilePath != null)
@@ -581,6 +579,25 @@ namespace RszTool
             return null;
         }
 
+        public void RemoveGameObject(GameObjectData gameObject)
+        {
+            if (gameObject.Parent != null)
+            {
+                gameObject.Parent.Children.Remove(gameObject);
+                gameObject.Parent = null;
+            }
+            else if (gameObject.Folder != null)
+            {
+                gameObject.Folder.GameObjects.Remove(gameObject);
+                gameObject.Folder = null;
+            }
+            else
+            {
+                GameObjectDatas?.Remove(gameObject);
+            }
+            StructChanged = true;
+        }
+
         /// <summary>
         /// 提取某个游戏对象，构造新的RSZ
         /// </summary>
@@ -652,22 +669,6 @@ namespace RszTool
                                      GameObjectData? parent = null, bool isDuplicate = false)
         {
             GameObjectData newGameObject = (GameObjectData)gameObject.Clone();
-            int instanceAddStart = RSZ!.InstanceList.Count;
-            int userDataAddStart = RSZ.RSZUserDataInfoList.Count;
-
-            void RecurseGameObject(GameObjectData gameObject)
-            {
-                RSZ.ImportInstance(gameObject.Instance!, false);
-                foreach (var component in gameObject.Components)
-                {
-                    RSZ.ImportInstance(component, false);
-                }
-                AddGameObjectInfo(gameObject);
-                foreach (var child in gameObject.Children)
-                {
-                    RecurseGameObject(child);
-                }
-            }
 
             newGameObject.Folder = null;
             newGameObject.Parent = null;
@@ -697,9 +698,7 @@ namespace RszTool
             {
                 collection.Add(newGameObject);
             }
-            RecurseGameObject(newGameObject);
-            RszUtils.AddUserDataFromRsz(UserdataInfoList, RSZ, userDataAddStart);
-            RszUtils.AddResourceFromRsz(ResourceInfoList, RSZ, instanceAddStart);
+            StructChanged = true;
         }
 
         /// <summary>
