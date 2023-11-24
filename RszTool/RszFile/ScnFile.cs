@@ -691,7 +691,7 @@ namespace RszTool
             if (isDuplicate)
             {
                 int index = collection.IndexOf(gameObject);
-                if (index == -1) index = collection.Count;
+                index = index == -1 ? collection.Count : index + 1;
                 collection.Insert(index, newGameObject);
             }
             else

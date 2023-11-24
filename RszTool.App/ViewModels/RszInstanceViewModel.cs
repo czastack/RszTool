@@ -36,6 +36,11 @@ namespace RszTool.App.ViewModels
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public void NotifyValueChanged()
+        {
+            PropertyChanged?.Invoke(this, new(nameof(Value)));
+        }
     }
 
 
@@ -68,28 +73,21 @@ namespace RszTool.App.ViewModels
         BaseRszFieldViewModel(instance, index)
     {
         public override string Name => $"{Field.name} : {OriginalType}";
+        public List<object> Values => (List<object>)instance.Values[Index];
 
-        public override object Value
+        private IEnumerable<BaseRszFieldArrayItemViewModel> GetItems()
         {
-            get
+            var values = (List<object>)instance.Values[Index];
+            bool isReference = Field.IsReference;
+            for (int i = 0; i < values.Count; i++)
             {
-                if (itemViewModels == null)
-                {
-                    var values = (List<object>)instance.Values[Index];
-                    bool isReference = Field.IsReference;
-                    itemViewModels = new(values.Count);
-                    for (int i = 0; i < values.Count; i++)
-                    {
-                        itemViewModels.Add(isReference ?
-                            new RszFieldArrayInstanceItemViewModel(Field, values, i) :
-                            new RszFieldArrayNormalItemViewModel(Field, values, i));
-                    }
-                }
-                return itemViewModels;
+                yield return isReference ?
+                    new RszFieldArrayInstanceItemViewModel(this, i) :
+                    new RszFieldArrayNormalItemViewModel(this, i);
             }
         }
 
-        private List<BaseRszFieldArrayItemViewModel>? itemViewModels;
+        public override object Value => GetItems();
     }
 
 
@@ -97,13 +95,14 @@ namespace RszTool.App.ViewModels
     /// 数组的项
     /// </summary>
     public class BaseRszFieldArrayItemViewModel(
-            RszField field, List<object> values, int arrayIndex) : INotifyPropertyChanged
+            RszFieldArrayViewModel array, int index) : INotifyPropertyChanged
     {
-        public int Index { get; } = arrayIndex;
+        public RszFieldArrayViewModel Array { get; } = array;
+        public int Index { get; } = index;
 
-        public RszField Field { get; } = field;
+        public RszField Field { get; } = array.Field;
         public virtual string Name => $"{Index}:";
-        public List<object> Values { get; } = values;
+        public List<object> Values => Array.Values;
 
         public RszFieldType Type => Field.type;
         public string OriginalType => Field.original_type;
@@ -125,8 +124,8 @@ namespace RszTool.App.ViewModels
     /// <summary>
     /// 普通数组的项
     /// </summary>
-    public class RszFieldArrayNormalItemViewModel(RszField field, List<object> values, int arrayIndex) :
-        BaseRszFieldArrayItemViewModel(field, values, arrayIndex), IFieldValueViewModel
+    public class RszFieldArrayNormalItemViewModel(RszFieldArrayViewModel array, int index) :
+        BaseRszFieldArrayItemViewModel(array, index), IFieldValueViewModel
     {
     }
 
@@ -134,8 +133,8 @@ namespace RszTool.App.ViewModels
     /// <summary>
     /// object数组的项
     /// </summary>
-    public class RszFieldArrayInstanceItemViewModel(RszField field, List<object> values, int arrayIndex) :
-        BaseRszFieldArrayItemViewModel(field, values, arrayIndex)
+    public class RszFieldArrayInstanceItemViewModel(RszFieldArrayViewModel array, int index) :
+        BaseRszFieldArrayItemViewModel(array, index)
     {
         public RszInstance Instance => (RszInstance)Values[Index];
         public override string Name => $"{Index}: {Instance.Name}";

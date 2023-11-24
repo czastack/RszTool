@@ -58,6 +58,7 @@ namespace RszTool.App.ViewModels
             if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
             {
                 rsz.ArrayRemoveItem(item.Values, item.Instance);
+                item.Array.NotifyValueChanged();
             }
         }
 
@@ -66,6 +67,7 @@ namespace RszTool.App.ViewModels
             if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
             {
                 rsz.ArrayInsertItem(item.Values, item.Instance, isDuplicate: true);
+                item.Array.NotifyValueChanged();
             }
         }
     }

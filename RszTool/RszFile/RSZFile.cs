@@ -524,26 +524,28 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 数组插入元素
+        /// 数组拷贝并插入元素
         /// </summary>
         /// <param name="array">数组</param>
         /// <param name="insertItem">待插入元素</param>
-        /// <param name="toArryIndex">插入位置</param>
+        /// <param name="insertPos">插入位置</param>
         /// <param name="isDuplicate">在原先元素的后面插入</param>
-        public void ArrayInsertItem(List<object> array, RszInstance insertItem,
-                                       int toArryIndex = -1, bool isDuplicate = false)
+        public RszInstance ArrayInsertItem(List<object> array, RszInstance insertItem,
+                                    int insertPos = -1, bool isDuplicate = false)
         {
             RszInstance newItem = (RszInstance)insertItem.Clone();
-            if (toArryIndex == -1 && isDuplicate)
+            if (isDuplicate)
             {
-                toArryIndex = array.IndexOf(insertItem);
+                insertPos = array.IndexOf(insertItem);
+                if (insertPos != -1) insertPos++;
             }
-            if (toArryIndex == -1)
+            if (insertPos == -1)
             {
-                toArryIndex = array.Count;
+                insertPos = array.Count;
             }
-            array.Insert(toArryIndex, newItem);
+            array.Insert(insertPos, newItem);
             StructChanged = true;
+            return newItem;
         }
 
         /// <summary>
