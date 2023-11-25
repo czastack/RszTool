@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace RszTool.App.ViewModels
 {
@@ -17,13 +16,9 @@ namespace RszTool.App.ViewModels
     public class BaseRszFieldViewModel(RszInstance instance, int index) : INotifyPropertyChanged
     {
         protected readonly RszInstance instance = instance;
-
         public int Index { get; } = index;
-
         public RszField Field => instance.RszClass.fields[Index];
         public virtual string Name => Field.name;
-        public RszFieldType Type => Field.type;
-        public string OriginalType => Field.original_type;
 
         public virtual object Value
         {
@@ -50,6 +45,17 @@ namespace RszTool.App.ViewModels
     public class RszFieldNormalViewModel(RszInstance instance, int index) :
         BaseRszFieldViewModel(instance, index), IFieldValueViewModel
     {
+        public override object Value
+        {
+            get => base.Value;
+            set
+            {
+                var field = Field;
+                var type = RszInstance.RszFieldTypeToCSharpType(field.type);
+                value = Convert.ChangeType(value, type);
+                base.Value = value;
+            }
+        }
     }
 
 
@@ -72,7 +78,7 @@ namespace RszTool.App.ViewModels
     public class RszFieldArrayViewModel(RszInstance instance, int index) :
         BaseRszFieldViewModel(instance, index)
     {
-        public override string Name => $"{Field.name} : {OriginalType}";
+        public override string Name => $"{Field.name} : {Field.DisplayType}";
         public List<object> Values => (List<object>)instance.Values[Index];
 
         private IEnumerable<BaseRszFieldArrayItemViewModel> GetItems()
@@ -104,9 +110,6 @@ namespace RszTool.App.ViewModels
         public virtual string Name => $"{Index}:";
         public List<object> Values => Array.Values;
 
-        public RszFieldType Type => Field.type;
-        public string OriginalType => Field.original_type;
-
         public virtual object Value
         {
             get => Values[Index];
@@ -127,6 +130,17 @@ namespace RszTool.App.ViewModels
     public class RszFieldArrayNormalItemViewModel(RszFieldArrayViewModel array, int index) :
         BaseRszFieldArrayItemViewModel(array, index), IFieldValueViewModel
     {
+        public override object Value
+        {
+            get => base.Value;
+            set
+            {
+                var field = Field;
+                var type = RszInstance.RszFieldTypeToCSharpType(field.type);
+                value = Convert.ChangeType(value, type);
+                base.Value = value;
+            }
+        }
     }
 
 

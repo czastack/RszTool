@@ -59,10 +59,10 @@
                     Width="15"
                     Height="13"
                     Background="Transparent">
-                        <Path 
+                        <Path
                         x:Name="ExpandPath"
-                        HorizontalAlignment="Left" 
-                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
                         Margin="1,1,1,1"
                         Fill="#333"
                         Data="M 4 0 L 8 4 L 4 8 Z"/>
@@ -155,6 +155,8 @@
     </Style>
 
     <Style TargetType="TreeViewItem" x:Key="TreeViewItemHideIfEmpty">
+        <!-- skip effect children -->
+        <Setter Property="ItemContainerStyle" Value="{x:Null}"/>
         <Style.Triggers>
             <Trigger Property="ItemsControl.HasItems" Value="False">
                 <Setter Property="Visibility" Value="Collapsed"/>

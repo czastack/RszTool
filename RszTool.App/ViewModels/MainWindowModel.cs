@@ -146,7 +146,18 @@ namespace RszTool.App.ViewModels
 
         private void OnSave(object arg)
         {
-            CurrentFile?.Save();
+            if (Debugger.IsAttached)
+            {
+                CurrentFile?.Save();
+            }
+            else try
+            {
+                CurrentFile?.Save();
+            }
+            catch (Exception e)
+            {
+                App.ShowUnhandledException(e, "OnSave");
+            }
         }
 
         private void OnClose(object arg)
