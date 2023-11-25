@@ -147,7 +147,7 @@ namespace RszTool
                 RebuildInstanceInfo();
                 StructChanged = false;
             }
-            var handler = FileHandler;
+            FileHandler handler = FileHandler;
             ref var header = ref Header.Data;
             handler.Seek(Header.Size);
             ObjectTableList.Write(handler);
@@ -636,7 +636,7 @@ namespace RszTool
             {
                 typeId = typeId,
                 Path = Path,
-                CRC = parser.GetRSZClassCRC(typeId),
+                // CRC = parser.GetRSZClassCRC(typeId),
             };
             return info;
         }

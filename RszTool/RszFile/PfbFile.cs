@@ -151,6 +151,7 @@ namespace RszTool
         protected override bool DoWrite()
         {
             FileHandler handler = FileHandler;
+            handler.Clear();
             ref var header = ref Header.Data;
             handler.Seek(Header.Size);
             GameObjectInfoList.Write(handler);

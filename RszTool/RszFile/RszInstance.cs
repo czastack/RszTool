@@ -61,7 +61,7 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 读取字段
+        /// 读取数据
         /// </summary>
         /// <param name="handler"></param>
         /// <returns></returns>
@@ -79,6 +79,13 @@ namespace RszTool
             return true;
         }
 
+        /// <summary>
+        /// 读取字段
+        /// </summary>
+        /// <param name="handler"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException"></exception>
         public object ReadRszField(FileHandler handler, int index)
         {
             RszField field = RszClass.fields[index];
@@ -103,14 +110,42 @@ namespace RszTool
                     {
                         handler.Align(4);
                     }
-                    arrayItems.Add(ReadNormalField(handler, field));
+                    object value = ReadNormalField(handler, field);
+                    if (DetectDataIsObject(field, ref value) && i > 0)
+                    {
+                        // 如果实际上是Object，那么索引0的时候就应该检测出来了，说明之前检测的不对？
+                        throw new InvalidDataException($"Detect {RszClass.name}.{field.name} as Object, but index > 0");
+                    }
+                    arrayItems.Add(value);
                 }
                 return arrayItems;
             }
             else
             {
-                return ReadNormalField(handler, field);
+                object value = ReadNormalField(handler, field);
+                DetectDataIsObject(field, ref value);
+                return value;
             }
+        }
+
+        /// <summary>
+        /// 检测type是Data的字段，是否实际是Object
+        /// </summary>
+        private bool DetectDataIsObject(RszField field, ref object data)
+        {
+            if (field.type == RszFieldType.Data && field.size == 4 && field.native)
+            {
+                int intValue = BitConverter.ToInt32((byte[])data, 0);
+                if (intValue < Index && intValue > 0 && intValue > Index - 101)
+                {
+                    field.type = RszFieldType.Object;
+                    field.IsTypeInferred = true;
+                    data = intValue;
+                    // Console.WriteLine($"Detect {RszClass.name}.{field.name} as Object");
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static object ReadNormalField(FileHandler handler, RszField field)
@@ -163,6 +198,11 @@ namespace RszTool
             }
         }
 
+        /// <summary>
+        /// 写入数据
+        /// </summary>
+        /// <param name="handler"></param>
+        /// <returns></returns>
         protected override bool DoWrite(FileHandler handler)
         {
             // if has RSZUserData, it is external
@@ -176,6 +216,12 @@ namespace RszTool
             return true;
         }
 
+        /// <summary>
+        /// 写入字段
+        /// </summary>
+        /// <param name="handler"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public bool WriteRszField(FileHandler handler, int index)
         {
             RszField field = RszClass.fields[index];

@@ -327,7 +327,7 @@ namespace RszTool
         protected override bool DoWrite()
         {
             FileHandler handler = FileHandler;
-
+            handler.Clear();
             handler.Seek(0);
             Header.Write(handler);
 

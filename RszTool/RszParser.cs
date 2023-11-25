@@ -188,7 +188,15 @@ namespace RszTool
         [JsonConverter(typeof(EnumJsonConverter<RszFieldType>))]
         public RszFieldType type { get; set; }
         public string original_type { get; set; } = "";
+        /// <summary>
+        /// rsz json中存的是Data，根据实际情况推测是其他类型
+        /// </summary>
+        [JsonIgnore]
+        public bool IsTypeInferred { get; set; }
         private string? displayType = null;
+        /// <summary>
+        /// 显示类型
+        /// </summary>
         public string DisplayType => displayType ??= string.IsNullOrEmpty(original_type) ?
             (array ? $"{type}[]" : type.ToString()) : original_type;
 
@@ -203,6 +211,7 @@ namespace RszTool
                 1 => RszFieldType.U8,
                 _ => type
             };
+            IsTypeInferred = type != RszFieldType.Data;
         }
 
         public bool IsReference => type == RszFieldType.Object || type == RszFieldType.UserData;

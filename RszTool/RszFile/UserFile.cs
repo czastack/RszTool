@@ -62,7 +62,8 @@ namespace RszTool
 
         protected override bool DoWrite()
         {
-            var handler = FileHandler;
+            FileHandler handler = FileHandler;
+            handler.Clear();
             ref var header = ref Header.Data;
             handler.Seek(Header.Size);
             handler.Align(16);
