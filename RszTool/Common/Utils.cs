@@ -70,6 +70,21 @@ namespace RszTool.Common
         /// <param name="n"></param>
         /// <returns></returns>
         public static int Align8(int n) => AlignSize(n, 8);
+
+        public static bool DetectFloat(byte[] data, out float floatValue)
+        {
+            if (data.Length == 4)
+            {
+                floatValue = BitConverter.ToSingle(data, 0);
+                float absValue = Math.Abs(floatValue);
+                if (data[3] < 255 && absValue > 0.0000001 && absValue < 10000000)
+                {
+                    return true;
+                }
+            }
+            floatValue = 0;
+            return false;
+        }
     }
 
     public static class Extensions

@@ -197,8 +197,25 @@ namespace RszTool
         /// <summary>
         /// 显示类型
         /// </summary>
-        public string DisplayType => displayType ??= string.IsNullOrEmpty(original_type) ?
-            (array ? $"{type}[]" : type.ToString()) : original_type;
+        public string DisplayType
+        {
+            get
+            {
+                if (displayType == null)
+                {
+                    if (string.IsNullOrEmpty(original_type))
+                    {
+                        displayType = array ? $"{type}[]" : type.ToString();
+                        if (IsTypeInferred) displayType += "?";
+                    }
+                    else
+                    {
+                        displayType = original_type;
+                    }
+                }
+                return displayType;
+            }
+        }
 
         public void GuessDataType()
         {
@@ -211,7 +228,7 @@ namespace RszTool
                 1 => RszFieldType.U8,
                 _ => type
             };
-            IsTypeInferred = type != RszFieldType.Data;
+            // IsTypeInferred = type != RszFieldType.Data;
         }
 
         public bool IsReference => type == RszFieldType.Object || type == RszFieldType.UserData;

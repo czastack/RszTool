@@ -111,10 +111,10 @@ namespace RszTool
                         handler.Align(4);
                     }
                     object value = ReadNormalField(handler, field);
-                    if (DetectDataIsObject(field, ref value) && i > 0)
+                    if (DetectDataType(field, ref value) && i > 0)
                     {
-                        // 如果实际上是Object，那么索引0的时候就应该检测出来了，说明之前检测的不对？
-                        throw new InvalidDataException($"Detect {RszClass.name}.{field.name} as Object, but index > 0");
+                        // 如果检测到其他类型，那么索引0的时候就应该检测出来了，说明之前检测的不对？
+                        throw new InvalidDataException($"Detect {RszClass.name}.{field.name} as {field.type}, but index > 0");
                     }
                     arrayItems.Add(value);
                 }
@@ -123,19 +123,20 @@ namespace RszTool
             else
             {
                 object value = ReadNormalField(handler, field);
-                DetectDataIsObject(field, ref value);
+                DetectDataType(field, ref value);
                 return value;
             }
         }
 
         /// <summary>
-        /// 检测type是Data的字段，是否实际是Object
+        /// 推断type是Data的字段的实际类型
         /// </summary>
-        private bool DetectDataIsObject(RszField field, ref object data)
+        private bool DetectDataType(RszField field, ref object data)
         {
             if (field.type == RszFieldType.Data && field.size == 4 && field.native)
             {
                 int intValue = BitConverter.ToInt32((byte[])data, 0);
+                // 检测Object
                 if (intValue < Index && intValue > 0 && intValue > Index - 101)
                 {
                     field.type = RszFieldType.Object;
@@ -143,6 +144,19 @@ namespace RszTool
                     data = intValue;
                     // Console.WriteLine($"Detect {RszClass.name}.{field.name} as Object");
                     return true;
+                }
+                // 检测float和int
+                else if (Utils.DetectFloat((byte[])data, out float floatValue))
+                {
+                    field.type = RszFieldType.F32;
+                    field.IsTypeInferred = true;
+                    data = floatValue;
+                }
+                else
+                {
+                    field.type = RszFieldType.S32;
+                    field.IsTypeInferred = true;
+                    data = intValue;
                 }
             }
             return false;
