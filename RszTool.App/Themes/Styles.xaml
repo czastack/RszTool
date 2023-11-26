@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:RszTool.App">
+    <Style TargetType="{x:Type local:MainWindow}">
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForeground}" />
+    </Style>
+
+    <Style TargetType="TreeView">
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForeground}" />
+    </Style>
+</ResourceDictionary>

@@ -14,6 +14,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/Generic.xaml" />
+                <ResourceDictionary Source="Themes/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type dragablz:HeaderedItemViewModel}">
                 <ContentControl Content="{Binding Content}" Margin="4 4 4 4" FontSize="14" />
@@ -33,6 +34,9 @@
                 <Setter Property="ItemContainerStyle" Value="{StaticResource TrapezoidDragableTabItemStyle}" />
                 <Setter Property="HeaderMemberPath" Value="Header" />
                 <Setter Property="Margin" Value="0 8 0 0" />
+                <Setter Property="Background" Value="{DynamicResource PrimaryBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryForeground}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryForeground}" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=(dockablz:Layout.IsTopLeftItem)}" Value="True">
                         <Setter Property="HeaderPrefixContent" Value="{StaticResource WindowIcon}" />
