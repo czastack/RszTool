@@ -48,6 +48,7 @@ namespace RszTool
             /// <returns></returns>
             public static GameObjectData FromScnGameObject(ScnFile.GameObjectData scnGameObject)
             {
+                RszInstance.CleanCloneCache();
                 GameObjectData gameObject = new()
                 {
                     Info = new()
@@ -58,9 +59,8 @@ namespace RszTool
                             componentCount = scnGameObject.Components.Count,
                         }
                     },
-                    Components = new(scnGameObject.Components.Select(item => (RszInstance)item.Clone())),
-                    Instance = scnGameObject.Instance != null ?
-                        (RszInstance)scnGameObject.Instance.Clone() : null
+                    Components = new(scnGameObject.Components.Select(item => item.CloneCached())),
+                    Instance = scnGameObject.Instance?.CloneCached()
                 };
                 foreach (var child in scnGameObject.Children)
                 {
@@ -68,6 +68,7 @@ namespace RszTool
                     newChild.Parent = gameObject;
                     gameObject.Children.Add(newChild);
                 }
+                RszInstance.CleanCloneCache();
                 return gameObject;
             }
 

@@ -474,56 +474,6 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 导入实例
-        /// </summary>
-        /// <param name="instance"></param>
-        /// <param name="clone">是否克隆instance</param>
-        /// <param name="addToObjectTable">添加到ObjectTable</param>
-        /// <returns>如果clone为true，返回导入的实例副本，否则返回原始实例</returns>
-        public RszInstance ImportInstance(RszInstance instance, bool clone = true, bool addToObjectTable = false)
-        {
-            instance = clone ? (RszInstance)instance.Clone() : instance;
-            if (!clone && InstanceList.Contains(instance))
-            {
-                throw new InvalidOperationException("instance already in InstanceList");
-            }
-            int start = InstanceList.Count;
-            FixInstanceIndexRecurse(instance);
-            for (int i = start; i < InstanceList.Count; i++)
-            {
-                var newInstance = InstanceList[i];
-                InstanceInfoList.Add(new InstanceInfo
-                {
-                    typeId = newInstance.RszClass.typeId,
-                    CRC = newInstance.RszClass.crc
-                });
-                if (newInstance.RSZUserData != null)
-                {
-                    RSZUserDataInfoList.Add(newInstance.RSZUserData);
-                }
-                if (addToObjectTable)
-                {
-                    AddToObjectTable(instance);
-                }
-            }
-            return instance;
-        }
-
-        /// <summary>
-        /// 导入实例
-        /// </summary>
-        /// <param name="instances"></param>
-        /// <param name="addToObjectTable"></param>
-        /// <returns>导入的副本列表，如果clone为false，返回null</returns>
-        public void ImportInstances(IEnumerable<RszInstance> instances, bool clone = true, bool addToObjectTable = false)
-        {
-            foreach (var instance in instances)
-            {
-                ImportInstance(instance, clone, addToObjectTable);
-            }
-        }
-
-        /// <summary>
         /// 数组拷贝并插入元素
         /// </summary>
         /// <param name="array">数组</param>

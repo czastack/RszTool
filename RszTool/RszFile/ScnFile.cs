@@ -112,8 +112,8 @@ namespace RszTool
                 GameObjectData gameObject = new()
                 {
                     Info = Info != null ? new() { Data = Info.Data } : null,
-                    Components = new(Components.Select(item => (RszInstance)item.Clone())),
-                    Instance = Instance != null ? (RszInstance)Instance.Clone() : null,
+                    Components = new(Components.Select(item => item.CloneCached())),
+                    Instance = Instance?.CloneCached(),
                     Prefab = Prefab != null ? (PrefabInfo)Prefab.Clone() : null
                 };
                 foreach (var child in Children)
@@ -669,6 +669,7 @@ namespace RszTool
         public void ImportGameObject(GameObjectData gameObject, FolderData? folder = null,
                                      GameObjectData? parent = null, bool isDuplicate = false)
         {
+            RszInstance.CleanCloneCache();
             GameObjectData newGameObject = (GameObjectData)gameObject.Clone();
 
             newGameObject.Folder = null;
@@ -700,6 +701,7 @@ namespace RszTool
                 collection.Add(newGameObject);
             }
             StructChanged = true;
+            RszInstance.CleanCloneCache();
         }
 
         /// <summary>

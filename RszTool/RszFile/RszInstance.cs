@@ -389,41 +389,91 @@ namespace RszTool
         }
 
         /// <summary>
+        /// 避免被引用多次的instance拷贝多次
+        /// 每次拷贝会话，比如ImportGameObject后应该清空
+        /// </summary>
+        public static Dictionary<RszInstance, RszInstance> CloneCache { get; } = new();
+
+        public static void CleanCloneCache()
+        {
+            CloneCache.Clear();
+        }
+
+        /// <summary>
         /// 拷贝自身，如果字段值是RszInstance，则递归拷贝
         /// </summary>
         /// <returns></returns>
         public override object Clone()
         {
+            return CloneImpl(false);
+        }
+
+        /// <summary>
+        /// 拷贝自身，如果字段值是RszInstance，则递归拷贝
+        /// </summary>
+        /// <returns></returns>
+        public RszInstance CloneCached()
+        {
+            return CloneImpl(true);
+        }
+
+        private RszInstance CloneImpl(bool cached)
+        {
+            if (cached && CloneCache.TryGetValue(this, out RszInstance? copy)) return copy;
             IRSZUserDataInfo? userData = RSZUserData != null ? (IRSZUserDataInfo)RSZUserData.Clone() : null;
-            RszInstance copy = new(RszClass, -1, userData);
+            copy = new(RszClass, -1, userData);
+            if (cached) CloneCache[this] = copy;
             Array.Copy(Values, copy.Values, Values.Length);
             if (userData == null)
             {
                 for (int i = 0; i < RszClass.fields.Length; i++)
                 {
                     var field = RszClass.fields[i];
-                    if (field.IsReference)
+                    if (field.array)
                     {
-                        if (field.array)
+                        var newArray = new List<object>((List<object>)copy.Values[i]);
+                        copy.Values[i] = newArray;
+                        for (int j = 0; j < newArray.Count; j++)
                         {
-                            var newArray = new List<object>((List<object>)copy.Values[i]);
-                            copy.Values[i] = newArray;
-                            for (int j = 0; j < newArray.Count; j++)
+                            if (field.IsReference && newArray[j] is RszInstance item)
                             {
-                                if (newArray[j] is RszInstance item)
-                                {
-                                    newArray[j] = item.Clone();
-                                }
+                                newArray[j] = item.CloneImpl(cached);
+                            }
+                            else
+                            {
+                                newArray[j] = CloneValueType(newArray[j]);
                             }
                         }
-                        else if (copy.Values[i] is RszInstance instance)
-                        {
-                            copy.Values[i] = instance.Clone();
-                        }
+                    }
+                    else if (field.IsReference && copy.Values[i] is RszInstance instance)
+                    {
+                        copy.Values[i] = instance.CloneImpl(cached);
+                    }
+                    else
+                    {
+                        copy.Values[i] = CloneValueType(copy.Values[i]);
                     }
                 }
             }
             return copy;
+        }
+
+        private static System.Reflection.MethodInfo? memberwiseClone;
+
+        private static object CloneValueType(object value)
+        {
+            Type type = value.GetType();
+            if (type.IsValueType && !type.IsPrimitive && !type.IsEnum)
+            {
+                memberwiseClone ??= typeof(object).GetMethod("MemberwiseClone",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                if (memberwiseClone != null)
+                {
+                    var newObject = memberwiseClone.Invoke(value, null);
+                    if (newObject != null) return newObject;
+                }
+            }
+            return value;
         }
 
         public IEnumerable<RszInstance> Flatten()
