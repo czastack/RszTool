@@ -21,6 +21,8 @@
                     <MenuItem Header="_Copy" Command="{Binding PlacementTarget.Tag.CopyArrayItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
                     <MenuItem Header="Remove" Command="{Binding PlacementTarget.Tag.RemoveArrayItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
                     <MenuItem Header="Duplicate" Command="{Binding PlacementTarget.Tag.DuplicateArrayItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="DuplicateMulti" Command="{Binding PlacementTarget.Tag.DuplicateArrayItemMulti, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="PasteAfter" Command="{Binding PlacementTarget.Tag.PasteArrayItemAfter, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
                 </ContextMenu>
             </TextBlock.ContextMenu>
         </TextBlock>

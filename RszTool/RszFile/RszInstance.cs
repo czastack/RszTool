@@ -137,12 +137,12 @@ namespace RszTool
             {
                 int intValue = BitConverter.ToInt32((byte[])data, 0);
                 // 检测Object
-                if (intValue < Index && intValue > 0 && intValue > Index - 101)
+                if (intValue < Index && intValue > 3 && intValue > Index - 101)
                 {
                     field.type = RszFieldType.Object;
                     field.IsTypeInferred = true;
                     data = intValue;
-                    // Console.WriteLine($"Detect {RszClass.name}.{field.name} as Object");
+                    Console.WriteLine($"Detect {Name}.{field.name} as Object");
                     return true;
                 }
                 // 检测float和int

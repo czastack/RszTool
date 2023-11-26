@@ -27,12 +27,75 @@ namespace RszTool
                 {
                     Null.name = "NULL";
                 }
-                var GameObject = RszParser.GetRSZClass("via.GameObject");
-                if (GameObject?.GetField("v4") is RszField v4 && v4.type == RszFieldType.Data && v4.size == 4)
                 {
-                    v4.type = RszFieldType.F32;
+                    var rszClass = RszParser.GetRSZClass("via.GameObject");
+                    DetectFieldAsFloat(rszClass, "v4");
+                }
+                {
+                    var rszClass = RszParser.GetRSZClass("via.render.Mesh");
+                    DetectFieldAsInt(rszClass, "v0", "v10", "v45");
+                }
+                {
+                    var rszClass = RszParser.GetRSZClass("via.physics.Colliders");
+                    DetectFieldAsObject(rszClass, "v5");
+                }
+                {
+                    var rszClass = RszParser.GetRSZClass("via.physics.Collider");
+                    DetectFieldAsObject(rszClass, "v2", "v3", "v4");
+                }
+                {
+                    var rszClass = RszParser.GetRSZClass("chainsaw.collision.GimmickSensorUserData");
+                    DetectFieldAsObject(rszClass, "v1");
+                }
+                {
+                    var rszClass = RszParser.GetRSZClass("chainsaw.collision.GimmickDamageUserData");
+                    DetectFieldAsObject(rszClass, "v1");
+                }
+                {
+                    var rszClass = RszParser.GetRSZClass("chainsaw.collision.AttackUserData");
+                    DetectFieldAsObject(rszClass, "v1");
+                }
+                {
+                    var rszClass = RszParser.GetRSZClass("chainsaw.collision.DamageUserData");
+                    DetectFieldAsObject(rszClass, "v1");
+                }
+                {
+                    var rszClass = RszParser.GetRSZClass("via.motion.Motion");
+                    DetectFieldAsObject(rszClass, "v17");
+                }
+                {
+                    var rszClass = RszParser.GetRSZClass("via.navigation.AIMapEffector");
+                    DetectFieldAsObject(rszClass, "v3", "v9");
                 }
             }
+        }
+
+        private static void DetectFieldAs(RszClass? rszClass, RszFieldType type, params string[] fieldNames)
+        {
+            if (rszClass == null) return;
+            foreach (var fieldName in fieldNames)
+            {
+                if (rszClass?.GetField(fieldName) is RszField field && field.type == RszFieldType.Data && field.size == 4)
+                {
+                    field.type = type;
+                    field.IsTypeInferred = true;
+                }
+            }
+        }
+
+        private static void DetectFieldAsInt(RszClass? rszClass, params string[] fieldNames)
+        {
+            DetectFieldAs(rszClass, RszFieldType.S32, fieldNames);
+        }
+
+        private static void DetectFieldAsObject(RszClass? rszClass, params string[] fieldNames)
+        {
+            DetectFieldAs(rszClass, RszFieldType.Object, fieldNames);
+        }
+
+        private static void DetectFieldAsFloat(RszClass? rszClass, params string[] fieldNames)
+        {
+            DetectFieldAs(rszClass, RszFieldType.F32, fieldNames);
         }
     }
 }

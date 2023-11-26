@@ -62,6 +62,10 @@ namespace RszTool
 
         protected override bool DoWrite()
         {
+            if (StructChanged)
+            {
+                RebuildInfoTable();
+            }
             FileHandler handler = FileHandler;
             handler.Clear();
             ref var header = ref Header.Data;
@@ -92,6 +96,7 @@ namespace RszTool
             RSZ!.RebuildInstanceInfo();
             RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);
             RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ);
+            StructChanged = false;
         }
     }
 }

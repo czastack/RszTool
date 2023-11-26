@@ -423,6 +423,7 @@ namespace RszTool
             }
             RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);
             RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ);
+            StructChanged = false;
         }
 
         /// <summary>

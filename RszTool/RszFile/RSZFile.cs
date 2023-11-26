@@ -145,7 +145,6 @@ namespace RszTool
             if (StructChanged)
             {
                 RebuildInstanceInfo();
-                StructChanged = false;
             }
             FileHandler handler = FileHandler;
             ref var header = ref Header.Data;
@@ -452,6 +451,7 @@ namespace RszTool
                 }
                 ObjectList = newObjectList;
             }
+            StructChanged = false;
         }
 
         /// <summary>
@@ -481,9 +481,10 @@ namespace RszTool
         /// <param name="insertPos">插入位置</param>
         /// <param name="isDuplicate">在原先元素的后面插入</param>
         public RszInstance ArrayInsertItem(List<object> array, RszInstance insertItem,
-                                    int insertPos = -1, bool isDuplicate = false)
+                                           int insertPos = -1, bool isDuplicate = false)
         {
-            RszInstance newItem = (RszInstance)insertItem.Clone();
+            RszInstance.CleanCloneCache();
+            RszInstance newItem = insertItem.CloneCached();
             if (isDuplicate)
             {
                 insertPos = array.IndexOf(insertItem);
@@ -495,6 +496,7 @@ namespace RszTool
             }
             array.Insert(insertPos, newItem);
             StructChanged = true;
+            RszInstance.CleanCloneCache();
             return newItem;
         }
 

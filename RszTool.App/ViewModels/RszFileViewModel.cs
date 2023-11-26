@@ -23,6 +23,8 @@ namespace RszTool.App.ViewModels
         public RelayCommand CopyArrayItem => new(OnCopyArrayItem);
         public RelayCommand RemoveArrayItem => new(OnRemoveArrayItem);
         public RelayCommand DuplicateArrayItem => new(OnDuplicateArrayItem);
+        public RelayCommand DuplicateArrayItemMulti => new(OnDuplicateArrayItemMulti);
+        public RelayCommand PasteArrayItemAfter => new(OnPasteArrayItemAfter);
 
         public static RszInstance? CopiedInstance { get; private set; }
 
@@ -67,6 +69,48 @@ namespace RszTool.App.ViewModels
             if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
             {
                 rsz.ArrayInsertItem(item.Values, item.Instance, isDuplicate: true);
+                item.Array.NotifyValueChanged();
+            }
+        }
+
+        protected void OnDuplicateArrayItemMulti(object arg)
+        {
+            if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
+            {
+                Views.InputDialog dialog = new()
+                {
+                    Message = "请输入重复次数",
+                    Owner = App.Current.MainWindow,
+                };
+                // 显示对话框，并等待用户输入
+                if (dialog.ShowDialog() == true)
+                {
+                    string userInput = dialog.InputText;
+                    int count = int.Parse(userInput);
+                    for (int i = 0; i < count; i++)
+                    {
+                        rsz.ArrayInsertItem(item.Values, item.Instance, isDuplicate: true);
+                    }
+                }
+                item.Array.NotifyValueChanged();
+            }
+        }
+
+        /// <summary>
+        /// 在后面粘贴
+        /// </summary>
+        /// <param name="arg"></param>
+        protected void OnPasteArrayItemAfter(object arg)
+        {
+            if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz &&
+                CopiedInstance != null)
+            {
+                if (CopiedInstance.RszClass != item.Instance.RszClass)
+                {
+                    var error = new InvalidOperationException($"CopiedInstance is {CopiedInstance.RszClass.name}, missmatch {item.Instance.RszClass.name}");
+                    App.ShowUnhandledException(error, "OnPasteArrayItemAfter");
+                }
+                rsz.ArrayInsertItem(item.Values, CopiedInstance, item.Values.IndexOf(item.Instance) + 1);
                 item.Array.NotifyValueChanged();
             }
         }
