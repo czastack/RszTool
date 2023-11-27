@@ -76,7 +76,7 @@ namespace RszTool.App
             }
 
             // Let the user decide if the app should die or not (if applicable).
-            if (MessageBox.Show(messageBoxMessage, messageBoxTitle, messageBoxButtons) == MessageBoxResult.Yes &&
+            if (MessageBox.Show(Application.Current.MainWindow, messageBoxMessage, messageBoxTitle, messageBoxButtons) == MessageBoxResult.Yes &&
                 promptUserForShutdown)
             {
                 Application.Current.Shutdown();

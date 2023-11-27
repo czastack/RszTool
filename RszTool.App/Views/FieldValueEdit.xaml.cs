@@ -20,9 +20,27 @@ namespace RszTool.App.Views
     /// </summary>
     public partial class FieldValueEdit : UserControl
     {
+        public static readonly DependencyProperty ValueChangedProperty =
+            DependencyProperty.Register("ValueChanged", typeof(bool), typeof(FieldValueEdit),
+                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
         public FieldValueEdit()
         {
             InitializeComponent();
+        }
+
+        public bool ValueChanged
+        {
+            get { return (bool)GetValue(ValueChangedProperty); }
+            set { SetValue(ValueChangedProperty, value); }
+        }
+
+        private void OnBindingSourceUpdated(object sender, DataTransferEventArgs args)
+        {
+            if (args.Property == TextBox.TextProperty)
+            {
+                ValueChanged = true;
+            }
         }
     }
 }

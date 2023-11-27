@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using RszTool.App.Common;
 
 namespace RszTool.App.ViewModels
@@ -19,7 +20,7 @@ namespace RszTool.App.ViewModels
                 return path != null ? Path.GetFileName(path) : null;
             }
         }
-        public bool Changed { get; protected set; }
+        public bool Changed { get; set; }
         public RelayCommand CopyArrayItem => new(OnCopyArrayItem);
         public RelayCommand RemoveArrayItem => new(OnRemoveArrayItem);
         public RelayCommand DuplicateArrayItem => new(OnDuplicateArrayItem);
@@ -80,7 +81,7 @@ namespace RszTool.App.ViewModels
                 Views.InputDialog dialog = new()
                 {
                     Message = "请输入重复次数",
-                    Owner = App.Current.MainWindow,
+                    Owner = Application.Current.MainWindow,
                 };
                 // 显示对话框，并等待用户输入
                 if (dialog.ShowDialog() == true)

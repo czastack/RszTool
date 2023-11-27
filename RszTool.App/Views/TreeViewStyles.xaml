@@ -33,11 +33,11 @@
     </HierarchicalDataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:RszFieldNormalViewModel}">
-        <local:FieldValueEdit DataContext="{Binding}" />
+        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding DataContext.Changed, RelativeSource={RelativeSource AncestorType=UserControl}}" />
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:RszFieldArrayNormalItemViewModel}">
-        <local:FieldValueEdit DataContext="{Binding}" />
+        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding DataContext.Changed, RelativeSource={RelativeSource AncestorType=UserControl}}" />
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:ClassPropertyViewModel}">

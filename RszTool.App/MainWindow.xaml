@@ -5,9 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RszTool.App"
         xmlns:views="clr-namespace:RszTool.App.Views"
+        xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
         xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
         xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowModel}"
         Title="RszTool" Height="450" Width="800"
         AllowDrop="True" DragOver="OnDragOver" Drop="OnDrop">
     <Window.Resources>
@@ -51,6 +53,9 @@
         <KeyBinding Command="{Binding CloseCommand}" Modifiers="Control" Key="W" />
         <KeyBinding Command="{Binding QuitCommand}" Modifiers="Control" Key="Q" />
     </Window.InputBindings>
+    <Window.DataContext>
+        <viewmodels:MainWindowModel />
+    </Window.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">

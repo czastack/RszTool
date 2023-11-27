@@ -17,13 +17,9 @@ namespace RszTool.App
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly MainWindowModel mainWindowModel;
-
         public MainWindow()
         {
             InitializeComponent();
-            mainWindowModel = new();
-            DataContext = mainWindowModel;
         }
 
         public void OnDragOver(object sender, DragEventArgs e)
@@ -41,6 +37,7 @@ namespace RszTool.App
 
         public void OnDrop(object sender, DragEventArgs e)
         {
+            if (DataContext is not MainWindowModel mainWindowModel) return;
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);

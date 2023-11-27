@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel;
+using RszTool.App.Common;
 
 namespace RszTool.App.ViewModels
 {
     public interface IFieldValueViewModel
     {
-        RszField Field {  get; }
+        RszField Field { get; }
         string Name { get; }
         object Value { get; set; }
     }
@@ -52,8 +53,15 @@ namespace RszTool.App.ViewModels
             {
                 var field = Field;
                 var type = RszInstance.RszFieldTypeToCSharpType(field.type);
-                value = Convert.ChangeType(value, type);
-                base.Value = value;
+                try
+                {
+                    value = Convert.ChangeType(value, type);
+                    base.Value = value;
+                }
+                catch (Exception)
+                {
+                    MessageBoxUtils.Warning("Format error");
+                }
             }
         }
     }
@@ -137,8 +145,15 @@ namespace RszTool.App.ViewModels
             {
                 var field = Field;
                 var type = RszInstance.RszFieldTypeToCSharpType(field.type);
-                value = Convert.ChangeType(value, type);
-                base.Value = value;
+                try
+                {
+                    value = Convert.ChangeType(value, type);
+                    base.Value = value;
+                }
+                catch (Exception)
+                {
+                    MessageBoxUtils.Warning("Format error");
+                }
             }
         }
     }
