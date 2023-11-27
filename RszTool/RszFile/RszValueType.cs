@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace RszTool.via
 {
@@ -21,6 +22,21 @@ namespace RszTool.via
         {
             return new Vector2(range.r, range.s);
         }
+
+        public float this[int index]
+        {
+            readonly get
+            {
+                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                return index == 0 ? r : s;
+            }
+            set
+            {
+                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                if (index == 0) r = value;
+                else s = value;
+            }
+        }
     }
 
 
@@ -32,6 +48,21 @@ namespace RszTool.via
         public readonly override string ToString()
         {
             return $"Range({r}, {s})";
+        }
+
+        public int this[int index]
+        {
+            readonly get
+            {
+                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                return index == 0 ? r : s;
+            }
+            set
+            {
+                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                if (index == 0) r = value;
+                else s = value;
+            }
         }
     }
 
@@ -53,6 +84,28 @@ namespace RszTool.via
         public float m31;
         public float m32;
         public float m33;
+
+        public float this[int index]
+        {
+            get
+            {
+                if (index < 0 || index > 15) throw new IndexOutOfRangeException($"Index must be between 0 and 15, got {index}");
+                ref float ptr = ref m00;
+                return Unsafe.Add(ref ptr, index);
+            }
+            set
+            {
+                if (index < 0 || index > 15) throw new IndexOutOfRangeException($"Index must be between 0 and 15, got {index}");
+                ref float ptr = ref m00;
+                Unsafe.Add(ref ptr, index) = value;
+            }
+        }
+
+        /* public float this[int row, int col]
+        {
+            get => this[row * 4 + col];
+            set => this[row * 4 + col] = value;
+        } */
     }
 
 
@@ -68,6 +121,8 @@ namespace RszTool.via
     {
         public Vector3 pos;
         public float r;
+
+        public float R { readonly get => r; set => r = value; }
     }
 
 

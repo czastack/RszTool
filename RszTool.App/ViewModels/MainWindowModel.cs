@@ -29,7 +29,19 @@ namespace RszTool.App.ViewModels
         /// <param name="path"></param>
         public void OpenFile(string path)
         {
-            // TODO check file opened
+            // check file opened
+            foreach (var item in Items)
+            {
+                if (item is FileTabItemViewModel fileTab)
+                {
+                    if (fileTab.FileViewModel.FilePath == path)
+                    {
+                        SelectedTabItem = item;
+                        return;
+                    }
+                }
+            }
+
             BaseRszFileViewModel? fileViewModel = null;
             ContentControl? content = null;
             RszFileOption option = new(GameName);

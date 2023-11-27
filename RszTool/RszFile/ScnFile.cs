@@ -348,6 +348,27 @@ namespace RszTool
         }
 
         /// <summary>
+        /// 迭代GameObject以及子物体的实例和组件实例
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public static IEnumerable<RszInstance> IterGameObjectInstances(GameObjectData gameObject)
+        {
+            yield return gameObject.Instance!;
+            foreach (var item in gameObject.Components)
+            {
+                yield return item;
+            }
+            foreach (var child in gameObject.Children)
+            {
+                foreach (var item in IterGameObjectInstances(child))
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        /// <summary>
         /// 收集Folder以及子Folder的实例和组件实例
         /// </summary>
         /// <param name="gameObject"></param>
@@ -362,6 +383,30 @@ namespace RszTool
             foreach (var child in folder.Children)
             {
                 CollectFolderGameObjectInstances(child, rszInstances);
+            }
+        }
+
+        /// <summary>
+        /// 迭代Folder以及子Folder的实例和组件实例
+        /// </summary>
+        /// <param name="folder"></param>
+        /// <returns></returns>
+        public static IEnumerable<RszInstance> IterFolderGameObjectInstances(FolderData folder)
+        {
+            yield return folder.Instance!;
+            foreach (var gameObject in folder.GameObjects)
+            {
+                foreach (var item in IterGameObjectInstances(gameObject))
+                {
+                    yield return item;
+                }
+            }
+            foreach (var child in folder.Children)
+            {
+                foreach (var item in IterFolderGameObjectInstances(child))
+                {
+                    yield return item;
+                }
             }
         }
 
@@ -691,6 +736,11 @@ namespace RszTool
                 GameObjectDatas ??= [];
                 collection = GameObjectDatas;
             }
+
+            // 为了可视化重新排序号，否则会显示序号是-1，但实际上保存的时候的序号和现在编号的可能不一致
+            // 所以要考虑这步操作是否有必要
+            RSZ!.FixInstanceListIndex(IterGameObjectInstances(newGameObject));
+
             if (isDuplicate)
             {
                 int index = collection.IndexOf(gameObject);
