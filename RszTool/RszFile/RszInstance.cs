@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Numerics;
 using System.Text;
 using RszTool.Common;
@@ -197,10 +196,12 @@ namespace RszTool
                     RszFieldType.OBB => handler.Read<via.OBB>(),
                     RszFieldType.AABB => handler.Read<via.AABB>(),
                     RszFieldType.Guid or RszFieldType.GameObjectRef => handler.Read<Guid>(),
-                    RszFieldType.Color => handler.Read<Color>(),
+                    RszFieldType.Color => handler.Read<via.Color>(),
                     RszFieldType.Range => handler.Read<via.Range>(),
                     RszFieldType.Quaternion => handler.Read<Quaternion>(),
                     RszFieldType.Sphere => handler.Read<via.Sphere>(),
+                    RszFieldType.Capsule => handler.Read<via.Capsule>(),
+                    RszFieldType.Area => handler.Read<via.Area>(),
                     _ => throw new NotSupportedException($"Not support type {field.type}"),
                 };
                 /* if (field.size != handler.Tell() - startPos)
@@ -300,10 +301,12 @@ namespace RszTool
                     RszFieldType.OBB => handler.Write((via.OBB)value),
                     RszFieldType.AABB => handler.Write((via.AABB)value),
                     RszFieldType.Guid or RszFieldType.GameObjectRef => handler.Write((Guid)value),
-                    RszFieldType.Color => handler.Write((Color)value),
+                    RszFieldType.Color => handler.Write((via.Color)value),
                     RszFieldType.Range => handler.Write((via.Range)value),
                     RszFieldType.Quaternion => handler.Write((Quaternion)value),
                     RszFieldType.Sphere => handler.Write((via.Sphere)value),
+                    RszFieldType.Capsule => handler.Write((via.Capsule)value),
+                    RszFieldType.Area => handler.Write((via.Area)value),
                     _ => throw new NotSupportedException($"Not support type {field.type}"),
                 };
                 handler.Seek(startPos + field.size);
@@ -333,10 +336,12 @@ namespace RszTool
                 RszFieldType.Vec4 or RszFieldType.Float4 => typeof(Vector4),
                 RszFieldType.AABB => typeof(via.AABB),
                 RszFieldType.Guid or RszFieldType.GameObjectRef => typeof(Guid),
-                RszFieldType.Color => typeof(Color),
+                RszFieldType.Color => typeof(via.Color),
                 RszFieldType.Range => typeof(via.Range),
                 RszFieldType.Quaternion => typeof(Quaternion),
                 RszFieldType.Sphere => typeof(via.Sphere),
+                RszFieldType.Capsule => typeof(via.Capsule),
+                RszFieldType.Area => typeof(via.Area),
                 RszFieldType.String or RszFieldType.Resource => typeof(string),
                 _ => throw new NotSupportedException($"Not support type {type}"),
             };
@@ -368,6 +373,8 @@ namespace RszTool
             [typeof(via.Range)] = RszFieldType.Range,
             [typeof(Quaternion)] = RszFieldType.Quaternion,
             [typeof(via.Sphere)] = RszFieldType.Sphere,
+            [typeof(via.Capsule)] = RszFieldType.Capsule,
+            [typeof(via.Area)] = RszFieldType.Area,
             [typeof(string)] = RszFieldType.String,
         };
 

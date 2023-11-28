@@ -10,6 +10,9 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:IFieldValueViewModel}"
              d:DesignHeight="200" d:DesignWidth="800">
     <UserControl.Resources>
+        <viewmodels:ColorConverter x:Key="ColorConverter"/>
+        <viewmodels:GuidConverter x:Key="GuidConverter"/>
+
         <DataTemplate x:Key="InputText" DataType="{x:Type viewmodels:IFieldValueViewModel}">
             <TextBox Text="{Binding Value, NotifyOnSourceUpdated=True}" />
         </DataTemplate>
@@ -80,6 +83,15 @@
                 <TextBox Text="{Binding Value[14], NotifyOnSourceUpdated=True}" Grid.Column="2" Grid.Row="3" />
                 <TextBox Text="{Binding Value[15], NotifyOnSourceUpdated=True}" Grid.Column="3" Grid.Row="3" />
             </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="InputColor" DataType="{x:Type viewmodels:IFieldValueViewModel}">
+            <TextBox Text="{Binding Value, NotifyOnSourceUpdated=True, Converter={StaticResource ColorConverter}}" />
+        </DataTemplate>
+        <DataTemplate x:Key="InputGuid" DataType="{x:Type viewmodels:IFieldValueViewModel}">
+            <DockPanel>
+                <Button Content="New" Click="OnGuidNew" DockPanel.Dock="Right" />
+                <TextBox Text="{Binding Value, NotifyOnSourceUpdated=True, Converter={StaticResource GuidConverter}}" />
+            </DockPanel>
         </DataTemplate>
 
         <local:FieleTypeDataTemplateSelector x:Key="FieleTypeDataTemplateSelector"/>

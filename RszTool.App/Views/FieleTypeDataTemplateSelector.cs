@@ -10,14 +10,17 @@ namespace RszTool.App.Views
         {
             if (container is FrameworkElement element && item is IFieldValueViewModel viewModel)
             {
-                return viewModel.Field.type switch
+                var resource = viewModel.Field.type switch
                 {
-                    RszFieldType.Vec2 or RszFieldType.Float2 or RszFieldType.Range or RszFieldType.RangeI => (DataTemplate)element.FindResource("InputVec2"),
-                    RszFieldType.Vec3 or RszFieldType.Float3 => (DataTemplate)element.FindResource("InputVec3"),
-                    RszFieldType.Vec4 or RszFieldType.Float4 => (DataTemplate)element.FindResource("InputVec4"),
-                    RszFieldType.Mat4 => (DataTemplate)element.FindResource("InputMat4"),
-                    _ => (DataTemplate)element.FindResource("InputText"),
+                    RszFieldType.Vec2 or RszFieldType.Float2 or RszFieldType.Range or RszFieldType.RangeI => element.FindResource("InputVec2"),
+                    RszFieldType.Vec3 or RszFieldType.Float3 => element.FindResource("InputVec3"),
+                    RszFieldType.Vec4 or RszFieldType.Float4 => element.FindResource("InputVec4"),
+                    RszFieldType.Mat4 => element.FindResource("InputMat4"),
+                    RszFieldType.Guid or RszFieldType.GameObjectRef => element.FindResource("InputGuid"),
+                    RszFieldType.Color => element.FindResource("InputColor"),
+                    _ => element.FindResource("InputText"),
                 };
+                return (DataTemplate)resource;
             }
 
             return base.SelectTemplate(item, container);

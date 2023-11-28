@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using RszTool.App.ViewModels;
 
 namespace RszTool.App.Views
 {
@@ -41,6 +42,11 @@ namespace RszTool.App.Views
             {
                 ValueChanged = true;
             }
+        }
+
+        private void OnGuidNew(object sender, RoutedEventArgs e)
+        {
+            ((IFieldValueViewModel)DataContext).Value = Guid.NewGuid();
         }
     }
 }

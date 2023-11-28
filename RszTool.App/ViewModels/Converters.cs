@@ -124,4 +124,39 @@ namespace RszTool.App.ViewModels
             return null;
         }
     }
+
+
+    [ValueConversion(typeof(via.Color), typeof(string))]
+    public class ColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ((via.Color)value).Hex();
+        }
+
+        public object? ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return via.Color.Parse((string)value);
+        }
+    }
+
+
+    [ValueConversion(typeof(Guid), typeof(string))]
+    public class GuidConverter : IValueConverter
+    {
+        public GuidConverter()
+        {
+            Console.WriteLine("GuidConverter");
+        }
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ((Guid)value).ToString();
+        }
+
+        public object? ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return Guid.Parse((string)value);
+        }
+    }
 }

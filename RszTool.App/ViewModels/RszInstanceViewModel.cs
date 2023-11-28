@@ -51,16 +51,10 @@ namespace RszTool.App.ViewModels
             get => base.Value;
             set
             {
-                var field = Field;
-                var type = RszInstance.RszFieldTypeToCSharpType(field.type);
-                try
+                object? result = ConvertUtils.ConvertRszValue(Field, value);
+                if (result != null)
                 {
-                    value = Convert.ChangeType(value, type);
-                    base.Value = value;
-                }
-                catch (Exception)
-                {
-                    MessageBoxUtils.Warning("Format error");
+                    base.Value = result;
                 }
             }
         }
@@ -143,16 +137,10 @@ namespace RszTool.App.ViewModels
             get => base.Value;
             set
             {
-                var field = Field;
-                var type = RszInstance.RszFieldTypeToCSharpType(field.type);
-                try
+                object? result = ConvertUtils.ConvertRszValue(Field, value);
+                if (result != null)
                 {
-                    value = Convert.ChangeType(value, type);
-                    base.Value = value;
-                }
-                catch (Exception)
-                {
-                    MessageBoxUtils.Warning("Format error");
+                    base.Value = result;
                 }
             }
         }

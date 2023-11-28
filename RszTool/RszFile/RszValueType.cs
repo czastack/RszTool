@@ -1,8 +1,10 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace RszTool.via
 {
+    // Size=8
     public struct Range
     {
         public float r;
@@ -40,6 +42,7 @@ namespace RszTool.via
     }
 
 
+    // Size=8
     public struct RangeI
     {
         public int r;
@@ -67,6 +70,29 @@ namespace RszTool.via
     }
 
 
+    // Size=4
+    public struct Color
+    {
+        public uint rgba;
+
+        public readonly string Hex()
+        {
+            return rgba.ToString("X8");
+        }
+
+        /// <summary>
+        /// Parse a hex string
+        /// </summary>
+        /// <param name="hex"></param>
+        /// <returns></returns>
+        public static Color Parse(string hex)
+        {
+            return new Color { rgba = uint.Parse(hex, System.Globalization.NumberStyles.HexNumber) };
+        }
+    }
+
+
+    // Size=64
     public struct mat4 {
         public float m00;
         public float m01;
@@ -109,14 +135,17 @@ namespace RszTool.via
     }
 
 
+    [StructLayout(LayoutKind.Explicit, Size = 80)]
     public struct OBB
     {
+        [FieldOffset(0)]
         public mat4 coord;
+        [FieldOffset(64)]
         public Vector3 extent;
-        public float _padding;
     }
 
 
+    // Size=16
     public struct Sphere
     {
         public Vector3 pos;
@@ -126,11 +155,42 @@ namespace RszTool.via
     }
 
 
+    [StructLayout(LayoutKind.Explicit, Size = 32)]
     public struct AABB
     {
+        [FieldOffset(0)]
         public Vector3 minpos;
-        public float _padding;
+        [FieldOffset(16)]
         public Vector3 maxpos;
-        public float _padding2;
+    }
+
+
+    [StructLayout(LayoutKind.Explicit, Size = 48)]
+    public struct Capsule
+    {
+        [FieldOffset(0)]
+        public Vector3 p0;
+        [FieldOffset(16)]
+        public Vector3 p1;
+        [FieldOffset(32)]
+        public float r;
+    }
+
+
+    [StructLayout(LayoutKind.Explicit, Size = 48)]
+    public struct Area
+    {
+        [FieldOffset(0)]
+        public Vector2 p0;
+        [FieldOffset(8)]
+        public Vector2 p1;
+        [FieldOffset(16)]
+        public Vector2 p2;
+        [FieldOffset(24)]
+        public Vector2 p3;
+        [FieldOffset(32)]
+        public float height;
+        [FieldOffset(36)]
+        public float bottom;
     }
 }
