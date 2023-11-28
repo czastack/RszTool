@@ -30,15 +30,14 @@ namespace RszTool.App.ViewModels
     }
 
 
-    [ValueConversion(typeof(ScnFile.GameObjectData), typeof(IEnumerable<BaseTreeItemViewModel>))]
+    [ValueConversion(typeof(ScnFile.GameObjectData), typeof(IEnumerable<object>))]
     public class ScnGameObjectDataSubItemsConverter : IValueConverter
     {
-        public static IEnumerable<BaseTreeItemViewModel> Convert(ScnFile.GameObjectData gameObject)
+        public static IEnumerable<object> Convert(ScnFile.GameObjectData gameObject)
         {
             if (gameObject.Instance != null)
             {
-                yield return new TreeItemDelegate(gameObject.Instance.Name,
-                    () => RszInstanceToFieldViewModels.Convert(gameObject.Instance));
+                yield return gameObject.Instance;
             }
             yield return new TreeItemViewModel("Components", gameObject.Components);
             yield return new TreeItemViewModel("Children", gameObject.Children);
@@ -61,15 +60,14 @@ namespace RszTool.App.ViewModels
     }
 
 
-    [ValueConversion(typeof(ScnFile.FolderData), typeof(IEnumerable<BaseTreeItemViewModel>))]
+    [ValueConversion(typeof(ScnFile.FolderData), typeof(IEnumerable<object>))]
     public class ScnFolderDataSubItemsConverter : IValueConverter
     {
-        public static IEnumerable<BaseTreeItemViewModel> Convert(ScnFile.FolderData folder)
+        public static IEnumerable<object> Convert(ScnFile.FolderData folder)
         {
             if (folder.Instance != null)
             {
-                yield return new TreeItemDelegate(folder.Instance.Name,
-                    () => RszInstanceToFieldViewModels.Convert(folder.Instance));
+                yield return folder.Instance;
             }
             yield return new TreeItemViewModel("Children", folder.Children);
             yield return new TreeItemViewModel("GameObjects", folder.GameObjects);
@@ -93,15 +91,14 @@ namespace RszTool.App.ViewModels
     }
 
 
-    [ValueConversion(typeof(PfbFile.GameObjectData), typeof(IEnumerable<BaseTreeItemViewModel>))]
+    [ValueConversion(typeof(PfbFile.GameObjectData), typeof(IEnumerable<object>))]
     public class PfbGameObjectDataSubItemsConverter : IValueConverter
     {
-        public static IEnumerable<BaseTreeItemViewModel> Convert(PfbFile.GameObjectData gameObject)
+        public static IEnumerable<object> Convert(PfbFile.GameObjectData gameObject)
         {
             if (gameObject.Instance != null)
             {
-                yield return new TreeItemDelegate(gameObject.Instance.Name,
-                    () => RszInstanceToFieldViewModels.Convert(gameObject.Instance));
+                yield return gameObject.Instance;
             }
             if (gameObject.Components.Count > 0)
             {
@@ -144,11 +141,6 @@ namespace RszTool.App.ViewModels
     [ValueConversion(typeof(Guid), typeof(string))]
     public class GuidConverter : IValueConverter
     {
-        public GuidConverter()
-        {
-            Console.WriteLine("GuidConverter");
-        }
-
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             return ((Guid)value).ToString();

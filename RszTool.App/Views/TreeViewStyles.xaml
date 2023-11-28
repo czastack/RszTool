@@ -7,7 +7,13 @@
     <viewmodels:RszInstanceToFieldViewModels x:Key="RszInstanceToFieldViewModels"/>
 
     <HierarchicalDataTemplate DataType="{x:Type rsztool:RszInstance}" ItemsSource="{Binding ., Converter={StaticResource RszInstanceToFieldViewModels}}">
-        <TextBlock Text="{Binding Path=Name}"/>
+        <TextBlock Text="{Binding Path=Name}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="_Copy" Command="{Binding PlacementTarget.Tag.CopyInstance, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+        </TextBlock>
     </HierarchicalDataTemplate>
 
     <HierarchicalDataTemplate DataType="{x:Type viewmodels:BaseRszFieldViewModel}" ItemsSource="{Binding Path=Value}">

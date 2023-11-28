@@ -32,21 +32,8 @@ namespace RszTool.App.Views
 
         public bool ValueChanged
         {
-            get { return (bool)GetValue(ValueChangedProperty); }
-            set { SetValue(ValueChangedProperty, value); }
-        }
-
-        private void OnBindingSourceUpdated(object sender, DataTransferEventArgs args)
-        {
-            if (args.Property == TextBox.TextProperty)
-            {
-                ValueChanged = true;
-            }
-        }
-
-        private void OnGuidNew(object sender, RoutedEventArgs e)
-        {
-            ((IFieldValueViewModel)DataContext).Value = Guid.NewGuid();
+            get => (bool)GetValue(ValueChangedProperty);
+            set => SetValue(ValueChangedProperty, value);
         }
     }
 }

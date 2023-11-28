@@ -21,6 +21,7 @@ namespace RszTool.App.ViewModels
             }
         }
         public bool Changed { get; set; }
+        public RelayCommand CopyInstance => new(OnCopyInstance);
         public RelayCommand CopyArrayItem => new(OnCopyArrayItem);
         public RelayCommand RemoveArrayItem => new(OnRemoveArrayItem);
         public RelayCommand DuplicateArrayItem => new(OnDuplicateArrayItem);
@@ -48,7 +49,15 @@ namespace RszTool.App.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        protected static void OnCopyArrayItem(object arg)
+        private static void OnCopyInstance(object arg)
+        {
+            if (arg is RszInstance instance)
+            {
+                CopiedInstance = instance;
+            }
+        }
+
+        private static void OnCopyArrayItem(object arg)
         {
             if (arg is RszFieldArrayInstanceItemViewModel item)
             {
@@ -56,7 +65,7 @@ namespace RszTool.App.ViewModels
             }
         }
 
-        protected void OnRemoveArrayItem(object arg)
+        private void OnRemoveArrayItem(object arg)
         {
             if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
             {
@@ -65,7 +74,7 @@ namespace RszTool.App.ViewModels
             }
         }
 
-        protected void OnDuplicateArrayItem(object arg)
+        private void OnDuplicateArrayItem(object arg)
         {
             if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
             {
@@ -74,7 +83,7 @@ namespace RszTool.App.ViewModels
             }
         }
 
-        protected void OnDuplicateArrayItemMulti(object arg)
+        private void OnDuplicateArrayItemMulti(object arg)
         {
             if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
             {
@@ -101,7 +110,7 @@ namespace RszTool.App.ViewModels
         /// 在后面粘贴
         /// </summary>
         /// <param name="arg"></param>
-        protected void OnPasteArrayItemAfter(object arg)
+        private void OnPasteArrayItemAfter(object arg)
         {
             if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz &&
                 CopiedInstance != null)
@@ -164,7 +173,7 @@ namespace RszTool.App.ViewModels
         /// 复制游戏对象
         /// </summary>
         /// <param name="arg"></param>
-        public static void OnCopyGameObject(object arg)
+        private static void OnCopyGameObject(object arg)
         {
             CopiedGameObject = (ScnFile.GameObjectData)arg;
         }
@@ -173,7 +182,7 @@ namespace RszTool.App.ViewModels
         /// 删除游戏对象
         /// </summary>
         /// <param name="arg"></param>
-        public void OnRemoveGameObject(object arg)
+        private void OnRemoveGameObject(object arg)
         {
             File.RemoveGameObject((ScnFile.GameObjectData)arg);
         }
@@ -182,7 +191,7 @@ namespace RszTool.App.ViewModels
         /// 重复游戏对象
         /// </summary>
         /// <param name="arg"></param>
-        public void OnDuplicateGameObject(object arg)
+        private void OnDuplicateGameObject(object arg)
         {
             File.DuplicateGameObject((ScnFile.GameObjectData)arg);
         }
@@ -191,7 +200,7 @@ namespace RszTool.App.ViewModels
         /// 粘贴游戏对象
         /// </summary>
         /// <param name="arg"></param>
-        public void OnPasetGameObject(object arg)
+        private void OnPasetGameObject(object arg)
         {
             if (CopiedGameObject != null)
             {
@@ -204,7 +213,7 @@ namespace RszTool.App.ViewModels
         /// 粘贴游戏对象到文件夹
         /// </summary>
         /// <param name="arg"></param>
-        public void OnPasetGameObjectToFolder(object arg)
+        private void OnPasetGameObjectToFolder(object arg)
         {
             if (CopiedGameObject != null)
             {
@@ -217,7 +226,7 @@ namespace RszTool.App.ViewModels
         /// 粘贴游戏对象到父对象
         /// </summary>
         /// <param name="arg"></param>
-        public void OnPasetGameObjectToParent(object arg)
+        private void OnPasetGameObjectToParent(object arg)
         {
             if (CopiedGameObject != null)
             {

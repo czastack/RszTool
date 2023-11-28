@@ -139,9 +139,12 @@ namespace RszTool.via
     public struct OBB
     {
         [FieldOffset(0)]
-        public mat4 coord;
+        private mat4 coord;
         [FieldOffset(64)]
-        public Vector3 extent;
+        private Vector3 extent;
+
+        public mat4 Coord { readonly get => coord; set => coord = value; }
+        public Vector3 Extent { readonly get => extent; set => extent = value; }
     }
 
 
@@ -151,7 +154,13 @@ namespace RszTool.via
         public Vector3 pos;
         public float r;
 
+        public Vector3 Pos { readonly get => pos; set => pos = value; }
         public float R { readonly get => r; set => r = value; }
+
+        public readonly override string ToString()
+        {
+            return $"Sphere({pos}, {r})";
+        }
     }
 
 
@@ -162,6 +171,9 @@ namespace RszTool.via
         public Vector3 minpos;
         [FieldOffset(16)]
         public Vector3 maxpos;
+
+        public Vector3 Minpos { readonly get => minpos; set => minpos = value; }
+        public Vector3 Maxpos { readonly get => maxpos; set => maxpos = value; }
     }
 
 
@@ -174,6 +186,10 @@ namespace RszTool.via
         public Vector3 p1;
         [FieldOffset(32)]
         public float r;
+
+        public Vector3 P0 { readonly get => p0; set => p0 = value; }
+        public Vector3 P1 { readonly get => p1; set => p1 = value; }
+        public float R { readonly get => r; set => r = value; }
     }
 
 
@@ -192,5 +208,12 @@ namespace RszTool.via
         public float height;
         [FieldOffset(36)]
         public float bottom;
+
+        public Vector2 P0 { readonly get => p0; set => p0 = value; }
+        public Vector2 P1 { readonly get => p1; set => p1 = value; }
+        public Vector2 P2 { readonly get => p2; set => p2 = value; }
+        public Vector2 P3 { readonly get => p3; set => p3 = value; }
+        public float Height { readonly get => height; set => height = value; }
+        public float Bottom { readonly get => bottom; set => bottom = value; }
     }
 }

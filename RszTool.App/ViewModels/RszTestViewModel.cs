@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using RszTool.App.Common;
 
 namespace RszTool.App.ViewModels
 {
@@ -12,9 +13,28 @@ namespace RszTool.App.ViewModels
         public List<RszInstance> InstanceList { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public RelayCommand CopyInstance => new(OnCopyInstance);
+        public RelayCommand CopyArrayItem => new(OnCopyArrayItem);
+
+        private static void OnCopyInstance(object arg)
+        {
+            if (arg is RszInstance instance)
+            {
+                Console.WriteLine(instance.Stringify());
+            }
+        }
+
+        private static void OnCopyArrayItem(object arg)
+        {
+            if (arg is RszFieldArrayInstanceItemViewModel item)
+            {
+                Console.WriteLine(item.Instance.Stringify());
+            }
+        }
     }
 
-    
+
     public class InstanceTestData
     {
         public static IEnumerable<RszInstance> GetItems()
@@ -45,8 +65,8 @@ namespace RszTool.App.ViewModels
                     {
                         name = "_AccessoryId",
                         align = 4,
-                        type = RszFieldType.U32,
-                        original_type = "System.Int"
+                        type = RszFieldType.Sphere,
+                        original_type = "Sphere"
                     },
                     new()
                     {
@@ -86,7 +106,7 @@ namespace RszTool.App.ViewModels
                     new List<object>
                     {
                         new RszInstance(AccessoryEffectSingleSettingData, 2, values: [
-                            1017u,
+                            new via.Sphere(),
                             new List<object>
                             {
                                 new RszInstance(StatusEffectSetting, 1, values: [1000000u, 30.0f])
