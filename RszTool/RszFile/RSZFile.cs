@@ -199,7 +199,7 @@ namespace RszTool
         /// <param name="index">instance序号</param>
         /// <param name="createChildren">创建子对象</param>
         /// <returns></returns>
-        public RszInstance? CreateInstance(RszClass rszClass, int index = -1, bool createChildren = true)
+        public RszInstance CreateInstance(RszClass rszClass, int index = -1, bool createChildren = true)
         {
             RszInstance instance = new(rszClass, index);
             var fields = instance.Fields;
@@ -210,7 +210,7 @@ namespace RszTool
                 {
                     instance.Values[i] = new List<object>();
                 }
-                if (field.IsReference)
+                else if (field.IsReference)
                 {
                     if (createChildren)
                     {
@@ -235,6 +235,41 @@ namespace RszTool
                 }
             }
             return instance;
+        }
+
+        public object? CreateArrayItem(RszField field, string? className = null)
+        {
+            if (field.type == RszFieldType.Object)
+            {
+                className ??= GetElementType(field.original_type);
+                var rszClass = RszParser.GetRSZClass(className) ??
+                    throw new Exception($"RszClass {className} not found!");
+                return CreateInstance(rszClass);
+            }
+            else
+            {
+                if (field.type == RszFieldType.Data)
+                {
+                    return new byte[field.size];
+                }
+                var type = RszInstance.RszFieldTypeToCSharpType(field.type);
+                return Activator.CreateInstance(type) ??
+                    throw new NullReferenceException($"Can not create instance of type {type.Name}");
+            }
+        }
+
+        public static string GetElementType(string arrayType)
+        {
+            if (arrayType.EndsWith("[]"))
+            {
+                return arrayType[..^2];
+            }
+            const string listPrefix = "System.Collections.Generic.List`1<";
+            if (arrayType.StartsWith(listPrefix))
+            {
+                return arrayType[listPrefix.Length..-1];
+            }
+            return arrayType;
         }
 
         public void ClearInstances()
@@ -494,6 +529,10 @@ namespace RszTool
             {
                 insertPos = array.Count;
             }
+
+            // 为了可视化重新排序号，否则会显示序号是-1，但实际上保存的时候的序号和现在编号的可能不一致
+            FixInstanceIndexRecurse(newItem);
+
             array.Insert(insertPos, newItem);
             StructChanged = true;
             RszInstance.CleanCloneCache();

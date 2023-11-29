@@ -1,16 +1,18 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:RszTool.App.Views"
+                    xmlns:common="clr-namespace:RszTool.App.Common"
                     xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
                     xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool">
 
     <viewmodels:RszInstanceToFieldViewModels x:Key="RszInstanceToFieldViewModels"/>
+    <common:BindingProxy x:Key="ParentData" Data="{Binding}" />
 
     <HierarchicalDataTemplate DataType="{x:Type rsztool:RszInstance}" ItemsSource="{Binding ., Converter={StaticResource RszInstanceToFieldViewModels}}">
-        <TextBlock Text="{Binding Path=Name}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+        <TextBlock Text="{Binding Path=Name}">
             <TextBlock.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="_Copy" Command="{Binding PlacementTarget.Tag.CopyInstance, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="_Copy" Command="{Binding Data.CopyInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
                 </ContextMenu>
             </TextBlock.ContextMenu>
         </TextBlock>
@@ -21,14 +23,14 @@
     </HierarchicalDataTemplate>
 
     <HierarchicalDataTemplate DataType="{x:Type viewmodels:BaseRszFieldArrayItemViewModel}" ItemsSource="{Binding Path=Value}">
-        <TextBlock Text="{Binding Path=Name}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+        <TextBlock Text="{Binding Path=Name}">
             <TextBlock.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="_Copy" Command="{Binding PlacementTarget.Tag.CopyArrayItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-                    <MenuItem Header="Remove" Command="{Binding PlacementTarget.Tag.RemoveArrayItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-                    <MenuItem Header="Duplicate" Command="{Binding PlacementTarget.Tag.DuplicateArrayItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-                    <MenuItem Header="DuplicateMulti" Command="{Binding PlacementTarget.Tag.DuplicateArrayItemMulti, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-                    <MenuItem Header="PasteAfter" Command="{Binding PlacementTarget.Tag.PasteArrayItemAfter, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="_Copy" Command="{Binding Data.CopyArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="Remove" Command="{Binding Data.RemoveArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="Duplicate" Command="{Binding Data.DuplicateArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="DuplicateMulti" Command="{Binding Data.DuplicateArrayItemMulti, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="PasteAfter" Command="{Binding Data.PasteArrayItemAfter, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
                 </ContextMenu>
             </TextBlock.ContextMenu>
         </TextBlock>
@@ -39,11 +41,11 @@
     </HierarchicalDataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:RszFieldNormalViewModel}">
-        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding DataContext.Changed, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding Data.Changed, Source={StaticResource ParentData}}" />
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:RszFieldArrayNormalItemViewModel}">
-        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding DataContext.Changed, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding Data.Changed, Source={StaticResource ParentData}}" />
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:ClassPropertyViewModel}">

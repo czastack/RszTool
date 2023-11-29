@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:RszTool.App.Views"
+             xmlns:common="clr-namespace:RszTool.App.Common"
              xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
              xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool"
              mc:Ignorable="d"
@@ -18,14 +19,15 @@
 
             <viewmodels:ScnFolderDataSubItemsConverter x:Key="ScnFolderDataSubItemsConverter"/>
             <viewmodels:ScnGameObjectDataSubItemsConverter x:Key="ScnGameObjectDataSubItemsConverter"/>
+            <common:BindingProxy x:Key="ParentData" Data="{Binding}" />
 
             <HierarchicalDataTemplate DataType="{x:Type rsztool:ScnFile+FolderData}"
                                       ItemsSource="{Binding ., Converter={StaticResource ScnFolderDataSubItemsConverter}}"
                                       ItemContainerStyle="{StaticResource TreeViewItemHideIfEmpty}">
-                <TextBlock Text="{Binding Path=Name}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <TextBlock Text="{Binding Path=Name}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Paste Gameobject" Command="{Binding PlacementTarget.Tag.PasetGameObjectToFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                            <MenuItem Header="Paste Gameobject" Command="{common:ParentBinding PasetGameObjectToFolder}" CommandParameter="{Binding}" />
                         </ContextMenu>
                     </TextBlock.ContextMenu>
                 </TextBlock>
@@ -34,13 +36,13 @@
             <HierarchicalDataTemplate DataType="{x:Type rsztool:ScnFile+GameObjectData}"
                                       ItemsSource="{Binding ., Converter={StaticResource ScnGameObjectDataSubItemsConverter}}"
                                       ItemContainerStyle="{StaticResource TreeViewItemHideIfEmpty}">
-                <TextBlock Text="{Binding Path=Name}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <TextBlock Text="{Binding Path=Name}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="_Copy" Command="{Binding PlacementTarget.Tag.CopyGameObject, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-                            <MenuItem Header="Remove" Command="{Binding PlacementTarget.Tag.RemoveGameObject, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-                            <MenuItem Header="Duplicate" Command="{Binding PlacementTarget.Tag.DuplicateGameObject, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-                            <MenuItem Header="Paste Gameobject to children" Command="{Binding PlacementTarget.Tag.PasetGameObjectToParent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                            <MenuItem Header="_Copy" Command="{common:ParentBinding CopyGameObject}" CommandParameter="{Binding}" />
+                            <MenuItem Header="Remove" Command="{common:ParentBinding RemoveGameObject}" CommandParameter="{Binding}" />
+                            <MenuItem Header="Duplicate" Command="{common:ParentBinding DuplicateGameObject}" CommandParameter="{Binding}" />
+                            <MenuItem Header="Paste Gameobject to children" Command="{common:ParentBinding PasetGameObjectToParent}" CommandParameter="{Binding}" />
                         </ContextMenu>
                     </TextBlock.ContextMenu>
                 </TextBlock>
