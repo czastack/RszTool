@@ -101,25 +101,21 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <ToggleButton x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}"
-                                  Grid.Row="0"
-                                  Grid.Column="0"
-                                  IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                                  ClickMode="Press"/>
+                                      Grid.Row="0"
+                                      Grid.Column="0"
+                                      IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                      ClickMode="Press"/>
 
                         <Border x:Name="Bd"
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            Padding="0,2,0,2">
-                            <ContentPresenter x:Name="PART_Header"
-                                ContentSource="Header"
-                                HorizontalAlignment="Stretch" />
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="0,2,0,2">
+                            <ContentPresenter x:Name="PART_Header" ContentSource="Header" HorizontalAlignment="Stretch" />
                         </Border>
-                        <ItemsPresenter x:Name="ItemsHost"
-                                Grid.Row="1"
-                                Grid.Column="1"/>
+                        <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Grid.Column="1"/>
                     </Grid>
 
                     <ControlTemplate.Triggers>

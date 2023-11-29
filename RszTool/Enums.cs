@@ -133,6 +133,6 @@ namespace RszTool
 
     public static class RszDefines
     {
-        public static GameName[] GameNames { get; } = Enum.GetValues<GameName>();
+        public static GameName[] GameNames { get; } = (GameName[])Enum.GetValues(typeof(GameName));
     }
 }

@@ -33,9 +33,10 @@ namespace RszTool
             var dict = JsonSerializer.Deserialize<Dictionary<string, RszClass>>(fileStream);
             if (dict != null)
             {
-                foreach (var (key, value) in dict)
+                foreach (var item in dict)
                 {
-                    value.typeId = uint.Parse(key, NumberStyles.HexNumber);
+                    var value = item.Value;
+                    value.typeId = uint.Parse(item.Key, NumberStyles.HexNumber);
                     classDict[value.typeId] = value;
                     classNameDict[value.name] = value;
 
@@ -52,7 +53,11 @@ namespace RszTool
 
         public static RszFieldType GetFieldTypeInternal(string typeName)
         {
+#if NET5_0_OR_GREATER
             return Enum.Parse<RszFieldType>(typeName, true);
+#else
+            return (RszFieldType)Enum.Parse(typeof(RszFieldType), typeName, true);
+#endif
         }
 
         public string GetRSZClassName(uint classHash)

@@ -60,7 +60,7 @@ namespace RszTool
 
         public static uint GetHash(string text)
         {
-            return MurMur3Hash(MemoryMarshal.AsBytes((ReadOnlySpan<char>)text));
+            return MurMur3Hash(MemoryMarshal.AsBytes(text.AsSpan()));
         }
 
         public static uint GetAsciiHash(string text)

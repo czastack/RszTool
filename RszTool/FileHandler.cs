@@ -485,7 +485,7 @@ namespace RszTool
                 int n = buffer.IndexOf((char)0);
                 if (n != -1)
                 {
-                    result = n == 0 ? "" : new string(buffer.Slice(0, n));
+                    result = n == 0 ? "" : buffer.Slice(0, n).ToString();
                 }
             }
             else
@@ -529,7 +529,7 @@ namespace RszTool
 
         public bool WriteWString(string text)
         {
-            return WriteSpan((ReadOnlySpan<char>)text) && Write<ushort>(0);
+            return WriteSpan(text.AsSpan()) && Write<ushort>(0);
         }
 
         public T Read<T>() where T : struct

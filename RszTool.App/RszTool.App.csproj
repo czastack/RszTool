@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFrameworks>net8.0-windows;net472</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
     <UseWPF>true</UseWPF>
     <NoWarn>$(NoWarn);CS0067</NoWarn>
   </PropertyGroup>
@@ -23,5 +24,9 @@
   <ItemGroup>
     <ProjectReference Include="..\RszTool\RszTool.csproj" />
   </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
 
 </Project>

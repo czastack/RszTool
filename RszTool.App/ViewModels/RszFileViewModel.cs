@@ -129,37 +129,40 @@ namespace RszTool.App.ViewModels
 
     public class UserFileViewModel(UserFile file) : BaseRszFileViewModel
     {
-        public override UserFile File { get; } = file;
+        public override BaseRszFile File => UserFile;
+        public UserFile UserFile { get; } = file;
 
-        public RszViewModel RszViewModel => new(File.RSZ!);
+        public RszViewModel RszViewModel => new(UserFile.RSZ!);
     }
 
 
     public class PfbFileViewModel(PfbFile file) : BaseRszFileViewModel
     {
-        public override PfbFile File { get; } = file;
-        public RszViewModel RszViewModel => new(File.RSZ!);
-        public IEnumerable<PfbFile.GameObjectData>? GameObjects => File.GameObjectDatas;
+        public override BaseRszFile File => PfbFile;
+        public PfbFile PfbFile { get; } = file;
+        public RszViewModel RszViewModel => new(PfbFile.RSZ!);
+        public IEnumerable<PfbFile.GameObjectData>? GameObjects => PfbFile.GameObjectDatas;
 
         public override void PostRead()
         {
-            File.SetupGameObjects();
+            PfbFile.SetupGameObjects();
         }
     }
 
 
     public class ScnFileViewModel(ScnFile file) : BaseRszFileViewModel
     {
-        public override ScnFile File { get; } = file;
-        public RszViewModel RszViewModel => new(File.RSZ!);
-        public ObservableCollection<ScnFile.FolderData>? Folders => File.FolderDatas;
-        public ObservableCollection<ScnFile.GameObjectData>? GameObjects => File.GameObjectDatas;
+        public ScnFile ScnFile { get; } = file;
+        public override BaseRszFile File => ScnFile;
+        public RszViewModel RszViewModel => new(ScnFile.RSZ!);
+        public ObservableCollection<ScnFile.FolderData>? Folders => ScnFile.FolderDatas;
+        public ObservableCollection<ScnFile.GameObjectData>? GameObjects => ScnFile.GameObjectDatas;
 
         public static ScnFile.GameObjectData? CopiedGameObject { get; private set; }
 
         public override void PostRead()
         {
-            File.SetupGameObjects();
+            ScnFile.SetupGameObjects();
         }
 
         public RelayCommand CopyGameObject => new(OnCopyGameObject);
@@ -184,7 +187,7 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private void OnRemoveGameObject(object arg)
         {
-            File.RemoveGameObject((ScnFile.GameObjectData)arg);
+            ScnFile.RemoveGameObject((ScnFile.GameObjectData)arg);
         }
 
         /// <summary>
@@ -193,7 +196,7 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private void OnDuplicateGameObject(object arg)
         {
-            File.DuplicateGameObject((ScnFile.GameObjectData)arg);
+            ScnFile.DuplicateGameObject((ScnFile.GameObjectData)arg);
         }
 
         /// <summary>
@@ -204,7 +207,7 @@ namespace RszTool.App.ViewModels
         {
             if (CopiedGameObject != null)
             {
-                File.ImportGameObject(CopiedGameObject);
+                ScnFile.ImportGameObject(CopiedGameObject);
                 OnPropertyChanged(nameof(GameObjects));
             }
         }
@@ -218,7 +221,7 @@ namespace RszTool.App.ViewModels
             if (CopiedGameObject != null)
             {
                 var folder = (ScnFile.FolderData)arg;
-                File.ImportGameObject(CopiedGameObject, folder);
+                ScnFile.ImportGameObject(CopiedGameObject, folder);
             }
         }
 
@@ -231,7 +234,7 @@ namespace RszTool.App.ViewModels
             if (CopiedGameObject != null)
             {
                 var parent = (ScnFile.GameObjectData)arg;
-                File.ImportGameObject(CopiedGameObject, parent: parent);
+                ScnFile.ImportGameObject(CopiedGameObject, parent: parent);
             }
         }
     }

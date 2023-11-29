@@ -17,7 +17,6 @@ namespace RszTool
             TestImportGameObject();
             // TestParseMdf();
             // TestMurMur3Hash();
-            // TestParseEnum();
         }
 
         private static void TestRszParser()
@@ -251,22 +250,6 @@ namespace RszTool
                 string result = hash == hashes[i] ? "" : $", expacted {hashes[i]:X}";
                 Console.WriteLine($"hash of {strings[i]} is {hash:X}{result}");
             }
-        }
-
-        [Flags]
-        public enum TestEnum
-        {
-            None = 0,
-            A = 1,
-            B = 2,
-            C = 4,
-        }
-
-        static void TestParseEnum()
-        {
-            string value = "A | B";
-            TestEnum result = Enum.Parse<TestEnum>(value.Replace("|", ","));
-            Console.WriteLine(result);
         }
     }
 }
