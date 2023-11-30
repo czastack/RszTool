@@ -24,7 +24,7 @@
             <HierarchicalDataTemplate DataType="{x:Type rsztool:ScnFile+FolderData}"
                                       ItemsSource="{Binding ., Converter={StaticResource ScnFolderDataSubItemsConverter}}"
                                       ItemContainerStyle="{StaticResource TreeViewItemHideIfEmpty}">
-                <TextBlock Text="{Binding Path=Name}">
+                <TextBlock Text="{Binding Name}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Paste Gameobject" Command="{common:ParentBinding PasetGameObjectToFolder}" CommandParameter="{Binding}" />
@@ -36,7 +36,7 @@
             <HierarchicalDataTemplate DataType="{x:Type rsztool:ScnFile+GameObjectData}"
                                       ItemsSource="{Binding ., Converter={StaticResource ScnGameObjectDataSubItemsConverter}}"
                                       ItemContainerStyle="{StaticResource TreeViewItemHideIfEmpty}">
-                <TextBlock Text="{Binding Path=Name}">
+                <TextBlock Text="{Binding Name}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="_Copy" Command="{common:ParentBinding CopyGameObject}" CommandParameter="{Binding}" />
@@ -60,8 +60,8 @@
         </Grid.RowDefinitions>
         <TextBox Text="{Binding FilePath, Mode=OneWay}" IsReadOnly="True" Margin="0 0 0 5" Grid.Row="0" />
         <TreeView Grid.Row="1">
-            <TreeViewItem ItemsSource="{Binding Path=Folders}" Header="Folders" />
-            <TreeViewItem ItemsSource="{Binding Path=GameObjects}" Header="GameObjects">
+            <TreeViewItem ItemsSource="{Binding Folders}" Header="Folders" />
+            <TreeViewItem ItemsSource="{Binding GameObjects}" Header="GameObjects">
                 <TreeViewItem.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="_Paste GameObject" Command="{Binding PasetGameObject}" />

@@ -27,6 +27,7 @@ namespace RszTool.App.ViewModels
         public RelayCommand DuplicateArrayItem => new(OnDuplicateArrayItem);
         public RelayCommand DuplicateArrayItemMulti => new(OnDuplicateArrayItemMulti);
         public RelayCommand PasteArrayItemAfter => new(OnPasteArrayItemAfter);
+        public RelayCommand NewArrayItem => new(OnNewArrayItem);
 
         public static RszInstance? CopiedInstance { get; private set; }
 
@@ -54,6 +55,7 @@ namespace RszTool.App.ViewModels
             if (arg is RszInstance instance)
             {
                 CopiedInstance = instance;
+                Console.WriteLine(instance.Stringify());
             }
         }
 
@@ -65,49 +67,74 @@ namespace RszTool.App.ViewModels
             }
         }
 
+        /// <summary>
+        /// 移除数组项
+        /// </summary>
+        /// <param name="arg"></param>
         private void OnRemoveArrayItem(object arg)
         {
-            if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
+            if (arg is BaseRszFieldArrayItemViewModel item && File.GetRSZ() is RSZFile rsz)
             {
-                rsz.ArrayRemoveItem(item.Values, item.Instance);
-                item.Array.NotifyValueChanged();
-            }
-        }
-
-        private void OnDuplicateArrayItem(object arg)
-        {
-            if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
-            {
-                rsz.ArrayInsertItem(item.Values, item.Instance, isDuplicate: true);
-                item.Array.NotifyValueChanged();
-            }
-        }
-
-        private void OnDuplicateArrayItemMulti(object arg)
-        {
-            if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz)
-            {
-                Views.InputDialog dialog = new()
-                {
-                    Message = "请输入重复次数",
-                    Owner = Application.Current.MainWindow,
-                };
-                // 显示对话框，并等待用户输入
-                if (dialog.ShowDialog() == true)
-                {
-                    string userInput = dialog.InputText;
-                    int count = int.Parse(userInput);
-                    for (int i = 0; i < count; i++)
-                    {
-                        rsz.ArrayInsertItem(item.Values, item.Instance, isDuplicate: true);
-                    }
-                }
-                item.Array.NotifyValueChanged();
+                rsz.ArrayRemoveItem(item.Values, item.Value);
+                item.Array.NotifyItemsChanged();
             }
         }
 
         /// <summary>
-        /// 在后面粘贴
+        /// 重复数组项
+        /// </summary>
+        /// <param name="arg"></param>
+        private void OnDuplicateArrayItem(object arg)
+        {
+            if (File.GetRSZ() is not RSZFile rsz) return;
+            if (arg is RszFieldArrayInstanceItemViewModel item)
+            {
+                rsz.ArrayInsertInstance(item.Values, item.Instance, item.Index + 1);
+                item.Array.NotifyItemsChanged();
+            }
+            else if (arg is RszFieldArrayNormalItemViewModel normalItem)
+            {
+                rsz.ArrayInsertItem(normalItem.Values, normalItem.Value, normalItem.Index + 1);
+                normalItem.Array.NotifyItemsChanged();
+            }
+        }
+
+        /// <summary>
+        /// 重复多次数组项
+        /// </summary>
+        /// <param name="arg"></param>
+        private void OnDuplicateArrayItemMulti(object arg)
+        {
+            if (File.GetRSZ() is not RSZFile rsz) return;
+            Views.InputDialog dialog = new()
+            {
+                Message = "请输入重复次数",
+                Owner = Application.Current.MainWindow,
+            };
+            // 显示对话框，并等待用户输入
+            if (dialog.ShowDialog() != true) return;
+            string userInput = dialog.InputText;
+            int count = int.Parse(userInput);
+            if (arg is RszFieldArrayInstanceItemViewModel item)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    rsz.ArrayInsertInstance(item.Values, item.Instance, item.Index + 1);
+                }
+                item.Array.NotifyItemsChanged();
+            }
+            else if (arg is RszFieldArrayNormalItemViewModel normalItem)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    rsz.ArrayInsertItem(normalItem.Values, normalItem.Value, normalItem.Index + 1);
+                }
+                normalItem.Array.NotifyItemsChanged();
+            }
+        }
+
+        /// <summary>
+        /// 在数组项后面粘贴
         /// </summary>
         /// <param name="arg"></param>
         private void OnPasteArrayItemAfter(object arg)
@@ -120,8 +147,43 @@ namespace RszTool.App.ViewModels
                     var error = new InvalidOperationException($"CopiedInstance is {CopiedInstance.RszClass.name}, missmatch {item.Instance.RszClass.name}");
                     App.ShowUnhandledException(error, "OnPasteArrayItemAfter");
                 }
-                rsz.ArrayInsertItem(item.Values, CopiedInstance, item.Values.IndexOf(item.Instance) + 1);
-                item.Array.NotifyValueChanged();
+                rsz.ArrayInsertInstance(item.Values, CopiedInstance, item.Index + 1);
+                item.Array.NotifyItemsChanged();
+            }
+        }
+
+        /// <summary>
+        /// 数组新建项
+        /// </summary>
+        /// <param name="arg"></param>
+        private void OnNewArrayItem(object arg)
+        {
+            if (arg is RszFieldArrayViewModel item && File.GetRSZ() is RSZFile rsz)
+            {
+                string? className = null;
+                if (item.Field.IsReference)
+                {
+                    className = RszInstance.GetElementType(item.Field.original_type);
+                    Views.InputDialog dialog = new()
+                    {
+                        Message = "请输入创建的类名",
+                        InputText = className,
+                        Owner = Application.Current.MainWindow,
+                    };
+                    if (dialog.ShowDialog() != true) return;
+                    className = dialog.InputText;
+                }
+                var newItem = RszInstance.CreateArrayItem(rsz.RszParser, item.Field, className);
+                if (newItem == null) return;
+                if (newItem is RszInstance instance)
+                {
+                    rsz.ArrayInsertInstance(item.Values, instance);
+                }
+                else
+                {
+                    rsz.ArrayInsertItem(item.Values, newItem);
+                }
+                item.NotifyItemsChanged();
             }
         }
     }

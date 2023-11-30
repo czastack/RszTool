@@ -192,86 +192,6 @@ namespace RszTool
 
         // 下面的函数用于重新构建数据，基本读写功能都在上面
 
-        /// <summary>
-        /// 创建RszInstance
-        /// </summary>
-        /// <param name="rszClass">Rsz类型</param>
-        /// <param name="index">instance序号</param>
-        /// <param name="createChildren">创建子对象</param>
-        /// <returns></returns>
-        public RszInstance CreateInstance(RszClass rszClass, int index = -1, bool createChildren = true)
-        {
-            RszInstance instance = new(rszClass, index);
-            var fields = instance.Fields;
-            for (int i = 0; i < fields.Length; i++)
-            {
-                var field = fields[i];
-                if (field.array)
-                {
-                    instance.Values[i] = new List<object>();
-                }
-                else if (field.IsReference)
-                {
-                    if (createChildren)
-                    {
-                        RszClass? fieldClass = RszParser.GetRSZClass(field.original_type) ??
-                            throw new Exception($"RszClass {field.original_type} not found!");
-                        instance.Values[i] = CreateInstance(fieldClass, -1, createChildren) ??
-                            throw new NullReferenceException($"Can not create RszInstance of type {fieldClass.name}");
-                    }
-                }
-                else
-                {
-                    if (field.type == RszFieldType.Data)
-                    {
-                        instance.Values[i] = new byte[field.size];
-                    }
-                    else
-                    {
-                        var type = RszInstance.RszFieldTypeToCSharpType(field.type);
-                        instance.Values[i] = Activator.CreateInstance(type) ??
-                            throw new NullReferenceException($"Can not create instance of type {type.Name}");
-                    }
-                }
-            }
-            return instance;
-        }
-
-        public object? CreateArrayItem(RszField field, string? className = null)
-        {
-            if (field.type == RszFieldType.Object)
-            {
-                className ??= GetElementType(field.original_type);
-                var rszClass = RszParser.GetRSZClass(className) ??
-                    throw new Exception($"RszClass {className} not found!");
-                return CreateInstance(rszClass);
-            }
-            else
-            {
-                if (field.type == RszFieldType.Data)
-                {
-                    return new byte[field.size];
-                }
-                var type = RszInstance.RszFieldTypeToCSharpType(field.type);
-                return Activator.CreateInstance(type) ??
-                    throw new NullReferenceException($"Can not create instance of type {type.Name}");
-            }
-        }
-
-        public static string GetElementType(string arrayType)
-        {
-            if (arrayType.EndsWith("[]"))
-            {
-                return arrayType[..^2];
-            }
-            const string listPrefix = "System.Collections.Generic.List`1<";
-            if (arrayType.StartsWith(listPrefix))
-            {
-                return arrayType[listPrefix.Length..-1];
-            }
-            return arrayType;
-        }
-
         public void ClearInstances()
         {
             InstanceList.Clear();
@@ -509,18 +429,18 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 数组拷贝并插入元素
+        /// 数组拷贝并插入Object
         /// </summary>
         /// <param name="array">数组</param>
         /// <param name="insertItem">待插入元素</param>
         /// <param name="insertPos">插入位置</param>
         /// <param name="isDuplicate">在原先元素的后面插入</param>
-        public RszInstance ArrayInsertItem(List<object> array, RszInstance insertItem,
-                                           int insertPos = -1, bool isDuplicate = false)
+        public RszInstance ArrayInsertInstance(List<object> array, RszInstance insertItem,
+                                               int insertPos = -1, bool isDuplicate = false)
         {
             RszInstance.CleanCloneCache();
             RszInstance newItem = insertItem.CloneCached();
-            if (isDuplicate)
+            if (insertPos == -1 && isDuplicate)
             {
                 insertPos = array.IndexOf(insertItem);
                 if (insertPos != -1) insertPos++;
@@ -540,11 +460,23 @@ namespace RszTool
         }
 
         /// <summary>
+        /// 数组插入普通项
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="item"></param>
+        /// <param name="insertPos"></param>
+        public void ArrayInsertItem(List<object> array, object item, int insertPos = -1)
+        {
+            array.Insert(insertPos, item);
+            StructChanged = true;
+        }
+
+        /// <summary>
         /// 数组移除元素
         /// </summary>
         /// <param name="array">数组</param>
         /// <param name="item">待移除元素</param>
-        public void ArrayRemoveItem(List<object> array, RszInstance item)
+        public void ArrayRemoveItem(List<object> array, object item)
         {
             array.Remove(item);
             StructChanged = true;

@@ -9,7 +9,7 @@
     <common:BindingProxy x:Key="ParentData" Data="{Binding}" />
 
     <HierarchicalDataTemplate DataType="{x:Type rsztool:RszInstance}" ItemsSource="{Binding ., Converter={StaticResource RszInstanceToFieldViewModels}}">
-        <TextBlock Text="{Binding Path=Name}">
+        <TextBlock Text="{Binding Name}">
             <TextBlock.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="_Copy" Command="{Binding Data.CopyInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
@@ -18,12 +18,22 @@
         </TextBlock>
     </HierarchicalDataTemplate>
 
-    <HierarchicalDataTemplate DataType="{x:Type viewmodels:BaseRszFieldViewModel}" ItemsSource="{Binding Path=Value}">
-        <TextBlock Text="{Binding Path=Name}"/>
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:RszFieldInstanceViewModel}" ItemsSource="{Binding Items}">
+        <TextBlock Text="{Binding Name}"/>
     </HierarchicalDataTemplate>
 
-    <HierarchicalDataTemplate DataType="{x:Type viewmodels:BaseRszFieldArrayItemViewModel}" ItemsSource="{Binding Path=Value}">
-        <TextBlock Text="{Binding Path=Name}">
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:RszFieldArrayViewModel}" ItemsSource="{Binding Items}">
+        <TextBlock Text="{Binding Name}">
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="NewItem" Command="{Binding Data.NewArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+        </TextBlock>
+    </HierarchicalDataTemplate>
+
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:RszFieldArrayInstanceItemViewModel}" ItemsSource="{Binding Items}">
+        <TextBlock Text="{Binding Name}">
             <TextBlock.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="_Copy" Command="{Binding Data.CopyArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
@@ -36,8 +46,8 @@
         </TextBlock>
     </HierarchicalDataTemplate>
 
-    <HierarchicalDataTemplate DataType="{x:Type viewmodels:BaseTreeItemViewModel}" ItemsSource="{Binding Path=Items}">
-        <TextBlock Text="{Binding Path=Name}"/>
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:BaseTreeItemViewModel}" ItemsSource="{Binding Items}">
+        <TextBlock Text="{Binding Name}"/>
     </HierarchicalDataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:RszFieldNormalViewModel}">
@@ -103,7 +113,7 @@
                         <ToggleButton x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}"
                                       Grid.Row="0"
                                       Grid.Column="0"
-                                      IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                      IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                                       ClickMode="Press"/>
 
                         <Border x:Name="Bd"

@@ -19,7 +19,7 @@
             <viewmodels:PfbGameObjectDataSubItemsConverter x:Key="PfbGameObjectDataSubItemsConverter"/>
             <HierarchicalDataTemplate DataType="{x:Type rsztool:PfbFile+GameObjectData}"
                                       ItemsSource="{Binding ., Converter={StaticResource PfbGameObjectDataSubItemsConverter}}">
-                <TextBlock Text="{Binding Path=Name}"/>
+                <TextBlock Text="{Binding Name}"/>
             </HierarchicalDataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -34,7 +34,7 @@
         </Grid.RowDefinitions>
         <TextBox Text="{Binding FilePath, Mode=OneWay}" IsReadOnly="True" Margin="0 0 0 5" Grid.Row="0" />
         <TreeView Grid.Row="1">
-            <TreeViewItem ItemsSource="{Binding Path=GameObjects}" Header="GameObjects" />
+            <TreeViewItem ItemsSource="{Binding GameObjects}" Header="GameObjects" />
         </TreeView>
     </Grid>
 </UserControl>

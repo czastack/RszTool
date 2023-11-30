@@ -27,15 +27,15 @@ namespace RszTool.App.ViewModels
             set
             {
                 instance.Values[Index] = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+                PropertyChanged?.Invoke(this, new(nameof(Value)));
             }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public void NotifyValueChanged()
+        protected void OnPropertyChanged(string propertyName)
         {
-            PropertyChanged?.Invoke(this, new(nameof(Value)));
+            PropertyChanged?.Invoke(this, new(propertyName));
         }
     }
 
@@ -69,8 +69,7 @@ namespace RszTool.App.ViewModels
     {
         public RszInstance Instance => (RszInstance)instance.Values[Index];
         public override string Name => $"{Field.name} : {Instance.Name}";
-        public override object Value =>
-            RszInstanceToFieldViewModels.Convert(Instance);
+        public IEnumerable<object> Items => RszInstanceToFieldViewModels.Convert(Instance);
     }
 
 
@@ -95,7 +94,12 @@ namespace RszTool.App.ViewModels
             }
         }
 
-        public override object Value => GetItems();
+        public IEnumerable<object> Items => GetItems();
+
+        public void NotifyItemsChanged()
+        {
+            OnPropertyChanged(nameof(Items));
+        }
     }
 
 
@@ -118,7 +122,7 @@ namespace RszTool.App.ViewModels
             set
             {
                 Values[Index] = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+                PropertyChanged?.Invoke(this, new(nameof(Value)));
             }
         }
 
@@ -155,7 +159,6 @@ namespace RszTool.App.ViewModels
     {
         public RszInstance Instance => (RszInstance)Values[Index];
         public override string Name => $"{Index}: {Instance.Name}";
-        public override object Value =>
-            RszInstanceToFieldViewModels.Convert(Instance);
+        public IEnumerable<object> Items => RszInstanceToFieldViewModels.Convert(Instance);
     }
 }

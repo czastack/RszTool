@@ -7,8 +7,8 @@ namespace RszTool.App.Views
     /// </summary>
     public partial class InputDialog : Window
     {
-        public string Message { get => MessageText.Text; set => MessageText.Text = value; }
-        public string InputText { get; private set; } = "";
+        public string Message { get; set; } = "";
+        public string InputText { get; set; } = "";
 
         public InputDialog()
         {
@@ -17,7 +17,6 @@ namespace RszTool.App.Views
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
-            InputText = InputTextBox.Text;
             DialogResult = true;
         }
 

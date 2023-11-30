@@ -628,5 +628,103 @@ namespace RszTool
             Stringify(sb, instances, indent);
             return sb.ToString();
         }
+
+        /// <summary>
+        /// 创建RszInstance
+        /// </summary>
+        /// <param name="rszParser">RszParser</param>
+        /// <param name="rszClass">Rsz类型</param>
+        /// <param name="index">instance序号</param>
+        /// <param name="createChildren">创建子对象</param>
+        /// <returns></returns>
+        public static RszInstance CreateInstance(RszParser rszParser, RszClass rszClass, int index = -1, bool createChildren = true)
+        {
+            RszInstance instance = new(rszClass, index);
+            var fields = instance.Fields;
+            for (int i = 0; i < fields.Length; i++)
+            {
+                var field = fields[i];
+                if (field.array)
+                {
+                    instance.Values[i] = new List<object>();
+                }
+                else if (field.IsReference)
+                {
+                    if (createChildren)
+                    {
+                        RszClass? fieldClass = rszParser.GetRSZClass(field.original_type) ??
+                            throw new Exception($"RszClass {field.original_type} not found!");
+                        instance.Values[i] = CreateInstance(rszParser, fieldClass, -1, createChildren) ??
+                            throw new NullReferenceException($"Can not create RszInstance of type {fieldClass.name}");
+                    }
+                }
+                else
+                {
+                    instance.Values[i] = CreateNormalObject(field);
+                }
+            }
+            return instance;
+        }
+
+        /// <summary>
+        /// 创建数组元素
+        /// </summary>
+        /// <param name="rszParser"></param>
+        /// <param name="field"></param>
+        /// <param name="className"></param>
+        /// <returns></returns>
+        public static object? CreateArrayItem(RszParser rszParser, RszField field, string? className = null)
+        {
+            if (field.type == RszFieldType.Object)
+            {
+                className ??= GetElementType(field.original_type);
+                var rszClass = rszParser.GetRSZClass(className) ??
+                    throw new Exception($"RszClass {className} not found!");
+                return CreateInstance(rszParser, rszClass);
+            }
+            else
+            {
+                return CreateNormalObject(field);
+            }
+        }
+
+        /// <summary>
+        /// 创建普通对象
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public static object CreateNormalObject(RszField field)
+        {
+            if (field.type == RszFieldType.Data)
+            {
+                return new byte[field.size];
+            }
+            else if (field.IsString)
+            {
+                return "";
+            }
+            var type = RszFieldTypeToCSharpType(field.type);
+            return Activator.CreateInstance(type) ??
+                throw new NullReferenceException($"Can not create instance of type {type.Name}");
+        }
+
+        /// <summary>
+        /// 根据数组类型获取元素类型
+        /// </summary>
+        /// <param name="arrayType"></param>
+        /// <returns></returns>
+        public static string GetElementType(string arrayType)
+        {
+            if (arrayType.EndsWith("[]"))
+            {
+                return arrayType[..^2];
+            }
+            const string listPrefix = "System.Collections.Generic.List`1<";
+            if (arrayType.StartsWith(listPrefix))
+            {
+                return arrayType[listPrefix.Length..-1];
+            }
+            return arrayType;
+        }
     }
 }
