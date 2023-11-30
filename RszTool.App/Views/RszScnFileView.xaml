@@ -47,6 +47,11 @@
                     </TextBlock.ContextMenu>
                 </TextBlock>
             </HierarchicalDataTemplate>
+
+            <DataTemplate DataType="{x:Type rsztool:ScnFile+PrefabInfo}">
+                <!-- <local:FieldValueInput Value="{Binding Path}" ValueType="{x:Static rsztool:RszFieldType.String}" /> -->
+                <TextBlock Text="{Binding Path}"/>
+            </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
 

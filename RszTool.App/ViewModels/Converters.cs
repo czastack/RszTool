@@ -71,11 +71,7 @@ namespace RszTool.App.ViewModels
             }
             yield return new TreeItemViewModel("Children", folder.Children);
             yield return new TreeItemViewModel("GameObjects", folder.GameObjects);
-            if (folder.Prefabs.Count > 0)
-            {
-                yield return new TreeItemViewModel("Prefabs",
-                    folder.Prefabs.Select(item => new ClassViewModel(item, ["Path"])));
-            }
+            yield return new TreeItemViewModel("Prefabs", folder.Prefabs);
         }
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

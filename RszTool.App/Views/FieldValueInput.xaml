@@ -108,11 +108,11 @@
                 </Grid.RowDefinitions>
                 <TextBlock Text="Coord" Margin="0,0,10,0" Grid.Row="0" Grid.Column="0" />
                 <local:FieldValueInput
-                    Value="{Binding .Coord}" ValueType="{x:Static rsztool:RszFieldType.Mat4}"
+                    Value="{Binding Coord}" ValueType="{x:Static rsztool:RszFieldType.Mat4}"
                     UpdateSource="True" Grid.Row="0" Grid.Column="1" />
                 <TextBlock Text="Extent" Margin="0,0,10,0" Grid.Row="1" Grid.Column="0" />
                 <local:FieldValueInput
-                    Value="{Binding .Extent}" ValueType="{x:Static rsztool:RszFieldType.Vec3}"
+                    Value="{Binding Extent}" ValueType="{x:Static rsztool:RszFieldType.Vec3}"
                     UpdateSource="True" Grid.Row="1" Grid.Column="1" />
             </Grid>
         </DataTemplate>

@@ -121,7 +121,9 @@ namespace RszTool
     {
         unknown,
         re2,
+        re2rt,
         re3,
+        re3rt,
         re4,
         re8,
         re7,

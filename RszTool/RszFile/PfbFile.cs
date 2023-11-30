@@ -8,7 +8,7 @@ namespace RszTool
 
     public class PfbFile : BaseRszFile
     {
-        public struct HeaderStruct {
+        public class HeaderStruct : BaseModel {
             public uint magic;
             public int infoCount;
             public int resourceCount;
@@ -18,6 +18,40 @@ namespace RszTool
             public long resourceInfoOffset;
             public long userdataInfoOffset;
             public long dataOffset;
+
+            private int TdbVersion { get; }
+
+            public HeaderStruct(int tdbVersion) {
+                TdbVersion = tdbVersion;
+            }
+
+            protected override bool DoRead(FileHandler handler)
+            {
+                handler.Read(ref magic);
+                handler.Read(ref infoCount);
+                handler.Read(ref resourceCount);
+                handler.Read(ref gameObjectRefInfoCount);
+                if (TdbVersion > 67) handler.Read(ref userdataCount);
+                handler.Read(ref gameObjectRefInfoOffset);
+                handler.Read(ref resourceInfoOffset);
+                if (TdbVersion > 67) handler.Read(ref userdataInfoOffset);
+                handler.Read(ref dataOffset);
+                return true;
+            }
+
+            protected override bool DoWrite(FileHandler handler)
+            {
+                handler.Write(ref magic);
+                handler.Write(ref infoCount);
+                handler.Write(ref resourceCount);
+                handler.Write(ref gameObjectRefInfoCount);
+                if (TdbVersion > 67) handler.Write(ref userdataCount);
+                handler.Write(ref gameObjectRefInfoOffset);
+                handler.Write(ref resourceInfoOffset);
+                if (TdbVersion > 67) handler.Write(ref userdataInfoOffset);
+                handler.Write(ref dataOffset);
+                return true;
+            }
         }
 
         public struct GameObjectInfo {
@@ -78,7 +112,7 @@ namespace RszTool
                 set => ParentRef = value != null ? new(value) : null;
             }
 
-            public string? Name => Instance?.GetFieldValue("v0") as string;
+            public string? Name => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;
 
             public int? ObjectId => Info?.Data.objectId;
         }
@@ -86,7 +120,7 @@ namespace RszTool
         // ResourceInfo
         // UserdataInfo
 
-        public StructModel<HeaderStruct> Header { get; } = new();
+        public HeaderStruct Header { get; }
         public List<GameObjectInfoModel> GameObjectInfoList { get; } = new();
         public List<GameObjectRefInfoModel> GameObjectRefInfoList { get; } = new();
         public List<ResourceInfo> ResourceInfoList { get; } = new();
@@ -96,6 +130,7 @@ namespace RszTool
 
         public PfbFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
+            Header = new(option.TdbVersion);
             if (fileHandler.FilePath != null)
             {
                 RszUtils.CheckFileExtension(fileHandler.FilePath, Extension2, GetVersionExt());
@@ -131,24 +166,35 @@ namespace RszTool
             UserdataInfoList.Clear();
 
             var handler = FileHandler;
+            var header = Header;
             if (!Header.Read(handler)) return false;
-            if (Header.Data.magic != Magic)
+            if (header.magic != Magic)
             {
                 throw new InvalidDataException($"{handler.FilePath} Not a PFB file");
             }
 
-            GameObjectInfoList.Read(handler, Header.Data.infoCount);
+            GameObjectInfoList.Read(handler, header.infoCount);
 
-            handler.Seek(Header.Data.gameObjectRefInfoOffset);
-            GameObjectRefInfoList.Read(handler, Header.Data.gameObjectRefInfoCount);
+            handler.Seek(header.gameObjectRefInfoOffset);
+            GameObjectRefInfoList.Read(handler, header.gameObjectRefInfoCount);
 
-            handler.Seek(Header.Data.resourceInfoOffset);
-            ResourceInfoList.Read(handler, Header.Data.resourceCount);
+            handler.Seek(header.resourceInfoOffset);
+            // ResourceInfoList.Read(handler, header.resourceCount);
+            for (int i = 0; i < header.resourceCount; i++)
+            {
+                ResourceInfo item = new();
+                if (Option.TdbVersion <= 67) item.HasOffset = false;
+                if (!item.Read(handler)) return false;
+                ResourceInfoList.Add(item);
+            }
 
-            handler.Seek(Header.Data.userdataInfoOffset);
-            UserdataInfoList.Read(handler, (int)Header.Data.userdataCount);
+            handler.Seek(header.userdataInfoOffset);
+            if (Option.TdbVersion > 67)
+            {
+                UserdataInfoList.Read(handler, (int)header.userdataCount);
+            }
 
-            RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
+            RSZ = new RSZFile(Option, FileHandler.WithOffset(header.dataOffset));
             RSZ.Read(0, false);
             return true;
         }
@@ -161,8 +207,8 @@ namespace RszTool
             }
             FileHandler handler = FileHandler;
             handler.Clear();
-            ref var header = ref Header.Data;
-            handler.Seek(Header.Size);
+            var header = Header;
+            handler.Seek(header.Size);
             GameObjectInfoList.Write(handler);
 
             if (header.gameObjectRefInfoCount > 0)
@@ -174,9 +220,14 @@ namespace RszTool
 
             handler.Align(16);
             header.resourceInfoOffset = handler.Tell();
-            ResourceInfoList.Write(handler);
+            // ResourceInfoList.Write(handler);
+            foreach (var item in ResourceInfoList)
+            {
+                if (Option.TdbVersion <= 67) item.HasOffset = false;
+                if (!item.Write(handler)) return false;
+            }
 
-            if (UserdataInfoList.Count > 0)
+            if (Option.TdbVersion > 67 && UserdataInfoList.Count > 0)
             {
                 handler.Align(16);
                 header.userdataInfoOffset = handler.Tell();
@@ -194,7 +245,7 @@ namespace RszTool
             header.resourceCount = ResourceInfoList.Count;
             header.gameObjectRefInfoCount = GameObjectRefInfoList.Count;
             header.userdataCount = UserdataInfoList.Count;
-            Header.Write(handler, 0);
+            header.Write(handler, 0);
 
             return true;
         }

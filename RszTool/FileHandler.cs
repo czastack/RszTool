@@ -86,7 +86,7 @@ namespace RszTool
 
         public FileHandler WithOffset(long offset)
         {
-            return new FileHandler(Stream) { Offset = offset };
+            return new FileHandler(Stream) { Offset = Offset + offset };
         }
 
         public void Save(string? path = null)
@@ -523,8 +523,8 @@ namespace RszTool
                 } while (readCount == bytes.Length);
                 result = sb.ToString();
             }
-            if (jumpBack) Seek(originPos);
-            return result ?? "";
+            Seek(jumpBack ? originPos : originPos + result.Length * 2 + 2);
+            return result;
         }
 
         public int ReadWStringLength(long pos = -1, int maxLen = -1, bool jumpBack = true)

@@ -216,4 +216,32 @@ namespace RszTool.via
         public float Height { readonly get => height; set => height = value; }
         public float Bottom { readonly get => bottom; set => bottom = value; }
     }
+
+
+    public struct Postion
+    {
+        public double x;
+        public double y;
+        public double z;
+
+        public double this[int index]
+        {
+            readonly get => index switch {
+                0 => x,
+                1 => y,
+                2 => z,
+                _ => throw new IndexOutOfRangeException($"Index must be between 0 and 2, got {index}")
+            };
+            set
+            {
+                switch (index)
+                {
+                    case 0: x = value; break;
+                    case 1: y = value; break;
+                    case 2: z = value; break;
+                    default: throw new IndexOutOfRangeException($"Index must be between 0 and 2, got {index}");
+                }
+            }
+        }
+    }
 }

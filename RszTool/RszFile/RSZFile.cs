@@ -80,7 +80,7 @@ namespace RszTool
 
             handler.Seek(Header.Data.userdataOffset);
             Dictionary<int, int> instanceIdToUserData = new();
-            if (Option.TdbVersion < 67)
+            if (Option.TdbVersion <= 67)
             {
                 if (Header.Data.userdataCount > 0)
                 {
@@ -93,9 +93,11 @@ namespace RszTool
                         RSZUserDataInfoList.Add(rszUserDataInfo);
                         instanceIdToUserData[rszUserDataInfo.instanceId] = i;
 
+                        long pos = handler.Tell();
                         RSZFile embeddedRSZFile = new(Option, handler.WithOffset(rszUserDataInfo.RSZOffset));
-                        embeddedRSZFile.Read();
+                        embeddedRSZFile.Read(0, false);
                         EmbeddedRSZFileList.Add(embeddedRSZFile);
+                        handler.Seek(pos);
                     }
                 }
             }
@@ -117,9 +119,14 @@ namespace RszTool
                 RszClass? rszClass = RszParser.GetRSZClass(InstanceInfoList[i].typeId);
                 if (rszClass == null)
                 {
-                    // throw new Exception($"RszClass {InstanceInfoList[i].typeId} not found!");
-                    Console.Error.WriteLine($"RszClass {InstanceInfoList[i].typeId} not found!");
-                    continue;
+                    if (InstanceInfoList[i].typeId == 0)
+                    {
+                        rszClass = RszClass.Empty;
+                    }
+                    else
+                    {
+                        throw new Exception($"RszClass {InstanceInfoList[i].typeId} not found!");
+                    }
                 }
                 if (!instanceIdToUserData.TryGetValue(i, out int userDataIdx))
                 {
@@ -178,7 +185,7 @@ namespace RszTool
                     var item = (RSZUserDataInfo_TDB_LE_67)RSZUserDataInfoList[i];
                     item.RSZOffset = handler.Tell();
                     var embeddedRSZ = EmbeddedRSZFileList[i];
-                    embeddedRSZ.WriteTo(FileHandler.WithOffset(item.RSZOffset));
+                    embeddedRSZ.WriteTo(handler.WithOffset(item.RSZOffset));
                     // rewrite
                     item.dataSize = (uint)embeddedRSZ.Size;
                     item.Rewrite(handler);

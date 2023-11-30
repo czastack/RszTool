@@ -8,7 +8,7 @@ namespace RszTool
 
     public class ScnFile : BaseRszFile
     {
-        public struct HeaderStruct {
+        public class HeaderStruct : BaseModel {
             public uint magic;
             public int infoCount;
             public int resourceCount;
@@ -20,6 +20,60 @@ namespace RszTool
             public long prefabInfoOffset;
             public long userdataInfoOffset;
             public long dataOffset;
+
+            private int TdbVersion { get; }
+
+            public HeaderStruct(int tdbVersion) {
+                TdbVersion = tdbVersion;
+            }
+
+            protected override bool DoRead(FileHandler handler)
+            {
+                handler.Read(ref magic);
+                handler.Read(ref infoCount);
+                handler.Read(ref resourceCount);
+                handler.Read(ref folderCount);
+                if (TdbVersion > 67)
+                {
+                    handler.Read(ref prefabCount);
+                    handler.Read(ref userdataCount);
+                }
+                else
+                {
+                    handler.Read(ref userdataCount);
+                    handler.Read(ref prefabCount);
+                }
+                handler.Read(ref folderInfoOffset);
+                handler.Read(ref resourceInfoOffset);
+                handler.Read(ref prefabInfoOffset);
+                handler.Read(ref userdataInfoOffset);
+                handler.Read(ref dataOffset);
+                return true;
+            }
+
+            protected override bool DoWrite(FileHandler handler)
+            {
+                handler.Write(ref magic);
+                handler.Write(ref infoCount);
+                handler.Write(ref resourceCount);
+                handler.Write(ref folderCount);
+                if (TdbVersion > 67)
+                {
+                    handler.Write(ref prefabCount);
+                    handler.Write(ref userdataCount);
+                }
+                else
+                {
+                    handler.Write(ref userdataCount);
+                    handler.Write(ref prefabCount);
+                }
+                handler.Write(ref folderInfoOffset);
+                handler.Write(ref resourceInfoOffset);
+                handler.Write(ref prefabInfoOffset);
+                handler.Write(ref userdataInfoOffset);
+                handler.Write(ref dataOffset);
+                return true;
+            }
         }
 
         public struct GameObjectInfo {
@@ -77,7 +131,7 @@ namespace RszTool
             }
 
             public int? ObjectId => Info?.Data.objectId;
-            public string? Name => Instance?.GetFieldValue("v0") as string;
+            public string? Name => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;
         }
 
 
@@ -103,7 +157,7 @@ namespace RszTool
                 set => ParentRef = value != null ? new(value) : null;
             }
 
-            public string? Name => Instance?.GetFieldValue("v0") as string;
+            public string? Name => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;
 
             public int? ObjectId => Info?.Data.objectId;
 
@@ -126,7 +180,7 @@ namespace RszTool
             }
         }
 
-        public StructModel<HeaderStruct> Header { get; } = new();
+        public HeaderStruct Header { get; }
         public List<GameObjectInfoModel> GameObjectInfoList { get; } = new();
         public List<FolderInfoModel> FolderInfoList { get; } = new();
         public List<ResourceInfo> ResourceInfoList { get; } = new();
@@ -139,6 +193,7 @@ namespace RszTool
 
         public ScnFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
+            Header = new(option.TdbVersion);
             if (fileHandler.FilePath != null)
             {
                 RszUtils.CheckFileExtension(fileHandler.FilePath, Extension2, GetVersionExt());
@@ -177,8 +232,8 @@ namespace RszTool
             GameObjectDatas?.Clear();
 
             var handler = FileHandler;
-            if (!Header.Read(handler)) return false;
-            ref var header = ref Header.Data;
+            var header = Header;
+            if (!header.Read(handler)) return false;
             if (header.magic != Magic)
             {
                 throw new InvalidDataException($"{handler.FilePath} Not a SCN file");
@@ -213,8 +268,8 @@ namespace RszTool
 
             FileHandler handler = FileHandler;
             handler.Clear();
-            ref var header = ref Header.Data;
-            handler.Seek(Header.Size);
+            var header = Header;
+            handler.Seek(header.Size);
             GameObjectInfoList.Write(handler);
 
             if (FolderInfoList.Count > 0)
@@ -251,7 +306,7 @@ namespace RszTool
             header.resourceCount = ResourceInfoList.Count;
             header.prefabCount = PrefabInfoList.Count;
             header.userdataCount = UserdataInfoList.Count;
-            Header.Write(handler, 0);
+            header.Write(handler, 0);
 
             return true;
         }

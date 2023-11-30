@@ -4,18 +4,33 @@ namespace RszTool
     {
         public ulong pathOffset;
         public string? Path { get; set; }
+        public bool HasOffset { get; set; } = true;
 
         protected override bool DoRead(FileHandler handler)
         {
-            handler.Read(ref pathOffset);
-            Path = handler.ReadWString((long)pathOffset);
+            if (HasOffset)
+            {
+                handler.Read(ref pathOffset);
+                Path = handler.ReadWString((long)pathOffset);
+            }
+            else
+            {
+                Path = handler.ReadWString();
+            }
             return true;
         }
 
         protected override bool DoWrite(FileHandler handler)
         {
-            handler.StringTableAdd(Path);
-            handler.Write(pathOffset);
+            if (HasOffset)
+            {
+                handler.StringTableAdd(Path);
+                handler.Write(pathOffset);
+            }
+            else
+            {
+                handler.WriteWString(Path ?? "");
+            }
             return true;
         }
     }
