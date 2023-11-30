@@ -51,6 +51,7 @@
     <Window.InputBindings>
         <KeyBinding Command="{Binding OpenCommand}" Modifiers="Control" Key="O" />
         <KeyBinding Command="{Binding SaveCommand}" Modifiers="Control" Key="S" />
+        <KeyBinding Command="{Binding SaveAsCommand}" Modifiers="Ctrl+Shift" Key="S" />
         <KeyBinding Command="{Binding ReopenCommand}" Modifiers="Control" Key="R" />
         <KeyBinding Command="{Binding CloseCommand}" Modifiers="Control" Key="W" />
         <KeyBinding Command="{Binding QuitCommand}" Modifiers="Control" Key="Q" />
@@ -71,6 +72,7 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
                 <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
+                <MenuItem Header="_SaveAs" Command="{Binding SaveAsCommand}" InputGestureText="Ctrl+Shift+S" />
                 <MenuItem Header="_Reopen" Command="{Binding ReopenCommand}" InputGestureText="Ctrl+R" />
                 <MenuItem Header="_Close" Command="{Binding CloseCommand}" InputGestureText="Ctrl+W" />
                 <Separator />

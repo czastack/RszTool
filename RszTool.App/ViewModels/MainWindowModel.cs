@@ -106,6 +106,7 @@ namespace RszTool.App.ViewModels
 
         public RelayCommand OpenCommand => new(OnOpen);
         public RelayCommand SaveCommand => new(OnSave);
+        public RelayCommand SaveAsCommand => new(OnSaveAs);
         public RelayCommand ReopenCommand => new(OnReopen);
         public RelayCommand CloseCommand => new(OnClose);
         public RelayCommand QuitCommand => new(OnQuit);
@@ -122,30 +123,40 @@ namespace RszTool.App.ViewModels
 
         private void OnOpen(object arg)
         {
-            // Configure open file dialog box
             var dialog = new OpenFileDialog
             {
-                FileName = "Document", // Default file name
-                DefaultExt = ".txt", // Default file extension
-                // Filter files by extension
                 Filter = OpenFileFilter
             };
-
-            // Show open file dialog box
-            bool? result = dialog.ShowDialog();
-
-            // Process open file dialog box results
-            if (result == true)
+            if (dialog.ShowDialog() == true)
             {
-                // Open document
-                string filename = dialog.FileName;
-                OpenFile(filename);
+                AppUtils.TryAction(() => OpenFile(dialog.FileName));
             }
         }
 
         private void OnSave(object arg)
         {
             AppUtils.TryAction(() => CurrentFile?.Save());
+        }
+
+        private void OnSaveAs(object arg)
+        {
+            var currentFile = CurrentFile;
+            if (currentFile == null) return;
+            var dialog = new OpenFileDialog
+            {
+                FileName = currentFile.FileName,
+                Filter = OpenFileFilter
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                // Open document
+                string? fileName = dialog.FileName;
+                if (fileName != null)
+                {
+                    AppUtils.TryAction(() => currentFile.SaveAs(fileName));
+                    SelectedTabItem!.Header = currentFile.FileName;
+                }
+            }
         }
 
         private void OnReopen(object arg)
