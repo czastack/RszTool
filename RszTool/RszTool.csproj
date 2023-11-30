@@ -10,11 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
-    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     <PackageReference Include="System.Memory" Version="4.5.5" />
-    <PackageReference Include="System.Text.Json" Version="7.0.2" />
+    <PackageReference Include="System.Text.Json" Version="8.0.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <!-- <PackageReference Include="System.Resources.Extensions" Version="7.0.0" /> -->
   </ItemGroup>
 
   <!-- Add this as a new ItemGroup, replacing paths and names appropriately -->

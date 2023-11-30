@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿// for VectorBindingWrapper
+using System.Numerics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -46,7 +48,18 @@ namespace RszTool.App.Views
         {
             if (d is FieldValueInput control)
             {
+#if !NET5_0_OR_GREATER
+                if (e.NewValue is Vector2 or Vector3 or Vector4)
+                {
+                    control.Content = new VectorBindingWrapper(e.NewValue);
+                }
+                else
+                {
+                    control.Content = e.NewValue;
+                }
+#else
                 control.Content = e.NewValue;
+#endif
             }
         }
 
@@ -104,6 +117,33 @@ namespace RszTool.App.Views
         {
             Value = Guid.NewGuid();
             ValueChanged = true;
+        }
+    }
+
+
+    public class VectorBindingWrapper(dynamic value)
+    {
+        public dynamic Value { get; set; } = value;
+
+        public float this[int index]
+        {
+            get => index switch {
+                0 => Value.X,
+                1 => Value.Y,
+                2 => Value.Z,
+                3 => Value.W,
+                _ => throw new IndexOutOfRangeException($"Index should be between 0 and 3, but got {index}"),
+            };
+            set
+            {
+                switch (index)
+                {
+                    case 0: Value.X = value; break;
+                    case 1: Value.Y = value; break;
+                    case 2: Value.Z = value; break;
+                    case 3: Value.W = value; break;
+                }
+            }
         }
     }
 }
