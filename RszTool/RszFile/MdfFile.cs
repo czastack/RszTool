@@ -263,8 +263,9 @@ namespace RszTool
 
         protected override bool DoRead()
         {
-            FileHandler handler = FileHandler;
+            MatDatas.Clear();
 
+            var handler = FileHandler;
             if (!Header.Read(handler)) return false;
             if (Header.Data.magic != Magic)
             {

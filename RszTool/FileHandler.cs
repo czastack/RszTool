@@ -22,16 +22,8 @@ namespace RszTool
 
         public FileHandler(string path, bool holdFile = false)
         {
-            FilePath = path;
-            FileStream fileStream = new(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-            if (!holdFile) {
-                Stream = new MemoryStream();
-                fileStream.CopyTo(Stream);
-                fileStream.Dispose();
-                Stream.Position = 0;
-            } else {
-                Stream = fileStream;
-            }
+            Open(path, holdFile);
+            Stream ??= new MemoryStream();
         }
 
         public FileHandler(Stream stream)
@@ -55,6 +47,29 @@ namespace RszTool
             if (disposing)
             {
                 Stream.Dispose();
+            }
+        }
+
+        public void Open(string path, bool holdFile = false)
+        {
+            FilePath = path;
+            FileStream fileStream = new(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            if (!holdFile) {
+                Stream = new MemoryStream();
+                fileStream.CopyTo(Stream);
+                fileStream.Dispose();
+                Stream.Position = 0;
+            } else {
+                Stream = fileStream;
+            }
+        }
+
+        public void Reopen()
+        {
+            if (FilePath != null)
+            {
+                Stream.Dispose();
+                Open(FilePath, !IsMemory);
             }
         }
 

@@ -31,6 +31,19 @@ namespace RszTool.App.ViewModels
 
         public static RszInstance? CopiedInstance { get; private set; }
 
+        public virtual void PostRead() {}
+
+        public bool Read()
+        {
+            if (File.Read())
+            {
+                PostRead();
+                Changed = false;
+                return true;
+            }
+            return false;
+        }
+
         public bool Save() => File.Save();
 
         public bool SaveAs(string path)
@@ -43,7 +56,11 @@ namespace RszTool.App.ViewModels
             return result;
         }
 
-        public virtual void PostRead() {}
+        public bool Reopen()
+        {
+            File.FileHandler.Reopen();
+            return Read();
+        }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {

@@ -71,7 +71,7 @@ namespace RszTool.App
 
             if (promptUserForShutdown)
             {
-                messageBoxMessage += "Should we close it?";
+                messageBoxMessage += "\n\nShould we close it?";
                 messageBoxButtons = MessageBoxButton.YesNo;
             }
 

@@ -62,11 +62,10 @@ namespace RszTool.App.ViewModels
             }
             if (fileViewModel != null && content != null)
             {
-                if (!fileViewModel.File.Read())
+                if (!fileViewModel.Read())
                 {
                     return;
                 }
-                fileViewModel.PostRead();
                 content.DataContext = fileViewModel;
                 HeaderedItemViewModel header = new FileTabItemViewModel(fileViewModel, content);
                 Items.Add(header);
@@ -80,27 +79,14 @@ namespace RszTool.App.ViewModels
 
         public void OnDropFile(string[] files)
         {
-            foreach (var file in files)
+            for (int i = 0; i < files.Length; i++)
             {
-                if (Debugger.IsAttached)
-                {
-                    OpenFile(file);
-                }
-                else try
-                {
-                    OpenFile(file);
-                }
-                catch (Exception e)
-                {
-                    App.ShowUnhandledException(e, "OnDropFile");
-                }
+                string file = files[i];
+                AppUtils.TryAction(() => OpenFile(file));
             }
         }
 
-        public ItemActionCallback ClosingTabItemHandler
-        {
-            get { return ClosingTabItemHandlerImpl; }
-        }
+        public static ItemActionCallback ClosingTabItemHandler => ClosingTabItemHandlerImpl;
 
         /// <summary>
         /// Callback to handle tab closing.
@@ -120,6 +106,7 @@ namespace RszTool.App.ViewModels
 
         public RelayCommand OpenCommand => new(OnOpen);
         public RelayCommand SaveCommand => new(OnSave);
+        public RelayCommand ReopenCommand => new(OnReopen);
         public RelayCommand CloseCommand => new(OnClose);
         public RelayCommand QuitCommand => new(OnQuit);
 
@@ -158,18 +145,12 @@ namespace RszTool.App.ViewModels
 
         private void OnSave(object arg)
         {
-            if (Debugger.IsAttached)
-            {
-                CurrentFile?.Save();
-            }
-            else try
-            {
-                CurrentFile?.Save();
-            }
-            catch (Exception e)
-            {
-                App.ShowUnhandledException(e, "OnSave");
-            }
+            AppUtils.TryAction(() => CurrentFile?.Save());
+        }
+
+        private void OnReopen(object arg)
+        {
+            AppUtils.TryAction(() => CurrentFile?.Reopen());
         }
 
         private void OnClose(object arg)

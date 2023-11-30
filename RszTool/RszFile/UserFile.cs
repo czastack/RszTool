@@ -42,6 +42,9 @@ namespace RszTool
 
         protected override bool DoRead()
         {
+            ResourceInfoList.Clear();
+            UserdataInfoList.Clear();
+
             var handler = FileHandler;
             if (!Header.Read(handler)) return false;
             if (Header.Data.magic != Magic)

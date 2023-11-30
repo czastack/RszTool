@@ -50,6 +50,13 @@ namespace RszTool
 
         protected override bool DoRead()
         {
+            ObjectTableList.Clear();
+            InstanceInfoList.Clear();
+            RSZUserDataInfoList.Clear();
+            InstanceList.Clear();
+            ObjectList.Clear();
+            EmbeddedRSZFileList?.Clear();
+
             var handler = FileHandler;
             handler.Seek(0);
             if (!Header.Read(handler)) return false;

@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:RszTool.App"
         xmlns:views="clr-namespace:RszTool.App.Views"
         xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
+        xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool"
         xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
         xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz"
         mc:Ignorable="d"
@@ -50,24 +51,38 @@
     <Window.InputBindings>
         <KeyBinding Command="{Binding OpenCommand}" Modifiers="Control" Key="O" />
         <KeyBinding Command="{Binding SaveCommand}" Modifiers="Control" Key="S" />
+        <KeyBinding Command="{Binding ReopenCommand}" Modifiers="Control" Key="R" />
         <KeyBinding Command="{Binding CloseCommand}" Modifiers="Control" Key="W" />
         <KeyBinding Command="{Binding QuitCommand}" Modifiers="Control" Key="Q" />
     </Window.InputBindings>
     <Window.DataContext>
         <viewmodels:MainWindowModel />
     </Window.DataContext>
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
                 <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
+                <MenuItem Header="_Reopen" Command="{Binding ReopenCommand}" InputGestureText="Ctrl+R" />
                 <MenuItem Header="_Close" Command="{Binding CloseCommand}" InputGestureText="Ctrl+W" />
                 <Separator />
                 <MenuItem Header="_Quit" Command="{Binding QuitCommand}" InputGestureText="Ctrl+Q" />
             </MenuItem>
         </Menu>
+        <DockPanel Grid.Row="1" Margin="5">
+            <TextBlock Text="Game version" DockPanel.Dock="Left" Margin="0 0 5 0" VerticalAlignment="Center" />
+            <ComboBox ItemsSource="{x:Static rsztool:RszDefines.GameNames}" SelectedValue="{Binding GameName}" />
+        </DockPanel>
         <dragablz:TabablzControl Margin="8" Style="{StaticResource TabablzControlStyle}"
-                                 SelectedItem="{Binding SelectedTabItem}">
+                                 SelectedItem="{Binding SelectedTabItem}" Grid.Row="2">
             <dragablz:TabablzControl.InterTabController>
                 <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
             </dragablz:TabablzControl.InterTabController>
@@ -75,5 +90,5 @@
                 <views:RszTestView/>
             </TabItem> -->
         </dragablz:TabablzControl>
-    </DockPanel>
+    </Grid>
 </Window>

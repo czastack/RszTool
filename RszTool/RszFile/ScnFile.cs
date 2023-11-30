@@ -168,7 +168,15 @@ namespace RszTool
 
         protected override bool DoRead()
         {
-            FileHandler handler = FileHandler;
+            GameObjectInfoList.Clear();
+            FolderInfoList.Clear();
+            ResourceInfoList.Clear();
+            PrefabInfoList.Clear();
+            UserdataInfoList.Clear();
+            FolderDatas?.Clear();
+            GameObjectDatas?.Clear();
+
+            var handler = FileHandler;
             if (!Header.Read(handler)) return false;
             ref var header = ref Header.Data;
             if (header.magic != Magic)
