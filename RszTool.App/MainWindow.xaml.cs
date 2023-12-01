@@ -20,6 +20,8 @@ namespace RszTool.App
         public MainWindow()
         {
             InitializeComponent();
+
+            Closing += OnClosing;
         }
 
         public void OnDragOver(object sender, DragEventArgs e)
@@ -42,6 +44,14 @@ namespace RszTool.App
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 mainWindowModel.OnDropFile(files);
+            }
+        }
+
+        private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (DataContext is MainWindowModel mainWindowModel)
+            {
+                if (!mainWindowModel.OnExit()) e.Cancel = true;
             }
         }
     }

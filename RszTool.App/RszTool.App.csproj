@@ -8,9 +8,6 @@
     <LangVersion>latest</LangVersion>
     <UseWPF>true</UseWPF>
     <NoWarn>$(NoWarn);CS0067</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net472' ">
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 

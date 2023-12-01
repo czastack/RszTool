@@ -6,7 +6,7 @@ namespace RszTool.App.Common
     {
         public static MessageBoxResult ShowOk(string message, MessageBoxImage icon)
         {
-            return MessageBox.Show(App.Current.MainWindow, message, "提示", MessageBoxButton.OK, icon);
+            return MessageBox.Show(Application.Current.MainWindow, message, "提示", MessageBoxButton.OK, icon);
         }
 
         public static MessageBoxResult Error(string message)
@@ -21,12 +21,12 @@ namespace RszTool.App.Common
 
         public static bool Confirm(string message)
         {
-            return MessageBox.Show(App.Current.MainWindow, message, "提示", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+            return MessageBox.Show(Application.Current.MainWindow, message, "提示", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
         }
 
         public static MessageBoxResult YesNoCancel(string message)
         {
-            return MessageBox.Show(App.Current.MainWindow, message, "提示", MessageBoxButton.YesNoCancel);
+            return MessageBox.Show(Application.Current.MainWindow, message, "提示", MessageBoxButton.YesNoCancel);
         }
     }
 }

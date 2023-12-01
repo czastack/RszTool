@@ -20,7 +20,16 @@ namespace RszTool.App.ViewModels
                 return path != null ? Path.GetFileName(path) : null;
             }
         }
-        public bool Changed { get; set; }
+        private bool changed;
+        public bool Changed
+        {
+            get => changed;
+            set
+            {
+                changed = value;
+                HeaderChanged?.Invoke();
+            }
+        }
         public RelayCommand CopyInstance => new(OnCopyInstance);
         public RelayCommand CopyArrayItem => new(OnCopyArrayItem);
         public RelayCommand RemoveArrayItem => new(OnRemoveArrayItem);
@@ -28,6 +37,11 @@ namespace RszTool.App.ViewModels
         public RelayCommand DuplicateArrayItemMulti => new(OnDuplicateArrayItemMulti);
         public RelayCommand PasteArrayItemAfter => new(OnPasteArrayItemAfter);
         public RelayCommand NewArrayItem => new(OnNewArrayItem);
+
+        /// <summary>
+        /// 标题改变(SaveAs或者Changed)
+        /// </summary>
+        public event Action? HeaderChanged;
 
         public static RszInstance? CopiedInstance { get; private set; }
 
@@ -44,20 +58,30 @@ namespace RszTool.App.ViewModels
             return false;
         }
 
-        public bool Save() => File.Save();
+        public bool Save()
+        {
+            bool result = File.Save();
+            if (result)
+            {
+                Changed = false;
+            }
+            return result;
+        }
 
         public bool SaveAs(string path)
         {
             bool result = File.SaveAs(path);
             if (result)
             {
-                PropertyChanged?.Invoke(this, new(nameof(FilePath)));
+                Changed = false;
+                HeaderChanged?.Invoke();
             }
             return result;
         }
 
         public bool Reopen()
         {
+            // TODO check Changed
             File.FileHandler.Reopen();
             return Read();
         }

@@ -23,6 +23,15 @@ namespace RszTool.App.ViewModels
 
         public CustomInterTabClient InterTabClient { get; } = new();
 
+        public RelayCommand OpenCommand => new(OnOpen);
+        public RelayCommand SaveCommand => new(OnSave);
+        public RelayCommand SaveAsCommand => new(OnSaveAs);
+        public RelayCommand ReopenCommand => new(OnReopen);
+        public RelayCommand CloseCommand => new(OnClose);
+        public RelayCommand QuitCommand => new(OnQuit);
+
+        public ItemActionCallback ClosingTabItemHandler => ClosingTabItemHandlerImpl;
+
         /// <summary>
         /// 打开文件
         /// </summary>
@@ -86,30 +95,17 @@ namespace RszTool.App.ViewModels
             }
         }
 
-        public static ItemActionCallback ClosingTabItemHandler => ClosingTabItemHandlerImpl;
-
         /// <summary>
         /// Callback to handle tab closing.
         /// </summary>
-        private static void ClosingTabItemHandlerImpl(ItemActionCallbackArgs<TabablzControl> args)
+        private void ClosingTabItemHandlerImpl(ItemActionCallbackArgs<TabablzControl> args)
         {
-            //in here you can dispose stuff or cancel the close
-
-            //here's your view model:
-            var viewModel = args.DragablzItem.DataContext as HeaderedItemViewModel;
-
-            //here's how you can cancel stuff:
-            //args.Cancel();
+            if (args.DragablzItem.DataContext is not FileTabItemViewModel fileTab) return;
+            if (!OnTabClose(fileTab))
+            {
+                args.Cancel();
+            }
         }
-
-
-
-        public RelayCommand OpenCommand => new(OnOpen);
-        public RelayCommand SaveCommand => new(OnSave);
-        public RelayCommand SaveAsCommand => new(OnSaveAs);
-        public RelayCommand ReopenCommand => new(OnReopen);
-        public RelayCommand CloseCommand => new(OnClose);
-        public RelayCommand QuitCommand => new(OnQuit);
 
         private static readonly (string, string)[] SupportedFile = {
             ("User file", "*.user.*"),
@@ -154,7 +150,6 @@ namespace RszTool.App.ViewModels
                 if (fileName != null)
                 {
                     AppUtils.TryAction(() => currentFile.SaveAs(fileName));
-                    SelectedTabItem!.Header = currentFile.FileName;
                 }
             }
         }
@@ -164,29 +159,48 @@ namespace RszTool.App.ViewModels
             AppUtils.TryAction(() => CurrentFile?.Reopen());
         }
 
-        private void OnClose(object arg)
+        private static bool OnTabClose(FileTabItemViewModel fileTab)
         {
-            if (SelectedTabItem == null || CurrentFile == null) return;
-            if (CurrentFile.Changed)
+            if (fileTab.FileViewModel.Changed)
             {
                 // Check changed
+                var result = MessageBoxUtils.YesNoCancel(
+                    $"File is changed, do you want to save it?\n{fileTab.FileViewModel.FilePath}");
+                if (result == MessageBoxResult.Yes)
+                {
+                    AppUtils.TryAction(() => fileTab.FileViewModel.Save());
+                }
+                else if (result == MessageBoxResult.Cancel) return false;
             }
-            Items.Remove(SelectedTabItem);
+            return true;
+        }
+
+        private void OnClose(object arg)
+        {
+            if (SelectedTabItem is FileTabItemViewModel fileTab && OnTabClose(fileTab))
+            {
+                Items.Remove(fileTab);
+            }
         }
 
         private void OnQuit(object arg)
+        {
+            if (OnExit())
+            {
+                Application.Current.Shutdown();
+            }
+        }
+
+        public bool OnExit()
         {
             foreach (var item in Items)
             {
                 if (item is FileTabItemViewModel fileTab)
                 {
-                    if (fileTab.FileViewModel.Changed)
-                    {
-                        // Check changed
-                    }
+                    if (!OnTabClose(fileTab)) return false;
                 }
             }
-            Application.Current.Shutdown();
+            return true;
         }
     }
 
@@ -197,8 +211,14 @@ namespace RszTool.App.ViewModels
             : base(fileViewModel.FileName!, content, isSelected)
         {
             FileViewModel = fileViewModel;
+            fileViewModel.HeaderChanged += UpdateHeader;
         }
 
         public BaseRszFileViewModel FileViewModel { get; set; }
+
+        public void UpdateHeader()
+        {
+            Header = FileViewModel.FileName + (FileViewModel.Changed ? "*" : "");
+        }
     }
 }
