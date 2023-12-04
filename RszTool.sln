@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RszTool", "RszTool\RszTool.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelSourceGenerator", "ModelSourceGenerator\ModelSourceGenerator.csproj", "{A39423CC-595C-49E4-A20A-3F6825DB4D46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RszTool.Gui", "RszTool.Gui\RszTool.Gui.csproj", "{EF55623F-B84D-4A89-A14E-4ABF0524E568}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RszTool.Gui", "RszTool.Gui\RszTool.Gui.csproj", "{EF55623F-B84D-4A89-A14E-4ABF0524E568}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RszTool.Test", "RszTool.Test\RszTool.Test.csproj", "{25AC68C0-1445-4B64-B35F-78EF1A7A70EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{EF55623F-B84D-4A89-A14E-4ABF0524E568}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF55623F-B84D-4A89-A14E-4ABF0524E568}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF55623F-B84D-4A89-A14E-4ABF0524E568}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25AC68C0-1445-4B64-B35F-78EF1A7A70EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25AC68C0-1445-4B64-B35F-78EF1A7A70EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25AC68C0-1445-4B64-B35F-78EF1A7A70EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25AC68C0-1445-4B64-B35F-78EF1A7A70EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

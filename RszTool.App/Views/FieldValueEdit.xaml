@@ -12,13 +12,13 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="400"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
         <TextBlock Text="{Binding Name}" Margin="0,0,10,0" VerticalAlignment="Center" Grid.Column="0" />
         <local:FieldValueInput
             Value="{Binding Value}" ValueType="{Binding Field.type}"
             ValueChanged="{Binding ValueChanged, RelativeSource={RelativeSource AncestorType=UserControl}}"
             Grid.Column="1" />
-        <TextBlock Text="{Binding Field.DisplayType}" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="2" />
+        <TextBlock Text="{Binding Field.DisplayType}" Margin="10,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Grid.Column="2" />
     </Grid>
 </UserControl>

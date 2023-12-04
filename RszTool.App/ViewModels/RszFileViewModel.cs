@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using RszTool.App.Common;
+using RszTool.App.Resources;
 
 namespace RszTool.App.ViewModels
 {
@@ -31,12 +32,12 @@ namespace RszTool.App.ViewModels
             }
         }
         public RelayCommand CopyInstance => new(OnCopyInstance);
-        public RelayCommand CopyArrayItem => new(OnCopyArrayItem);
-        public RelayCommand RemoveArrayItem => new(OnRemoveArrayItem);
-        public RelayCommand DuplicateArrayItem => new(OnDuplicateArrayItem);
-        public RelayCommand DuplicateArrayItemMulti => new(OnDuplicateArrayItemMulti);
-        public RelayCommand PasteArrayItemAfter => new(OnPasteArrayItemAfter);
-        public RelayCommand NewArrayItem => new(OnNewArrayItem);
+        public RelayCommand ArrayItemCopy => new(OnArrayItemCopy);
+        public RelayCommand ArrayItemRemove => new(OnArrayItemRemove);
+        public RelayCommand ArrayItemDuplicate => new(OnArrayItemDuplicate);
+        public RelayCommand ArrayItemDuplicateMulti => new(OnArrayItemDuplicateMulti);
+        public RelayCommand ArrayItemPasteAfter => new(OnArrayItemPasteAfter);
+        public RelayCommand ArrayItemNew => new(OnArrayItemNew);
 
         /// <summary>
         /// 标题改变(SaveAs或者Changed)
@@ -100,7 +101,7 @@ namespace RszTool.App.ViewModels
             }
         }
 
-        private static void OnCopyArrayItem(object arg)
+        private static void OnArrayItemCopy(object arg)
         {
             if (arg is RszFieldArrayInstanceItemViewModel item)
             {
@@ -112,7 +113,7 @@ namespace RszTool.App.ViewModels
         /// 移除数组项
         /// </summary>
         /// <param name="arg"></param>
-        private void OnRemoveArrayItem(object arg)
+        private void OnArrayItemRemove(object arg)
         {
             if (arg is BaseRszFieldArrayItemViewModel item && File.GetRSZ() is RSZFile rsz)
             {
@@ -125,7 +126,7 @@ namespace RszTool.App.ViewModels
         /// 重复数组项
         /// </summary>
         /// <param name="arg"></param>
-        private void OnDuplicateArrayItem(object arg)
+        private void OnArrayItemDuplicate(object arg)
         {
             if (File.GetRSZ() is not RSZFile rsz) return;
             if (arg is RszFieldArrayInstanceItemViewModel item)
@@ -144,12 +145,14 @@ namespace RszTool.App.ViewModels
         /// 重复多次数组项
         /// </summary>
         /// <param name="arg"></param>
-        private void OnDuplicateArrayItemMulti(object arg)
+        private void OnArrayItemDuplicateMulti(object arg)
         {
             if (File.GetRSZ() is not RSZFile rsz) return;
             Views.InputDialog dialog = new()
             {
-                Message = "请输入重复次数",
+                Title = Texts.Duplicate,
+                Message = Texts.InputDulicateCount,
+                InputText = "1",
                 Owner = Application.Current.MainWindow,
             };
             // 显示对话框，并等待用户输入
@@ -178,7 +181,7 @@ namespace RszTool.App.ViewModels
         /// 在数组项后面粘贴
         /// </summary>
         /// <param name="arg"></param>
-        private void OnPasteArrayItemAfter(object arg)
+        private void OnArrayItemPasteAfter(object arg)
         {
             if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz &&
                 CopiedInstance != null)
@@ -186,7 +189,7 @@ namespace RszTool.App.ViewModels
                 if (CopiedInstance.RszClass != item.Instance.RszClass)
                 {
                     var error = new InvalidOperationException($"CopiedInstance is {CopiedInstance.RszClass.name}, missmatch {item.Instance.RszClass.name}");
-                    App.ShowUnhandledException(error, "OnPasteArrayItemAfter");
+                    App.ShowUnhandledException(error, "OnArrayItemPasteAfter");
                 }
                 rsz.ArrayInsertInstance(item.Values, CopiedInstance, item.Index + 1);
                 item.Array.NotifyItemsChanged();
@@ -197,7 +200,7 @@ namespace RszTool.App.ViewModels
         /// 数组新建项
         /// </summary>
         /// <param name="arg"></param>
-        private void OnNewArrayItem(object arg)
+        private void OnArrayItemNew(object arg)
         {
             if (arg is RszFieldArrayViewModel item && File.GetRSZ() is RSZFile rsz)
             {
@@ -207,7 +210,8 @@ namespace RszTool.App.ViewModels
                     className = RszInstance.GetElementType(item.Field.original_type);
                     Views.InputDialog dialog = new()
                     {
-                        Message = "请输入创建的类名",
+                        Title = Texts.NewItem,
+                        Message = Texts.InputClassName,
                         InputText = className,
                         Owner = Application.Current.MainWindow,
                     };
@@ -271,9 +275,9 @@ namespace RszTool.App.ViewModels
         public RelayCommand CopyGameObject => new(OnCopyGameObject);
         public RelayCommand RemoveGameObject => new(OnRemoveGameObject);
         public RelayCommand DuplicateGameObject => new(OnDuplicateGameObject);
-        public RelayCommand PasetGameObject => new(OnPasetGameObject);
-        public RelayCommand PasetGameObjectToFolder => new(OnPasetGameObjectToFolder);
-        public RelayCommand PasetGameObjectToParent => new(OnPasetGameObjectToParent);
+        public RelayCommand PasteGameObject => new(OnPasteGameObject);
+        public RelayCommand PasteGameObjectToFolder => new(OnPasteGameObjectToFolder);
+        public RelayCommand PasteGameobjectAsChild => new(OnPasteGameobjectAsChild);
 
         /// <summary>
         /// 复制游戏对象
@@ -306,7 +310,7 @@ namespace RszTool.App.ViewModels
         /// 粘贴游戏对象
         /// </summary>
         /// <param name="arg"></param>
-        private void OnPasetGameObject(object arg)
+        private void OnPasteGameObject(object arg)
         {
             if (CopiedGameObject != null)
             {
@@ -319,7 +323,7 @@ namespace RszTool.App.ViewModels
         /// 粘贴游戏对象到文件夹
         /// </summary>
         /// <param name="arg"></param>
-        private void OnPasetGameObjectToFolder(object arg)
+        private void OnPasteGameObjectToFolder(object arg)
         {
             if (CopiedGameObject != null)
             {
@@ -332,7 +336,7 @@ namespace RszTool.App.ViewModels
         /// 粘贴游戏对象到父对象
         /// </summary>
         /// <param name="arg"></param>
-        private void OnPasetGameObjectToParent(object arg)
+        private void OnPasteGameobjectAsChild(object arg)
         {
             if (CopiedGameObject != null)
             {

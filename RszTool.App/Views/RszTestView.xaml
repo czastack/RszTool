@@ -20,7 +20,7 @@
           ItemContainerStyle="{StaticResource TreeViewItemStyle}">
             <TreeViewItem ItemsSource="{Binding InstancesList.ListItems}" Header="My Header" ItemContainerStyle="{StaticResource TreeViewItemStyle}" />
         </TreeView> -->
-        <Button Content="测试" DockPanel.Dock="Bottom" Click="Test" />
+        <Button Content="Test" DockPanel.Dock="Bottom" Click="Test" />
         <TextBox x:Name="TestContent" DockPanel.Dock="Bottom" Height="100" />
         <TreeView>
             <TreeViewItem ItemsSource="{Binding InstanceList}" Header="Instances" />

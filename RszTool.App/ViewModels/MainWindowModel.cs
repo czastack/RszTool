@@ -1,11 +1,13 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Dragablz;
 using Microsoft.Win32;
 using RszTool.App.Common;
+using RszTool.App.Resources;
 using RszTool.App.Views;
 
 namespace RszTool.App.ViewModels
@@ -51,6 +53,13 @@ namespace RszTool.App.ViewModels
                 }
             }
 
+            string rszJsonFile = $"rsz{GameName}.json";
+            if (!File.Exists(rszJsonFile))
+            {
+                MessageBoxUtils.Warning(string.Format(Texts.RszJsonNotFound, rszJsonFile));
+                return;
+            }
+
             BaseRszFileViewModel? fileViewModel = null;
             ContentControl? content = null;
             RszFileOption option = new(GameName);
@@ -82,7 +91,7 @@ namespace RszTool.App.ViewModels
             }
             else
             {
-                MessageBox.Show("不支持的文件类型", "提示");
+                MessageBoxUtils.Info(Texts.NotSupportedFormat);
             }
         }
 

@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:RszTool.App.Views"
              xmlns:common="clr-namespace:RszTool.App.Common"
              xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
+             xmlns:res="clr-namespace:RszTool.App.Resources"
              xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=viewmodels:ScnFileViewModel}"
@@ -27,7 +28,7 @@
                 <TextBlock Text="{Binding Name}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Paste Gameobject" Command="{common:ParentBinding PasetGameObjectToFolder}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text PasteGameobject}" Command="{common:ParentBinding PasteGameObjectToFolder}" CommandParameter="{Binding}" />
                         </ContextMenu>
                     </TextBlock.ContextMenu>
                 </TextBlock>
@@ -39,10 +40,10 @@
                 <TextBlock Text="{Binding Name}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="_Copy" Command="{common:ParentBinding CopyGameObject}" CommandParameter="{Binding}" />
-                            <MenuItem Header="Remove" Command="{common:ParentBinding RemoveGameObject}" CommandParameter="{Binding}" />
-                            <MenuItem Header="Duplicate" Command="{common:ParentBinding DuplicateGameObject}" CommandParameter="{Binding}" />
-                            <MenuItem Header="Paste Gameobject to children" Command="{common:ParentBinding PasetGameObjectToParent}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text Copy}" Command="{common:ParentBinding CopyGameObject}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text Remove}" Command="{common:ParentBinding RemoveGameObject}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text Duplicate}" Command="{common:ParentBinding DuplicateGameObject}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text PasteGameobjectAsChild}" Command="{common:ParentBinding PasteGameobjectAsChild}" CommandParameter="{Binding}" />
                         </ContextMenu>
                     </TextBlock.ContextMenu>
                 </TextBlock>
@@ -69,7 +70,7 @@
             <TreeViewItem ItemsSource="{Binding GameObjects}" Header="GameObjects">
                 <TreeViewItem.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="_Paste GameObject" Command="{Binding PasetGameObject}" />
+                        <MenuItem Header="{res:Text PasteGameobject}" Command="{Binding PasteGameObject}" />
                     </ContextMenu>
                 </TreeViewItem.ContextMenu>
             </TreeViewItem>

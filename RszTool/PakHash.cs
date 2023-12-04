@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RszTool
 {
-    class PakHash
+    public class PakHash
     {
         private static uint MurMur3Hash(ReadOnlySpan<byte> bytes)
         {

@@ -79,3 +79,6 @@ ModelManifest.xml
 
 .vs
 .vscode
+
+rsz*.json
+RszTool.Test/test/

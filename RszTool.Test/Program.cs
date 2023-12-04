@@ -1,6 +1,6 @@
 ﻿using RszTool.Common;
 
-namespace RszTool
+namespace RszTool.Test
 {
     internal class Program
     {

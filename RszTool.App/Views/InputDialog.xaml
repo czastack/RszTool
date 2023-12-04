@@ -12,8 +12,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="{Binding Message, RelativeSource={RelativeSource AncestorType=Window}}" Width="200" TextAlignment="Center" Grid.Row="0" />
-        <TextBox Text="{Binding InputText, RelativeSource={RelativeSource AncestorType=Window}}" Width="200" Margin="10" Grid.Row="1" />
+        <TextBlock Text="{Binding Message, RelativeSource={RelativeSource AncestorType=Window}}" Margin="50 5 50 5" TextAlignment="Center" Grid.Row="0" />
+        <TextBox Text="{Binding InputText, RelativeSource={RelativeSource AncestorType=Window}}" Margin="50 5 50 5" Grid.Row="1" />
         <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center">
             <Button Content="OK" Width="60" Margin="5" Click="OKButton_Click"/>
             <Button Content="Cancel" Width="60" Margin="5" Click="CancelButton_Click"/>

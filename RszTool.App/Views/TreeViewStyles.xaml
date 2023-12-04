@@ -3,6 +3,7 @@
                     xmlns:local="clr-namespace:RszTool.App.Views"
                     xmlns:common="clr-namespace:RszTool.App.Common"
                     xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
+                    xmlns:res="clr-namespace:RszTool.App.Resources"
                     xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool">
 
     <viewmodels:RszInstanceToFieldViewModels x:Key="RszInstanceToFieldViewModels"/>
@@ -12,7 +13,7 @@
         <TextBlock Text="{Binding Name}">
             <TextBlock.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="_Copy" Command="{Binding Data.CopyInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.CopyInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
                 </ContextMenu>
             </TextBlock.ContextMenu>
         </TextBlock>
@@ -26,7 +27,7 @@
         <TextBlock Text="{Binding Name}">
             <TextBlock.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="NewItem" Command="{Binding Data.NewArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.NewArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
                 </ContextMenu>
             </TextBlock.ContextMenu>
         </TextBlock>
@@ -36,11 +37,11 @@
         <TextBlock Text="{Binding Name}">
             <TextBlock.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="_Copy" Command="{Binding Data.CopyArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
-                    <MenuItem Header="Remove" Command="{Binding Data.RemoveArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
-                    <MenuItem Header="Duplicate" Command="{Binding Data.DuplicateArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
-                    <MenuItem Header="DuplicateMulti" Command="{Binding Data.DuplicateArrayItemMulti, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
-                    <MenuItem Header="PasteAfter" Command="{Binding Data.PasteArrayItemAfter, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.ArrayItemCopy, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Remove}" Command="{Binding Data.ArrayItemRemove, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Duplicate}" Command="{Binding Data.ArrayItemDuplicate, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text DuplicateMulti}" Command="{Binding Data.ArrayItemDuplicateMulti, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text PasteAfter}" Command="{Binding Data.ArrayItemPasteAfter, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
                 </ContextMenu>
             </TextBlock.ContextMenu>
         </TextBlock>

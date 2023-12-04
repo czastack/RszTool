@@ -20,6 +20,8 @@ namespace RszTool.App
         public MainWindow()
         {
             InitializeComponent();
+            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version!;
+            Title = $"{Title} v{version.Major}.{version.Minor} - By chenstack";
 
             Closing += OnClosing;
         }

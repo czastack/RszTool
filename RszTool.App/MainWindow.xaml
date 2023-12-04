@@ -6,12 +6,13 @@
         xmlns:local="clr-namespace:RszTool.App"
         xmlns:views="clr-namespace:RszTool.App.Views"
         xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
+        xmlns:res="clr-namespace:RszTool.App.Resources"
         xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool"
         xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
         xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowModel}"
-        Title="RszTool" Height="450" Width="800"
+        Title="RszTool" Height="960" Width="1280"
         AllowDrop="True" DragOver="OnDragOver" Drop="OnDrop">
     <Window.Resources>
         <ResourceDictionary>
@@ -46,6 +47,15 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+
+            <Style TargetType="TextBlock" x:Key="UsageHint">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Items.Count}" Value="0">
+                        <Setter Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
     <Window.InputBindings>
@@ -69,14 +79,14 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Open" Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
-                <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
-                <MenuItem Header="_SaveAs" Command="{Binding SaveAsCommand}" InputGestureText="Ctrl+Shift+S" />
-                <MenuItem Header="_Reopen" Command="{Binding ReopenCommand}" InputGestureText="Ctrl+R" />
-                <MenuItem Header="_Close" Command="{Binding CloseCommand}" InputGestureText="Ctrl+W" />
+            <MenuItem Header="{res:Text File}">
+                <MenuItem Header="{res:Text Open}" Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
+                <MenuItem Header="{res:Text Save}" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
+                <MenuItem Header="{res:Text SaveAs}" Command="{Binding SaveAsCommand}" InputGestureText="Ctrl+Shift+S" />
+                <MenuItem Header="{res:Text Reopen}" Command="{Binding ReopenCommand}" InputGestureText="Ctrl+R" />
+                <MenuItem Header="{res:Text Close}" Command="{Binding CloseCommand}" InputGestureText="Ctrl+W" />
                 <Separator />
-                <MenuItem Header="_Quit" Command="{Binding QuitCommand}" InputGestureText="Ctrl+Q" />
+                <MenuItem Header="{res:Text Quit}" Command="{Binding QuitCommand}" InputGestureText="Ctrl+Q" />
             </MenuItem>
         </Menu>
         <DockPanel Grid.Row="1" Margin="5">
@@ -92,5 +102,8 @@
                 <views:RszTestView/>
             </TabItem> -->
         </dragablz:TabablzControl>
+
+        <TextBlock Text="{res:Text UsageHint}" TextAlignment="Center"
+                   Style="{StaticResource UsageHint}" FontSize="18" VerticalAlignment="Center" Grid.Row="2" />
     </Grid>
 </Window>
