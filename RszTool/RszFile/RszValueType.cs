@@ -244,4 +244,222 @@ namespace RszTool.via
             }
         }
     }
+
+
+    // Size=32
+    public struct TaperedCapsule
+    {
+        private Vector4 vertexRadiusA;
+        private Vector4 vertexRadiusB;
+
+        public Vector4 VertexRadiusA { readonly get => vertexRadiusA; set => vertexRadiusA = value; }
+        public Vector4 VertexRadiusB { readonly get => vertexRadiusB; set => vertexRadiusB = value; }
+    }
+
+
+    // Size=32
+    public struct Cone
+    {
+        public Vector3 p0;
+        public float r0;
+        public Vector3 p1;
+        public float r1;
+    }
+
+
+    [StructLayout(LayoutKind.Explicit, Size = 32)]
+    public struct Line
+    {
+        [FieldOffset(0)]
+        public Vector3 from;
+        [FieldOffset(16)]
+        public Vector3 dir;
+    }
+
+
+    [StructLayout(LayoutKind.Explicit, Size = 32)]
+    public struct LineSegment
+    {
+        [FieldOffset(0)]
+        public Vector3 start;
+        [FieldOffset(16)]
+        public Vector3 end;
+    }
+
+
+    // Size=16
+    public struct Plane
+    {
+        public Vector3 normal;
+        public float dist;
+    }
+
+
+    // Size=4
+    public struct PlaneXZ
+    {
+        public float dist;
+    }
+
+
+    // Size=8
+    public struct Point
+    {
+        public float x;
+        public float y;
+    }
+
+
+    // Size=8
+    public struct Size
+    {
+        public float w;
+        public float h;
+    }
+
+
+    [StructLayout(LayoutKind.Explicit, Size = 32)]
+    public struct Ray
+    {
+        [FieldOffset(0)]
+        public Vector3 from;
+        [FieldOffset(16)]
+        public Vector3 dir;
+    }
+
+
+    // Size=16
+    public struct RayY
+    {
+        public Vector3 from;
+        public float dir;
+    }
+
+
+    [StructLayout(LayoutKind.Explicit, Size = 32)]
+    public struct Segment
+    {
+        [FieldOffset(0)]
+        public Vector4 from;
+        [FieldOffset(16)]
+        public Vector3 dir;
+    }
+
+
+    [StructLayout(LayoutKind.Explicit, Size = 48)]
+    public struct Triangle
+    {
+        [FieldOffset(0)]
+        public Vector3 p0;
+        [FieldOffset(16)]
+        public Vector3 p1;
+        [FieldOffset(32)]
+        public Vector3 p2;
+    }
+
+
+    [StructLayout(LayoutKind.Explicit, Size = 48)]
+    public struct Cylinder
+    {
+        [FieldOffset(0)]
+        public Vector3 p0;
+        [FieldOffset(16)]
+        public Vector3 p1;
+        [FieldOffset(32)]
+        public float r;
+    }
+
+
+    [StructLayout(LayoutKind.Explicit, Size = 32)]
+    public struct Ellipsoid
+    {
+        [FieldOffset(0)]
+        public Vector3 pos;
+        [FieldOffset(16)]
+        public Vector3 r;
+    }
+
+
+    // Size=32
+    public struct Torus
+    {
+        public Vector3 pos;
+        public float r;
+        public Vector3 axis;
+        public float cr;
+    }
+
+
+    // Size=16
+    public struct Rect
+    {
+        public float l;
+        public float t;
+        public float r;
+        public float b;
+    }
+
+
+    // Size=32
+    public struct Rect3D
+    {
+        public Vector3 normal;
+        public float sizeW;
+        public Vector3 center;
+        public float sizeH;
+    }
+
+
+    // Size=96
+    public struct Frustum
+    {
+        public Plane plane0;
+        public Plane plane1;
+        public Plane plane2;
+        public Plane plane3;
+        public Plane plane4;
+        public Plane plane5;
+    }
+
+
+    // Size=16
+    public struct KeyFrame
+    {
+        public float value;
+        public uint time_type;
+        public uint inNormal;
+        public uint outNormal;
+    }
+
+
+#pragma warning disable CS8981
+    public struct sfix
+    {
+        public int v;
+    }
+#pragma warning restore CS8981
+
+
+    public struct Sfix2
+    {
+        public sfix x;
+        public sfix y;
+    }
+
+
+    public struct Sfix3
+    {
+        public sfix x;
+        public sfix y;
+        public sfix z;
+    }
+
+
+    public struct Sfix4
+    {
+        public sfix x;
+        public sfix y;
+        public sfix z;
+        public sfix w;
+    }
 }

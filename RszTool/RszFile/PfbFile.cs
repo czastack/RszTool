@@ -115,6 +115,11 @@ namespace RszTool
             public string? Name => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;
 
             public int? ObjectId => Info?.Data.objectId;
+
+            public override string ToString()
+            {
+                return Name ?? "";
+            }
         }
 
         // ResourceInfo

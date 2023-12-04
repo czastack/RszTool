@@ -27,6 +27,11 @@ namespace RszTool.App.ViewModels
             propertyViewModels ??= MakePropertyViewModels(Instance, Properties);
 
         override public IEnumerable<object>? Items => PropertyViewModels;
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
 
@@ -41,6 +46,11 @@ namespace RszTool.App.ViewModels
         {
             get => Property.GetValue(Instance);
             set => Property.SetValue(Instance, value);
+        }
+
+        public override string ToString()
+        {
+            return $"{Type} {Name} = {Value}";
         }
     }
 }

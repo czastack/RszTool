@@ -19,10 +19,12 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBox Text="{Binding FilePath, Mode=OneWay}" IsReadOnly="True" Margin="0 0 0 5" Grid.Row="0" />
-        <TreeView Grid.Row="1">
+        <TextBox Text="{Binding SelectedItem, Mode=OneWay}" IsReadOnly="True" Margin="0 0 0 5" Grid.Row="1" />
+        <TreeView Grid.Row="2" SelectedItemChanged="TreeView_SelectedItemChanged">
             <TreeViewItem ItemsSource="{Binding RszViewModel.Instances}" Header="Instances" />
             <TreeViewItem ItemsSource="{Binding RszViewModel.Objects}" Header="Objects" />
         </TreeView>

@@ -58,6 +58,11 @@ namespace RszTool.App.ViewModels
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Field.DisplayType} {Field.name} = {Value}";
+        }
     }
 
 
@@ -70,6 +75,11 @@ namespace RszTool.App.ViewModels
         public RszInstance Instance => (RszInstance)instance.Values[Index];
         public override string Name => $"{Field.name} : {Instance.Name}";
         public IEnumerable<object> Items => RszInstanceToFieldViewModels.Convert(Instance);
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
 
@@ -99,6 +109,11 @@ namespace RszTool.App.ViewModels
         public void NotifyItemsChanged()
         {
             OnPropertyChanged(nameof(Items));
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 
@@ -148,6 +163,11 @@ namespace RszTool.App.ViewModels
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Field.DisplayType} {Field.name}[{Index}] = {Value}";;
+        }
     }
 
 
@@ -160,5 +180,10 @@ namespace RszTool.App.ViewModels
         public RszInstance Instance => (RszInstance)Values[Index];
         public override string Name => $"{Index}: {Instance.Name}";
         public IEnumerable<object> Items => RszInstanceToFieldViewModels.Convert(Instance);
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

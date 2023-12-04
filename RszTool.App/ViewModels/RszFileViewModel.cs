@@ -31,6 +31,8 @@ namespace RszTool.App.ViewModels
                 HeaderChanged?.Invoke();
             }
         }
+        public object? SelectedItem { get; set; }
+
         public RelayCommand CopyInstance => new(OnCopyInstance);
         public RelayCommand ArrayItemCopy => new(OnArrayItemCopy);
         public RelayCommand ArrayItemRemove => new(OnArrayItemRemove);

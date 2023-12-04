@@ -54,6 +54,11 @@ namespace RszTool
         /// </summary>
         public static readonly RszInstance NULL = new();
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         private void AlignFirstField(FileHandler handler)
         {
             handler.Align(RszClass.fields[0].array ? 4 : RszClass.fields[0].align);
@@ -202,6 +207,28 @@ namespace RszTool
                     RszFieldType.Sphere => handler.Read<via.Sphere>(),
                     RszFieldType.Capsule => handler.Read<via.Capsule>(),
                     RszFieldType.Area => handler.Read<via.Area>(),
+                    RszFieldType.TaperedCapsule => handler.Read<via.TaperedCapsule>(),
+                    RszFieldType.Cone => handler.Read<via.Cone>(),
+                    RszFieldType.Line => handler.Read<via.Line>(),
+                    RszFieldType.LineSegment => handler.Read<via.LineSegment>(),
+                    RszFieldType.Plane => handler.Read<via.Plane>(),
+                    RszFieldType.PlaneXZ => handler.Read<via.PlaneXZ>(),
+                    RszFieldType.Size => handler.Read<via.Size>(),
+                    RszFieldType.Ray => handler.Read<via.Ray>(),
+                    RszFieldType.RayY => handler.Read<via.RayY>(),
+                    RszFieldType.Segment => handler.Read<via.Segment>(),
+                    RszFieldType.Triangle => handler.Read<via.Triangle>(),
+                    RszFieldType.Cylinder => handler.Read<via.Cylinder>(),
+                    RszFieldType.Ellipsoid => handler.Read<via.Ellipsoid>(),
+                    RszFieldType.Torus => handler.Read<via.Torus>(),
+                    RszFieldType.Rect => handler.Read<via.Rect>(),
+                    RszFieldType.Rect3D => handler.Read<via.Rect3D>(),
+                    RszFieldType.Frustum => handler.Read<via.Frustum>(),
+                    RszFieldType.KeyFrame => handler.Read<via.KeyFrame>(),
+                    RszFieldType.Sfix => handler.Read<via.sfix>(),
+                    RszFieldType.Sfix2 => handler.Read<via.Sfix2>(),
+                    RszFieldType.Sfix3 => handler.Read<via.Sfix3>(),
+                    RszFieldType.Sfix4 => handler.Read<via.Sfix4>(),
                     _ => throw new NotSupportedException($"Not support type {field.type}"),
                 };
                 /* if (field.size != handler.Tell() - startPos)
@@ -212,6 +239,191 @@ namespace RszTool
                 return value;
             }
         }
+
+        public static bool WriteNormalField(FileHandler handler, RszField field, object value)
+        {
+            if (field.IsString)
+            {
+                string valueStr = (string)value;
+                return handler.Write(valueStr.Length + 1) && handler.WriteWString(valueStr);
+            }
+            else if (field.type == RszFieldType.Object || field.type == RszFieldType.UserData)
+            {
+                return handler.Write(value is RszInstance instance ? instance.Index : (int)value);
+            }
+            else
+            {
+                long startPos = handler.Tell();
+                _ = field.type switch
+                {
+                    RszFieldType.S32 => handler.Write((int)value),
+                    RszFieldType.U32 => handler.Write((uint)value),
+                    RszFieldType.S64 => handler.Write((long)value),
+                    RszFieldType.U64 => handler.Write((ulong)value),
+                    RszFieldType.F32 => handler.Write((float)value),
+                    RszFieldType.F64 => handler.Write((double)value),
+                    RszFieldType.Bool => handler.Write((bool)value),
+                    RszFieldType.S8 => handler.Write((sbyte)value),
+                    RszFieldType.U8 => handler.Write((byte)value),
+                    RszFieldType.S16 => handler.Write((short)value),
+                    RszFieldType.U16 => handler.Write((ushort)value),
+                    RszFieldType.Data => handler.WriteBytes((byte[])value),
+                    RszFieldType.Mat4 => handler.Write((via.mat4)value),
+                    RszFieldType.Vec2 or RszFieldType.Float2 or RszFieldType.Point => handler.Write((Vector2)value),
+                    RszFieldType.Vec3 or RszFieldType.Float3 => handler.Write((Vector3)value),
+                    RszFieldType.Vec4 or RszFieldType.Float4 => handler.Write((Vector4)value),
+                    RszFieldType.OBB => handler.Write((via.OBB)value),
+                    RszFieldType.AABB => handler.Write((via.AABB)value),
+                    RszFieldType.Guid or RszFieldType.GameObjectRef or RszFieldType.Uri => handler.Write((Guid)value),
+                    RszFieldType.Color => handler.Write((via.Color)value),
+                    RszFieldType.Range => handler.Write((via.Range)value),
+                    RszFieldType.Quaternion => handler.Write((Quaternion)value),
+                    RszFieldType.Sphere => handler.Write((via.Sphere)value),
+                    RszFieldType.Capsule => handler.Write((via.Capsule)value),
+                    RszFieldType.Area => handler.Write((via.Area)value),
+                    RszFieldType.TaperedCapsule => handler.Write((via.TaperedCapsule)value),
+                    RszFieldType.Cone => handler.Write((via.Cone)value),
+                    RszFieldType.Line => handler.Write((via.Line)value),
+                    RszFieldType.LineSegment => handler.Write((via.LineSegment)value),
+                    RszFieldType.Plane => handler.Write((via.Plane)value),
+                    RszFieldType.PlaneXZ => handler.Write((via.PlaneXZ)value),
+                    RszFieldType.Size => handler.Write((via.Size)value),
+                    RszFieldType.Ray => handler.Write((via.Ray)value),
+                    RszFieldType.RayY => handler.Write((via.RayY)value),
+                    RszFieldType.Segment => handler.Write((via.Segment)value),
+                    RszFieldType.Triangle => handler.Write((via.Triangle)value),
+                    RszFieldType.Cylinder => handler.Write((via.Cylinder)value),
+                    RszFieldType.Ellipsoid => handler.Write((via.Ellipsoid)value),
+                    RszFieldType.Torus => handler.Write((via.Torus)value),
+                    RszFieldType.Rect => handler.Write((via.Rect)value),
+                    RszFieldType.Rect3D => handler.Write((via.Rect3D)value),
+                    RszFieldType.Frustum => handler.Write((via.Frustum)value),
+                    RszFieldType.KeyFrame => handler.Write((via.KeyFrame)value),
+                    RszFieldType.Sfix => handler.Write((via.sfix)value),
+                    RszFieldType.Sfix2 => handler.Write((via.Sfix2)value),
+                    RszFieldType.Sfix3 => handler.Write((via.Sfix3)value),
+                    RszFieldType.Sfix4 => handler.Write((via.Sfix4)value),
+                    _ => throw new NotSupportedException($"Not support type {field.type}"),
+                };
+                handler.Seek(startPos + field.size);
+                return true;
+            }
+        }
+
+        public static Type RszFieldTypeToCSharpType(RszFieldType type)
+        {
+            return type switch
+            {
+                RszFieldType.String or RszFieldType.Resource => typeof(string),
+                RszFieldType.S32 or RszFieldType.Object or RszFieldType.UserData => typeof(int),
+                RszFieldType.U32 => typeof(uint),
+                RszFieldType.S64 => typeof(long),
+                RszFieldType.U64 => typeof(ulong),
+                RszFieldType.F32 => typeof(float),
+                RszFieldType.F64 => typeof(double),
+                RszFieldType.Bool => typeof(bool),
+                RszFieldType.S8 => typeof(sbyte),
+                RszFieldType.U8 => typeof(byte),
+                RszFieldType.S16 => typeof(short),
+                RszFieldType.U16 => typeof(ushort),
+                RszFieldType.Data => typeof(byte[]),
+                RszFieldType.Mat4 => typeof(via.mat4),
+                RszFieldType.Vec2 or RszFieldType.Float2 or RszFieldType.Point => typeof(Vector2),
+                RszFieldType.Vec3 or RszFieldType.Float3 => typeof(Vector3),
+                RszFieldType.Vec4 or RszFieldType.Float4 => typeof(Vector4),
+                RszFieldType.AABB => typeof(via.AABB),
+                RszFieldType.Guid or RszFieldType.GameObjectRef or RszFieldType.Uri => typeof(Guid),
+                RszFieldType.Color => typeof(via.Color),
+                RszFieldType.Range => typeof(via.Range),
+                RszFieldType.Quaternion => typeof(Quaternion),
+                RszFieldType.Sphere => typeof(via.Sphere),
+                RszFieldType.Capsule => typeof(via.Capsule),
+                RszFieldType.Area => typeof(via.Area),
+                RszFieldType.TaperedCapsule => typeof(via.TaperedCapsule),
+                RszFieldType.Cone => typeof(via.Cone),
+                RszFieldType.Line => typeof(via.Line),
+                RszFieldType.LineSegment => typeof(via.LineSegment),
+                RszFieldType.Plane => typeof(via.Plane),
+                RszFieldType.PlaneXZ => typeof(via.PlaneXZ),
+                RszFieldType.Size => typeof(via.Size),
+                RszFieldType.Ray => typeof(via.Ray),
+                RszFieldType.RayY => typeof(via.RayY),
+                RszFieldType.Segment => typeof(via.Segment),
+                RszFieldType.Triangle => typeof(via.Triangle),
+                RszFieldType.Cylinder => typeof(via.Cylinder),
+                RszFieldType.Ellipsoid => typeof(via.Ellipsoid),
+                RszFieldType.Torus => typeof(via.Torus),
+                RszFieldType.Rect => typeof(via.Rect),
+                RszFieldType.Rect3D => typeof(via.Rect3D),
+                RszFieldType.Frustum => typeof(via.Frustum),
+                RszFieldType.KeyFrame => typeof(via.KeyFrame),
+                RszFieldType.Sfix => typeof(via.sfix),
+                RszFieldType.Sfix2 => typeof(via.Sfix2),
+                RszFieldType.Sfix3 => typeof(via.Sfix3),
+                RszFieldType.Sfix4 => typeof(via.Sfix4),
+                _ => throw new NotSupportedException($"Not support type {type}"),
+            };
+        }
+
+        /*
+        private static readonly Dictionary<Type, RszFieldType> CSharpTypeToRszFieldFieldTypeDict = new()
+        {
+            [typeof(string)] = RszFieldType.String,
+            [typeof(int)] = RszFieldType.S32,
+            [typeof(uint)] = RszFieldType.U32,
+            [typeof(long)] = RszFieldType.S64,
+            [typeof(ulong)] = RszFieldType.U64,
+            [typeof(float)] = RszFieldType.F32,
+            [typeof(double)] = RszFieldType.F64,
+            [typeof(bool)] = RszFieldType.Bool,
+            [typeof(sbyte)] = RszFieldType.S8,
+            [typeof(byte)] = RszFieldType.U8,
+            [typeof(short)] = RszFieldType.S16,
+            [typeof(ushort)] = RszFieldType.U16,
+            [typeof(byte[])] = RszFieldType.Data,
+            [typeof(via.mat4)] = RszFieldType.Mat4,
+            [typeof(Vector2)] = RszFieldType.Vec2,
+            [typeof(Vector3)] = RszFieldType.Vec3,
+            [typeof(Vector4)] = RszFieldType.Vec4,
+            [typeof(via.OBB)] = RszFieldType.OBB,
+            [typeof(via.AABB)] = RszFieldType.AABB,
+            [typeof(Guid)] = RszFieldType.Guid,
+            [typeof(Color)] = RszFieldType.Color,
+            [typeof(via.Range)] = RszFieldType.Range,
+            [typeof(Quaternion)] = RszFieldType.Quaternion,
+            [typeof(via.Sphere)] = RszFieldType.Sphere,
+            [typeof(via.Capsule)] = RszFieldType.Capsule,
+            [typeof(via.Area)] = RszFieldType.Area,
+            [typeof(via.TaperedCapsule)] = RszFieldType.TaperedCapsule,
+            [typeof(via.Cone)] = RszFieldType.Cone,
+            [typeof(via.Line)] = RszFieldType.Line,
+            [typeof(via.LineSegment)] = RszFieldType.LineSegment,
+            [typeof(via.Plane)] = RszFieldType.Plane,
+            [typeof(via.PlaneXZ)] = RszFieldType.PlaneXZ,
+            [typeof(via.Size)] = RszFieldType.Size,
+            [typeof(via.Ray)] = RszFieldType.Ray,
+            [typeof(via.RayY)] = RszFieldType.RayY,
+            [typeof(via.Segment)] = RszFieldType.Segment,
+            [typeof(via.Triangle)] = RszFieldType.Triangle,
+            [typeof(via.Cylinder)] = RszFieldType.Cylinder,
+            [typeof(via.Ellipsoid)] = RszFieldType.Ellipsoid,
+            [typeof(via.Torus)] = RszFieldType.Torus,
+            [typeof(via.Rect)] = RszFieldType.Rect,
+            [typeof(via.Rect3D)] = RszFieldType.Rect3D,
+            [typeof(via.Frustum)] = RszFieldType.Frustum,
+            [typeof(via.KeyFrame)] = RszFieldType.KeyFrame,
+            [typeof(via.sfix)] = RszFieldType.Sfix,
+            [typeof(via.Sfix2)] = RszFieldType.Sfix2,
+            [typeof(via.Sfix3)] = RszFieldType.Sfix3,
+            [typeof(via.Sfix4)] = RszFieldType.Sfix4,
+        };
+
+        public static RszFieldType CSharpTypeToRszFieldFieldType(Type type)
+        {
+            RszFieldType fieldType = RszFieldType.ukn_type;
+            CSharpTypeToRszFieldFieldTypeDict.TryGetValue(type, out fieldType);
+            return fieldType;
+        } */
 
         /// <summary>
         /// 写入数据
@@ -265,125 +477,6 @@ namespace RszTool
                 return WriteNormalField(handler, field, Values[index]);
             }
         }
-
-        public static bool WriteNormalField(FileHandler handler, RszField field, object value)
-        {
-            if (field.IsString)
-            {
-                string valueStr = (string)value;
-                return handler.Write(valueStr.Length + 1) && handler.WriteWString(valueStr);
-            }
-            else if (field.type == RszFieldType.Object || field.type == RszFieldType.UserData)
-            {
-                return handler.Write(value is RszInstance instance ? instance.Index : (int)value);
-            }
-            else
-            {
-                long startPos = handler.Tell();
-                _ = field.type switch
-                {
-                    RszFieldType.S32 => handler.Write((int)value),
-                    RszFieldType.U32 => handler.Write((uint)value),
-                    RszFieldType.S64 => handler.Write((long)value),
-                    RszFieldType.U64 => handler.Write((ulong)value),
-                    RszFieldType.F32 => handler.Write((float)value),
-                    RszFieldType.F64 => handler.Write((double)value),
-                    RszFieldType.Bool => handler.Write((bool)value),
-                    RszFieldType.S8 => handler.Write((sbyte)value),
-                    RszFieldType.U8 => handler.Write((byte)value),
-                    RszFieldType.S16 => handler.Write((short)value),
-                    RszFieldType.U16 => handler.Write((ushort)value),
-                    RszFieldType.Data => handler.WriteBytes((byte[])value),
-                    RszFieldType.Mat4 => handler.Write((via.mat4)value),
-                    RszFieldType.Vec2 or RszFieldType.Float2 or RszFieldType.Point => handler.Write((Vector2)value),
-                    RszFieldType.Vec3 or RszFieldType.Float3 => handler.Write((Vector3)value),
-                    RszFieldType.Vec4 or RszFieldType.Float4 => handler.Write((Vector4)value),
-                    RszFieldType.OBB => handler.Write((via.OBB)value),
-                    RszFieldType.AABB => handler.Write((via.AABB)value),
-                    RszFieldType.Guid or RszFieldType.GameObjectRef or RszFieldType.Uri => handler.Write((Guid)value),
-                    RszFieldType.Color => handler.Write((via.Color)value),
-                    RszFieldType.Range => handler.Write((via.Range)value),
-                    RszFieldType.Quaternion => handler.Write((Quaternion)value),
-                    RszFieldType.Sphere => handler.Write((via.Sphere)value),
-                    RszFieldType.Capsule => handler.Write((via.Capsule)value),
-                    RszFieldType.Area => handler.Write((via.Area)value),
-                    _ => throw new NotSupportedException($"Not support type {field.type}"),
-                };
-                handler.Seek(startPos + field.size);
-                return true;
-            }
-        }
-
-        public static Type RszFieldTypeToCSharpType(RszFieldType type)
-        {
-            return type switch
-            {
-                RszFieldType.S32 or RszFieldType.Object or RszFieldType.UserData => typeof(int),
-                RszFieldType.U32 => typeof(uint),
-                RszFieldType.S64 => typeof(long),
-                RszFieldType.U64 => typeof(ulong),
-                RszFieldType.F32 => typeof(float),
-                RszFieldType.F64 => typeof(double),
-                RszFieldType.Bool => typeof(bool),
-                RszFieldType.S8 => typeof(sbyte),
-                RszFieldType.U8 => typeof(byte),
-                RszFieldType.S16 => typeof(short),
-                RszFieldType.U16 => typeof(ushort),
-                RszFieldType.Data => typeof(byte[]),
-                RszFieldType.Mat4 => typeof(via.mat4),
-                RszFieldType.Vec2 or RszFieldType.Float2 or RszFieldType.Point => typeof(Vector2),
-                RszFieldType.Vec3 or RszFieldType.Float3 => typeof(Vector3),
-                RszFieldType.Vec4 or RszFieldType.Float4 => typeof(Vector4),
-                RszFieldType.AABB => typeof(via.AABB),
-                RszFieldType.Guid or RszFieldType.GameObjectRef or RszFieldType.Uri => typeof(Guid),
-                RszFieldType.Color => typeof(via.Color),
-                RszFieldType.Range => typeof(via.Range),
-                RszFieldType.Quaternion => typeof(Quaternion),
-                RszFieldType.Sphere => typeof(via.Sphere),
-                RszFieldType.Capsule => typeof(via.Capsule),
-                RszFieldType.Area => typeof(via.Area),
-                RszFieldType.String or RszFieldType.Resource => typeof(string),
-                _ => throw new NotSupportedException($"Not support type {type}"),
-            };
-        }
-
-        /*
-        private static readonly Dictionary<Type, RszFieldType> CSharpTypeToRszFieldFieldTypeDict = new()
-        {
-            [typeof(int)] = RszFieldType.S32,
-            [typeof(uint)] = RszFieldType.U32,
-            [typeof(long)] = RszFieldType.S64,
-            [typeof(ulong)] = RszFieldType.U64,
-            [typeof(float)] = RszFieldType.F32,
-            [typeof(double)] = RszFieldType.F64,
-            [typeof(bool)] = RszFieldType.Bool,
-            [typeof(sbyte)] = RszFieldType.S8,
-            [typeof(byte)] = RszFieldType.U8,
-            [typeof(short)] = RszFieldType.S16,
-            [typeof(ushort)] = RszFieldType.U16,
-            [typeof(byte[])] = RszFieldType.Data,
-            [typeof(via.mat4)] = RszFieldType.Mat4,
-            [typeof(Vector2)] = RszFieldType.Vec2,
-            [typeof(Vector3)] = RszFieldType.Vec3,
-            [typeof(Vector4)] = RszFieldType.Vec4,
-            [typeof(via.OBB)] = RszFieldType.OBB,
-            [typeof(via.AABB)] = RszFieldType.AABB,
-            [typeof(Guid)] = RszFieldType.Guid,
-            [typeof(Color)] = RszFieldType.Color,
-            [typeof(via.Range)] = RszFieldType.Range,
-            [typeof(Quaternion)] = RszFieldType.Quaternion,
-            [typeof(via.Sphere)] = RszFieldType.Sphere,
-            [typeof(via.Capsule)] = RszFieldType.Capsule,
-            [typeof(via.Area)] = RszFieldType.Area,
-            [typeof(string)] = RszFieldType.String,
-        };
-
-        public static RszFieldType CSharpTypeToRszFieldFieldType(Type type)
-        {
-            RszFieldType fieldType = RszFieldType.ukn_type;
-            CSharpTypeToRszFieldFieldTypeDict.TryGetValue(type, out fieldType);
-            return fieldType;
-        } */
 
         /// <summary>
         /// 获取字段值

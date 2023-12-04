@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
+using RszTool.App.ViewModels;
 
 namespace RszTool.App.Views
 {
@@ -10,6 +12,14 @@ namespace RszTool.App.Views
         public RszPfbFileView()
         {
             InitializeComponent();
+        }
+
+        private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (DataContext is BaseRszFileViewModel viewModel)
+            {
+                viewModel.SelectedItem = e.NewValue;
+            }
         }
     }
 }

@@ -132,6 +132,11 @@ namespace RszTool
 
             public int? ObjectId => Info?.Data.objectId;
             public string? Name => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;
+
+            public override string ToString()
+            {
+                return Name ?? "";
+            }
         }
 
 
@@ -177,6 +182,11 @@ namespace RszTool
                     gameObject.Children.Add(newChild);
                 }
                 return gameObject;
+            }
+
+            public override string ToString()
+            {
+                return Name ?? "";
             }
         }
 
