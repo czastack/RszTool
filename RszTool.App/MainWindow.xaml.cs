@@ -21,7 +21,7 @@ namespace RszTool.App
         {
             InitializeComponent();
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version!;
-            Title = $"{Title} v{version.Major}.{version.Minor} - By chenstack";
+            Title = $"{Title} v{version.Major}.{version.Minor}.{version.Build} - By chenstack";
 
             Closing += OnClosing;
         }

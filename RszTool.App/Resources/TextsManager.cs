@@ -15,7 +15,7 @@ namespace RszTool.App.Resources
         {
         }
 
-        public string? this[string name] => Texts.ResourceManager.GetString(name);
+        public string? this[string name] => Texts.ResourceManager.GetString(name, Texts.Culture);
 
         public void ChangeLanguage(CultureInfo cultureInfo)
         {

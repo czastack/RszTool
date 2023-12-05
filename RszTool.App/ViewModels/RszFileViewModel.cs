@@ -32,6 +32,8 @@ namespace RszTool.App.ViewModels
             }
         }
         public object? SelectedItem { get; set; }
+        public InstanceSearchViewModel InstanceSearchViewModel { get; } = new();
+        public ObservableCollection<RszInstance>? SearchInstanceList { get; set; }
 
         public RelayCommand CopyInstance => new(OnCopyInstance);
         public RelayCommand ArrayItemCopy => new(OnArrayItemCopy);
@@ -40,6 +42,7 @@ namespace RszTool.App.ViewModels
         public RelayCommand ArrayItemDuplicateMulti => new(OnArrayItemDuplicateMulti);
         public RelayCommand ArrayItemPasteAfter => new(OnArrayItemPasteAfter);
         public RelayCommand ArrayItemNew => new(OnArrayItemNew);
+        public RelayCommand SearchInstances => new(OnSearchInstances);
 
         /// <summary>
         /// 标题改变(SaveAs或者Changed)
@@ -233,6 +236,70 @@ namespace RszTool.App.ViewModels
                 item.NotifyItemsChanged();
             }
         }
+
+        private void OnSearchInstances(object arg)
+        {
+            SearchInstanceList ??= new();
+            SearchInstanceList.Clear();
+            if (File.GetRSZ() is not RSZFile rsz) return;
+            var args = InstanceSearchViewModel;
+            TextMatcher instanceMatcher = new(args.InstanceName, args.InstanceNameOption);
+            TextMatcher fieldNameMatcher = new(args.FieldName, args.FieldNameOption);
+            TextMatcher fieldValueMatcher = new(args.FieldValue, args.FieldValueOption);
+            if (!instanceMatcher.Enable && !fieldNameMatcher.Enable && !fieldValueMatcher.Enable)
+            {
+                return;
+            }
+            Dictionary<uint, bool>? classMatchedfieldName = null;
+            foreach (var instance in rsz.InstanceList)
+            {
+                if (instanceMatcher.Enable && !instanceMatcher.IsMatch(instance.Name))
+                {
+                    continue;
+                }
+                if (fieldNameMatcher.Enable)
+                {
+                    classMatchedfieldName ??= new();
+                    bool matched = false;
+                    if (classMatchedfieldName.TryGetValue(instance.RszClass.typeId, out bool value))
+                    {
+                        matched = value;
+                    }
+                    else
+                    {
+                        foreach (var field in instance.Fields)
+                        {
+                            if (fieldNameMatcher.IsMatch(field.name))
+                            {
+                                matched = true;
+                                break;
+                            }
+                        }
+                        classMatchedfieldName[instance.RszClass.typeId] = matched;
+                    }
+                    if (!matched) continue;
+                }
+                if (fieldValueMatcher.Enable)
+                {
+                    bool matched = false;
+                    var fields = instance.Fields;
+                    for (int i = 0; i < instance.Fields.Length; i++)
+                    {
+                        RszField? field = instance.Fields[i];
+                        var valueStr = instance.Values[i].ToString();
+                        if (valueStr != null && fieldValueMatcher.IsMatch(valueStr))
+                        {
+                            matched = true;
+                            break;
+                        }
+                    }
+                    if (!matched) continue;
+                }
+                SearchInstanceList.Add(instance);
+            }
+        }
+
+        public abstract IEnumerable<object> TreeViewItems { get; }
     }
 
 
@@ -242,6 +309,15 @@ namespace RszTool.App.ViewModels
         public UserFile UserFile { get; } = file;
 
         public RszViewModel RszViewModel => new(UserFile.RSZ!);
+
+        public override IEnumerable<object> TreeViewItems
+        {
+            get
+            {
+                yield return new TreeItemViewModel("Instances", RszViewModel.Instances);
+                yield return new TreeItemViewModel("Objects", RszViewModel.Objects);
+            }
+        }
     }
 
 
@@ -255,6 +331,14 @@ namespace RszTool.App.ViewModels
         public override void PostRead()
         {
             PfbFile.SetupGameObjects();
+        }
+
+        public override IEnumerable<object> TreeViewItems
+        {
+            get
+            {
+                yield return new TreeItemViewModel("GameObjects", GameObjects);
+            }
         }
     }
 
@@ -272,6 +356,15 @@ namespace RszTool.App.ViewModels
         public override void PostRead()
         {
             ScnFile.SetupGameObjects();
+        }
+
+        public override IEnumerable<object> TreeViewItems
+        {
+            get
+            {
+                yield return new TreeItemViewModel("Folders", Folders);
+                yield return new TreeItemViewModel("GameObjects", GameObjects);
+            }
         }
 
         public RelayCommand CopyGameObject => new(OnCopyGameObject);

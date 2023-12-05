@@ -27,7 +27,7 @@
         <TextBlock Text="{Binding Name}">
             <TextBlock.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.NewArrayItem, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text NewItem}" Command="{Binding Data.ArrayItemNew, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
                 </ContextMenu>
             </TextBlock.ContextMenu>
         </TextBlock>

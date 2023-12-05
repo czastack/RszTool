@@ -175,6 +175,10 @@ namespace RszTool
                     Instance = Instance?.CloneCached(),
                     Prefab = Prefab != null ? (PrefabInfo)Prefab.Clone() : null
                 };
+                if (gameObject.Info != null)
+                {
+                    gameObject.Info.Data.guid = Guid.NewGuid();
+                }
                 foreach (var child in Children)
                 {
                     var newChild = (GameObjectData)child.Clone();

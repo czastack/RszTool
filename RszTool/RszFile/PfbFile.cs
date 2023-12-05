@@ -172,7 +172,7 @@ namespace RszTool
 
             var handler = FileHandler;
             var header = Header;
-            if (!Header.Read(handler)) return false;
+            if (!header.Read(handler)) return false;
             if (header.magic != Magic)
             {
                 throw new InvalidDataException($"{handler.FilePath} Not a PFB file");

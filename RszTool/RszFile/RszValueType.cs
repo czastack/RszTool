@@ -315,6 +315,21 @@ namespace RszTool.via
     {
         public float w;
         public float h;
+
+        public float this[int index]
+        {
+            readonly get
+            {
+                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                return index == 0 ? w : h;
+            }
+            set
+            {
+                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                if (index == 0) w = value;
+                else h = value;
+            }
+        }
     }
 
 
@@ -397,6 +412,22 @@ namespace RszTool.via
         public float t;
         public float r;
         public float b;
+
+        public float this[int index]
+        {
+            get
+            {
+                if (index < 0 || index > 3) throw new IndexOutOfRangeException($"Index must be between 0 and 3, got {index}");
+                ref float ptr = ref l;
+                return Unsafe.Add(ref ptr, index);
+            }
+            set
+            {
+                if (index < 0 || index > 3) throw new IndexOutOfRangeException($"Index must be between 0 and 3, got {index}");
+                ref float ptr = ref l;
+                Unsafe.Add(ref ptr, index) = value;
+            }
+        }
     }
 
 

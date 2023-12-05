@@ -10,7 +10,7 @@ namespace RszTool.App.ViewModels
     }
 
 
-    public class TreeItemViewModel(string name, IEnumerable<object> items) : BaseTreeItemViewModel(name)
+    public class TreeItemViewModel(string name, IEnumerable<object>? items) : BaseTreeItemViewModel(name)
     {
         public override IEnumerable<object>? Items { get; } = items;
     }

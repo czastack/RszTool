@@ -50,32 +50,10 @@
             </HierarchicalDataTemplate>
 
             <DataTemplate DataType="{x:Type rsztool:ScnFile+PrefabInfo}">
-                <!-- <local:FieldValueInput Value="{Binding Path}" ValueType="{x:Static rsztool:RszFieldType.String}" /> -->
                 <TextBlock Text="{Binding Path}"/>
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <TextBox Text="{Binding FilePath, Mode=OneWay}" IsReadOnly="True" Margin="0 0 0 5" Grid.Row="0" />
-        <TextBox Text="{Binding SelectedItem, Mode=OneWay}" IsReadOnly="True" Margin="0 0 0 5" Grid.Row="1" />
-        <TreeView Grid.Row="2" SelectedItemChanged="TreeView_SelectedItemChanged">
-            <TreeViewItem ItemsSource="{Binding Folders}" Header="Folders" />
-            <TreeViewItem ItemsSource="{Binding GameObjects}" Header="GameObjects">
-                <TreeViewItem.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="{res:Text PasteGameobject}" Command="{Binding PasteGameObject}" />
-                    </ContextMenu>
-                </TreeViewItem.ContextMenu>
-            </TreeViewItem>
-        </TreeView>
-    </Grid>
+    <local:RszFileView />
 </UserControl>

@@ -97,11 +97,38 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Field name 的本地化字符串。
+        /// </summary>
+        internal static string FieldName {
+            get {
+                return ResourceManager.GetString("FieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Field value 的本地化字符串。
+        /// </summary>
+        internal static string FieldValue {
+            get {
+                return ResourceManager.GetString("FieldValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 File 的本地化字符串。
         /// </summary>
         internal static string File {
             get {
                 return ResourceManager.GetString("File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Find instances 的本地化字符串。
+        /// </summary>
+        internal static string FindInstances {
+            get {
+                return ResourceManager.GetString("FindInstances", resourceCulture);
             }
         }
         
@@ -120,6 +147,33 @@ namespace RszTool.App.Resources {
         internal static string InputDulicateCount {
             get {
                 return ResourceManager.GetString("InputDulicateCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Instance name 的本地化字符串。
+        /// </summary>
+        internal static string InstanceName {
+            get {
+                return ResourceManager.GetString("InstanceName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Match Case 的本地化字符串。
+        /// </summary>
+        internal static string MatchCase {
+            get {
+                return ResourceManager.GetString("MatchCase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Match Whole Word 的本地化字符串。
+        /// </summary>
+        internal static string MatchWholeWord {
+            get {
+                return ResourceManager.GetString("MatchWholeWord", resourceCulture);
             }
         }
         
@@ -247,6 +301,15 @@ namespace RszTool.App.Resources {
         internal static string UsageHint {
             get {
                 return ResourceManager.GetString("UsageHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Use Regular Expression 的本地化字符串。
+        /// </summary>
+        internal static string UseRegex {
+            get {
+                return ResourceManager.GetString("UseRegex", resourceCulture);
             }
         }
     }
