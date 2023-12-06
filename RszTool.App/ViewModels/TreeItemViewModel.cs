@@ -21,4 +21,7 @@ namespace RszTool.App.ViewModels
         public Func<IEnumerable<object>>? ItemsFunc { get; set; } = itemsFunc;
         public override IEnumerable<object>? Items => ItemsFunc?.Invoke() ?? null;
     }
+
+
+    public class GameObjectsHeader(string name, IEnumerable<object>? items) : TreeItemViewModel(name, items);
 }

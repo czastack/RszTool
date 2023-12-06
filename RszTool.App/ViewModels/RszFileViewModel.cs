@@ -319,7 +319,7 @@ namespace RszTool.App.ViewModels
             get
             {
                 yield return new TreeItemViewModel("Folders", Folders);
-                yield return new TreeItemViewModel("GameObjects", GameObjects);
+                yield return new GameObjectsHeader("GameObjects", GameObjects);
             }
         }
 
