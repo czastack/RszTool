@@ -24,6 +24,9 @@
                 <ContentControl Content="{Binding Content}" Margin="4 4 4 4" FontSize="14" />
             </DataTemplate>
 
+            <dragablz:InterTabController x:Key="InterTabController" x:Shared="False"
+                InterTabClient="{Binding InterTabClient}" />
+
             <dragablz:DragablzIcon Width="24" Height="24" Margin="0 -8 0 0"
                                    x:Key="WindowIcon" x:Shared="False"
                                    ToolTip="Added via the HeaderPrefixContent property"
@@ -31,12 +34,14 @@
 
             <Style TargetType="{x:Type dragablz:TabablzControl}" x:Key="TabablzControlStyle">
                 <Setter Property="ItemsSource" Value="{Binding Items}" />
+                <Setter Property="SelectedItem" Value="{Binding SelectedTabItem}" />
                 <Setter Property="ClosingItemCallback" Value="{Binding ClosingTabItemHandler}" />
                 <Setter Property="ShowDefaultAddButton" Value="False" />
                 <Setter Property="ShowDefaultCloseButton" Value="True" />
                 <Setter Property="AdjacentHeaderItemOffset" Value="-10" />
                 <Setter Property="ItemContainerStyle" Value="{StaticResource TrapezoidDragableTabItemStyle}" />
                 <Setter Property="HeaderMemberPath" Value="Header" />
+                <Setter Property="InterTabController" Value="{StaticResource InterTabController}" />
                 <Setter Property="Margin" Value="0 8 0 0" />
                 <Setter Property="Background" Value="{DynamicResource PrimaryBackground}" />
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryForeground}" />
@@ -93,16 +98,19 @@
             <TextBlock Text="Game version" DockPanel.Dock="Left" Margin="0 0 5 0" VerticalAlignment="Center" />
             <ComboBox ItemsSource="{x:Static rsztool:RszDefines.GameNames}" SelectedValue="{Binding GameName}" />
         </DockPanel>
-        <dragablz:TabablzControl Margin="8" Style="{StaticResource TabablzControlStyle}"
-                                 SelectedItem="{Binding SelectedTabItem}" Grid.Row="2">
-            <dragablz:TabablzControl.InterTabController>
-                <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
-            </dragablz:TabablzControl.InterTabController>
-            <!-- <TabItem Header="Tab No. 1" IsSelected="True">
-                <views:RszTestView/>
-            </TabItem> -->
-        </dragablz:TabablzControl>
-
+        <!-- <dockablz:Layout Grid.Row="2" Margin="8">
+            <dockablz:Layout.BranchTemplate>
+                <DataTemplate>
+                    <dragablz:TabablzControl Style="{StaticResource TabablzControlStyle}" />
+                </DataTemplate>
+            </dockablz:Layout.BranchTemplate>
+            <dragablz:TabablzControl Style="{StaticResource TabablzControlStyle}">
+                <TabItem Header="Tab No. 1" IsSelected="True">
+                    <views:RszTestView/>
+                </TabItem>
+            </dragablz:TabablzControl>
+        </dockablz:Layout> -->
+        <dragablz:TabablzControl Grid.Row="2" Margin="8" Style="{StaticResource TabablzControlStyle}" />
         <TextBlock Text="{res:Text UsageHint}" TextAlignment="Center"
                    Style="{StaticResource UsageHint}" FontSize="18" VerticalAlignment="Center" Grid.Row="2" />
     </Grid>

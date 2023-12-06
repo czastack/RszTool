@@ -7,6 +7,10 @@ namespace RszTool.App.Views
     {
         public override TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
         {
+            if (Application.Current.Windows.Count > 1)
+            {
+                return TabEmptiedResponse.CloseWindowOrLayoutBranch;
+            }
             return TabEmptiedResponse.DoNothing;
         }
     }

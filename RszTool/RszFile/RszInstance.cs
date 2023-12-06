@@ -27,6 +27,7 @@ namespace RszTool
         public string Name => name ??= $"{RszClass.name}[{index}]";
         public IRSZUserDataInfo? RSZUserData { get; set; }
         public RszField[] Fields => RszClass.fields;
+        public bool HasValues => Values.Length > 0;
 
         public RszInstance(RszClass rszClass, int index = -1, IRSZUserDataInfo? userData = null, object[]? values = null)
         {

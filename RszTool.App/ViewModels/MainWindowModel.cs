@@ -147,7 +147,7 @@ namespace RszTool.App.ViewModels
         {
             var currentFile = CurrentFile;
             if (currentFile == null) return;
-            var dialog = new OpenFileDialog
+            var dialog = new SaveFileDialog
             {
                 FileName = currentFile.FileName,
                 Filter = OpenFileFilter

@@ -242,60 +242,14 @@ namespace RszTool.App.ViewModels
             SearchInstanceList ??= new();
             SearchInstanceList.Clear();
             if (File.GetRSZ() is not RSZFile rsz) return;
-            var args = InstanceSearchViewModel;
-            TextMatcher instanceMatcher = new(args.InstanceName, args.InstanceNameOption);
-            TextMatcher fieldNameMatcher = new(args.FieldName, args.FieldNameOption);
-            TextMatcher fieldValueMatcher = new(args.FieldValue, args.FieldValueOption);
-            if (!instanceMatcher.Enable && !fieldNameMatcher.Enable && !fieldValueMatcher.Enable)
-            {
-                return;
-            }
-            Dictionary<uint, bool>? classMatchedfieldName = null;
+            InstanceFilter filter = new(InstanceSearchViewModel);
+            if (!filter.Enable) return;
             foreach (var instance in rsz.InstanceList)
             {
-                if (instanceMatcher.Enable && !instanceMatcher.IsMatch(instance.Name))
+                if (filter.IsMatch(instance))
                 {
-                    continue;
+                    SearchInstanceList.Add(instance);
                 }
-                if (fieldNameMatcher.Enable)
-                {
-                    classMatchedfieldName ??= new();
-                    bool matched = false;
-                    if (classMatchedfieldName.TryGetValue(instance.RszClass.typeId, out bool value))
-                    {
-                        matched = value;
-                    }
-                    else
-                    {
-                        foreach (var field in instance.Fields)
-                        {
-                            if (fieldNameMatcher.IsMatch(field.name))
-                            {
-                                matched = true;
-                                break;
-                            }
-                        }
-                        classMatchedfieldName[instance.RszClass.typeId] = matched;
-                    }
-                    if (!matched) continue;
-                }
-                if (fieldValueMatcher.Enable)
-                {
-                    bool matched = false;
-                    var fields = instance.Fields;
-                    for (int i = 0; i < instance.Fields.Length; i++)
-                    {
-                        RszField? field = instance.Fields[i];
-                        var valueStr = instance.Values[i].ToString();
-                        if (valueStr != null && fieldValueMatcher.IsMatch(valueStr))
-                        {
-                            matched = true;
-                            break;
-                        }
-                    }
-                    if (!matched) continue;
-                }
-                SearchInstanceList.Add(instance);
             }
         }
 
@@ -350,6 +304,8 @@ namespace RszTool.App.ViewModels
         public RszViewModel RszViewModel => new(ScnFile.RSZ!);
         public ObservableCollection<ScnFile.FolderData>? Folders => ScnFile.FolderDatas;
         public ObservableCollection<ScnFile.GameObjectData>? GameObjects => ScnFile.GameObjectDatas;
+        public GameobjectSearchViewModel GameobjectSearchViewModel { get; } = new();
+        public ObservableCollection<ScnFile.GameObjectData>? SearchGameObjectList { get; set; }
 
         public static ScnFile.GameObjectData? CopiedGameObject { get; private set; }
 
@@ -437,6 +393,22 @@ namespace RszTool.App.ViewModels
             {
                 var parent = (ScnFile.GameObjectData)arg;
                 ScnFile.ImportGameObject(CopiedGameObject, parent: parent);
+            }
+        }
+
+        private void OnSearchGameObject(object arg)
+        {
+            SearchGameObjectList ??= new();
+            SearchGameObjectList.Clear();
+            ScnGameObjectFilter filter = new(GameobjectSearchViewModel);
+            if (!filter.Enable) return;
+            if (ScnFile.GameObjectDatas == null) return;
+            foreach (var gameObject in ScnFile.GameObjectDatas)
+            {
+                if (filter.IsMatch(gameObject))
+                {
+                    SearchGameObjectList.Add(gameObject);
+                }
             }
         }
     }
