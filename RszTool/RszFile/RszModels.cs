@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace RszTool
 {
     public class ResourceInfo : BaseModel
@@ -60,5 +62,12 @@ namespace RszTool
             handler.Write(ref pathOffset);
             return true;
         }
+    }
+
+
+    public interface IGameObjectData
+    {
+        string? Name { get; }
+        ObservableCollection<RszInstance> Components { get; }
     }
 }

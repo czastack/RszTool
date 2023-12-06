@@ -184,8 +184,8 @@
   <data name="FindInstances" xml:space="preserve">
     <value>查找Instance</value>
   </data>
-  <data name="InstanceName" xml:space="preserve">
-    <value>Instance名称</value>
+  <data name="Name" xml:space="preserve">
+    <value>名称</value>
   </data>
   <data name="FieldName" xml:space="preserve">
     <value>字段名称</value>
@@ -201,5 +201,17 @@
   </data>
   <data name="UseRegex" xml:space="preserve">
     <value>使用正则表达式</value>
+  </data>
+  <data name="FindGameObjects" xml:space="preserve">
+    <value>查找游戏对象</value>
+  </data>
+  <data name="IncludeChildren" xml:space="preserve">
+    <value>包括子对象</value>
+  </data>
+  <data name="GameObjectName" xml:space="preserve">
+    <value>游戏对象名称</value>
+  </data>
+  <data name="Component" xml:space="preserve">
+    <value>组件</value>
   </data>
 </root>

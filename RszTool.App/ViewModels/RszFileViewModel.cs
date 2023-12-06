@@ -304,7 +304,7 @@ namespace RszTool.App.ViewModels
         public RszViewModel RszViewModel => new(ScnFile.RSZ!);
         public ObservableCollection<ScnFile.FolderData>? Folders => ScnFile.FolderDatas;
         public ObservableCollection<ScnFile.GameObjectData>? GameObjects => ScnFile.GameObjectDatas;
-        public GameobjectSearchViewModel GameobjectSearchViewModel { get; } = new();
+        public GameObjectSearchViewModel GameObjectSearchViewModel { get; } = new();
         public ObservableCollection<ScnFile.GameObjectData>? SearchGameObjectList { get; set; }
 
         public static ScnFile.GameObjectData? CopiedGameObject { get; private set; }
@@ -329,6 +329,7 @@ namespace RszTool.App.ViewModels
         public RelayCommand PasteGameObject => new(OnPasteGameObject);
         public RelayCommand PasteGameObjectToFolder => new(OnPasteGameObjectToFolder);
         public RelayCommand PasteGameobjectAsChild => new(OnPasteGameobjectAsChild);
+        public RelayCommand SearchGameObjects => new(OnSearchGameObjects);
 
         /// <summary>
         /// 复制游戏对象
@@ -396,14 +397,14 @@ namespace RszTool.App.ViewModels
             }
         }
 
-        private void OnSearchGameObject(object arg)
+        private void OnSearchGameObjects(object arg)
         {
             SearchGameObjectList ??= new();
             SearchGameObjectList.Clear();
-            ScnGameObjectFilter filter = new(GameobjectSearchViewModel);
+            ScnGameObjectFilter filter = new(GameObjectSearchViewModel);
             if (!filter.Enable) return;
             if (ScnFile.GameObjectDatas == null) return;
-            foreach (var gameObject in ScnFile.GameObjectDatas)
+            foreach (var gameObject in ScnFile.IterAllGameObjects(GameObjectSearchViewModel.IncludeChildren))
             {
                 if (filter.IsMatch(gameObject))
                 {

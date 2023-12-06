@@ -117,17 +117,17 @@ namespace RszTool
 
         public class FolderData
         {
-            public WeakReference<FolderData>? ParentRef;
-            public FolderInfoModel? Info;
-            public ObservableCollection<FolderData> Children = new();
-            public ObservableCollection<GameObjectData> GameObjects = new();
-            public ObservableCollection<PrefabInfo> Prefabs = new();
-            public RszInstance? Instance;
+            private WeakReference<FolderData>? parentRef;
+            public FolderInfoModel? Info { get; set; }
+            public ObservableCollection<FolderData> Children { get; private set; } = new();
+            public ObservableCollection<GameObjectData> GameObjects { get; private set; } = new();
+            public ObservableCollection<PrefabInfo> Prefabs { get; private set; } = new();
+            public RszInstance? Instance { get; set; }
 
             public FolderData? Parent
             {
-                get => ParentRef?.GetTarget();
-                set => ParentRef = value != null ? new(value) : null;
+                get => parentRef?.GetTarget();
+                set => parentRef = value != null ? new(value) : null;
             }
 
             public int? ObjectId => Info?.Data.objectId;
@@ -140,26 +140,26 @@ namespace RszTool
         }
 
 
-        public class GameObjectData : ICloneable
+        public class GameObjectData : IGameObjectData, ICloneable
         {
-            private WeakReference<FolderData>? FolderRef;
-            public WeakReference<GameObjectData>? ParentRef;
-            public GameObjectInfoModel? Info;
-            public PrefabInfo? Prefab;
-            public RszInstance? Instance;
-            public ObservableCollection<RszInstance> Components = new();
-            public ObservableCollection<GameObjectData> Children = new();
+            private WeakReference<FolderData>? folderRef;
+            private WeakReference<GameObjectData>? parentRef;
+            public GameObjectInfoModel? Info { get; set; }
+            public PrefabInfo? Prefab { get; set; }
+            public RszInstance? Instance { get; set; }
+            public ObservableCollection<RszInstance> Components { get; private set; } = new();
+            public ObservableCollection<GameObjectData> Children { get; private set; } = new();
 
             public FolderData? Folder
             {
-                get => FolderRef?.GetTarget();
-                set => FolderRef = value != null ? new(value) : null;
+                get => folderRef?.GetTarget();
+                set => folderRef = value != null ? new(value) : null;
             }
 
             public GameObjectData? Parent
             {
-                get => ParentRef?.GetTarget();
-                set => ParentRef = value != null ? new(value) : null;
+                get => parentRef?.GetTarget();
+                set => parentRef = value != null ? new(value) : null;
             }
 
             public string? Name => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;
@@ -677,13 +677,13 @@ namespace RszTool
         public GameObjectData? FindGameObjectInFolder(
             string name, FolderData? parent = null, bool recursive = false, bool gameObjectRecursive = false)
         {
-            if (FolderDatas == null || parent == null)
+            var folders = parent?.Children ?? FolderDatas;
+            if (folders == null)
             {
-                Console.Error.WriteLine("GameObjectDatas and parent is null");
+                Console.Error.WriteLine("FolderDatas and parent is null");
                 return null;
             }
-            var folders = parent?.Children ?? FolderDatas;
-            foreach (var folder in folders)
+            foreach (var folder in folders!)
             {
                 foreach (var gameObject in folder.GameObjects)
                 {
@@ -701,6 +701,69 @@ namespace RszTool
             }
             Console.Error.WriteLine($"GameObject {name} not found");
             return null;
+        }
+
+        /// <summary>
+        /// 在文件夹中迭代游戏对象
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="includeChildren">包括子对象</param>
+        /// <returns></returns>
+        public IEnumerable<GameObjectData> IterGameObjectsInFolder(FolderData? parent = null, bool includeChildren = false)
+        {
+            var folders = parent?.Children ?? FolderDatas;
+            if (folders == null)
+            {
+                Console.Error.WriteLine("FolderDatas and parent is null");
+                yield break;
+            }
+            foreach (var folder in folders)
+            {
+                foreach (var gameObject in folder.GameObjects)
+                {
+                    yield return gameObject;
+                    if (includeChildren)
+                    {
+                        foreach (var child in IterGameObjects(gameObject, includeChildren))
+                        {
+                            yield return child;
+                        }
+                    }
+                }
+            }
+            foreach (var folder in folders)
+            {
+                foreach (var item in IterGameObjectsInFolder(folder, includeChildren))
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public IEnumerable<GameObjectData> IterGameObjects(GameObjectData? parent = null, bool includeChildren = false)
+        {
+            var items = parent?.Children ?? GameObjectDatas;
+            if (items == null)
+            {
+                yield break;
+            }
+            foreach (var item in items)
+            {
+                yield return item;
+                if (includeChildren)
+                {
+                    foreach (var child in IterGameObjects(item, includeChildren))
+                    {
+                        yield return child;
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<GameObjectData> IterAllGameObjects(bool includeChildren = false)
+        {
+            return IterGameObjectsInFolder(includeChildren: includeChildren).Concat(
+                IterGameObjects(includeChildren: includeChildren));
         }
 
         public void RemoveGameObject(GameObjectData gameObject)

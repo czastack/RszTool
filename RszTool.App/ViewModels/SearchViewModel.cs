@@ -20,7 +20,7 @@ namespace RszTool.App.ViewModels
     }
 
 
-    public class GameobjectSearchViewModel : INotifyPropertyChanged
+    public class GameObjectSearchViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         public string GameObjectName { get; set; } = "";
@@ -173,13 +173,13 @@ namespace RszTool.App.ViewModels
         private readonly InstanceFilter componentFilter;
         public bool Enable => gameObjectNameMatcher.Enable || componentFilter.Enable;
 
-        public ScnGameObjectFilter(GameobjectSearchViewModel args)
+        public ScnGameObjectFilter(GameObjectSearchViewModel args)
         {
             gameObjectNameMatcher = new(args.GameObjectName, args.GameObjectNameOption);
             componentFilter = new(args.ComponentSearch);
         }
 
-        public bool IsMatch(ScnFile.GameObjectData gameObject)
+        public bool IsMatch(IGameObjectData gameObject)
         {
             if (gameObjectNameMatcher.Enable &&
                 (gameObject.Name == null || !gameObjectNameMatcher.IsMatch(gameObject.Name)))

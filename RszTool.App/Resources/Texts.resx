@@ -164,8 +164,8 @@ Currently, user, scn, pfb files are supported</value>
   <data name="FindInstances" xml:space="preserve">
     <value>Find instances</value>
   </data>
-  <data name="InstanceName" xml:space="preserve">
-    <value>Instance name</value>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
   </data>
   <data name="FieldName" xml:space="preserve">
     <value>Field name</value>
@@ -181,5 +181,17 @@ Currently, user, scn, pfb files are supported</value>
   </data>
   <data name="UseRegex" xml:space="preserve">
     <value>Use Regular Expression</value>
+  </data>
+  <data name="FindGameObjects" xml:space="preserve">
+    <value>Find GameObjects</value>
+  </data>
+  <data name="IncludeChildren" xml:space="preserve">
+    <value>Include Children</value>
+  </data>
+  <data name="GameObjectName" xml:space="preserve">
+    <value>GameObject Name</value>
+  </data>
+  <data name="Component" xml:space="preserve">
+    <value>Component</value>
   </data>
 </root>

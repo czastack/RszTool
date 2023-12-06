@@ -67,13 +67,13 @@ namespace RszTool
             public uint targetId;
         }
 
-        public class GameObjectData
+        public class GameObjectData : IGameObjectData
         {
-            public WeakReference<GameObjectData>? ParentRef;
-            public GameObjectInfoModel? Info;
-            public ObservableCollection<RszInstance> Components = new();
-            public ObservableCollection<GameObjectData> Children = new();
-            public RszInstance? Instance;
+            private WeakReference<GameObjectData>? parentRef;
+            public GameObjectInfoModel? Info { get; set; }
+            public ObservableCollection<RszInstance> Components { get; private set; } = new();
+            public ObservableCollection<GameObjectData> Children { get; private set; } = new();
+            public RszInstance? Instance { get; set; }
 
             /// <summary>
             /// 从ScnFile.GameObjectData生成GameObjectData
@@ -108,8 +108,8 @@ namespace RszTool
 
             public GameObjectData? Parent
             {
-                get => ParentRef?.GetTarget();
-                set => ParentRef = value != null ? new(value) : null;
+                get => parentRef?.GetTarget();
+                set => parentRef = value != null ? new(value) : null;
             }
 
             public string? Name => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;

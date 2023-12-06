@@ -1,0 +1,46 @@
+<UserControl x:Class="RszTool.App.Views.SearchGameObjectView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:RszTool.App.Views"
+             xmlns:common="clr-namespace:RszTool.App.Common"
+             xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
+             xmlns:res="clr-namespace:RszTool.App.Resources"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ScnFileViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800" d:Background="White">
+    <UserControl.Resources>
+        <ResourceDictionary Source="Icons.xaml" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{res:Text FindGameObjects}" Grid.Row="0" Grid.Column="0" />
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
+            <CheckBox Content="{res:Text IncludeChildren}" IsChecked="{Binding GameObjectSearchViewModel.IncludeChildren}" />
+        </StackPanel>
+        <Button Command="{Binding SearchGameObjects}" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Background="Transparent" BorderBrush="Transparent">
+            <Image Source="{StaticResource searchDrawingImage}" Width="16" />
+        </Button>
+
+        <TextBlock Text="{res:Text GameObjectName}" Grid.Row="1" Grid.Column="0" Margin="0 0 5 0" VerticalAlignment="Center" />
+        <TextBox Text="{Binding GameObjectSearchViewModel.GameObjectName}" Grid.Row="1" Grid.Column="1" Margin="0 5 5 0" />
+        <local:TextSearchOption DataContext="{Binding GameObjectSearchViewModel.GameObjectNameOption}" Grid.Row="1" Grid.Column="2" />
+
+        <TextBlock Text="{res:Text Component}" Grid.Row="2" Grid.Column="0" Margin="0 0 5 0" VerticalAlignment="Center" />
+        <local:SearchInstanceInput Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" DataContext="{Binding GameObjectSearchViewModel.ComponentSearch}" />
+
+        <TreeView Grid.Row="4" Grid.ColumnSpan="3" SelectedItemChanged="TreeView_SelectedItemChanged" ItemsSource="{Binding SearchGameObjectList}" Margin="0 5 0 0" />
+    </Grid>
+</UserControl>
