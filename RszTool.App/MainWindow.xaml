@@ -24,9 +24,6 @@
                 <ContentControl Content="{Binding Content}" Margin="4 4 4 4" FontSize="14" />
             </DataTemplate>
 
-            <dragablz:InterTabController x:Key="InterTabController" x:Shared="False"
-                InterTabClient="{Binding InterTabClient}" />
-
             <dragablz:DragablzIcon Width="24" Height="24" Margin="0 -8 0 0"
                                    x:Key="WindowIcon" x:Shared="False"
                                    ToolTip="Added via the HeaderPrefixContent property"
@@ -41,7 +38,6 @@
                 <Setter Property="AdjacentHeaderItemOffset" Value="-10" />
                 <Setter Property="ItemContainerStyle" Value="{StaticResource TrapezoidDragableTabItemStyle}" />
                 <Setter Property="HeaderMemberPath" Value="Header" />
-                <Setter Property="InterTabController" Value="{StaticResource InterTabController}" />
                 <Setter Property="Margin" Value="0 8 0 0" />
                 <Setter Property="Background" Value="{DynamicResource PrimaryBackground}" />
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryForeground}" />
@@ -133,7 +129,11 @@
                 </TabItem>
             </dragablz:TabablzControl>
         </dockablz:Layout> -->
-        <dragablz:TabablzControl Grid.Row="2" Margin="8" Style="{StaticResource TabablzControlStyle}" />
+        <dragablz:TabablzControl Grid.Row="2" Margin="8" Style="{StaticResource TabablzControlStyle}">
+            <dragablz:TabablzControl.InterTabController>
+                <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
+            </dragablz:TabablzControl.InterTabController>
+        </dragablz:TabablzControl>
         <TextBlock Text="{res:Text UsageHint}" TextAlignment="Center"
                    Style="{StaticResource UsageHint}" FontSize="18" VerticalAlignment="Center" Grid.Row="2" />
     </Grid>
