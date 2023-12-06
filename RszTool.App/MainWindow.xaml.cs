@@ -56,5 +56,19 @@ namespace RszTool.App
                 if (!mainWindowModel.OnExit()) e.Cancel = true;
             }
         }
+
+        private void Tag_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainWindowModel mainWindowModel &&
+                mainWindowModel.SelectedTabItem != null)
+            {
+                IInputElement focusedControl = FocusManager.GetFocusedElement(this);
+                if (focusedControl is TreeViewItem treeViewItem &&
+                    e.Source is MenuItem menuItem && menuItem.Header is Ellipse ellipse)
+                {
+                    treeViewItem.Foreground = ellipse.Fill;
+                }
+            }
+        }
     }
 }

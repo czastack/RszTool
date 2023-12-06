@@ -194,4 +194,7 @@ Currently, user, scn, pfb files are supported</value>
   <data name="Component" xml:space="preserve">
     <value>Component</value>
   </data>
+  <data name="Tag" xml:space="preserve">
+    <value>Tag</value>
+  </data>
 </root>

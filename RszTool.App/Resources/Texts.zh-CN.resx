@@ -214,4 +214,7 @@
   <data name="Component" xml:space="preserve">
     <value>组件</value>
   </data>
+  <data name="Tag" xml:space="preserve">
+    <value>标签</value>
+  </data>
 </root>

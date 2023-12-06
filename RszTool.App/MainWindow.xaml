@@ -93,6 +93,29 @@
                 <Separator />
                 <MenuItem Header="{res:Text Quit}" Command="{Binding QuitCommand}" InputGestureText="Ctrl+Q" />
             </MenuItem>
+            <MenuItem Header="{res:Text Tag}" Click="Tag_Click">
+                <MenuItem>
+                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Black" /></MenuItem.Header>
+                </MenuItem>
+                <MenuItem>
+                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Red" /></MenuItem.Header>
+                </MenuItem>
+                <MenuItem>
+                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Green" /></MenuItem.Header>
+                </MenuItem>
+                <MenuItem>
+                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Blue" /></MenuItem.Header>
+                </MenuItem>
+                <MenuItem>
+                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Yellow" /></MenuItem.Header>
+                </MenuItem>
+                <MenuItem>
+                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Orange" /></MenuItem.Header>
+                </MenuItem>
+                <MenuItem>
+                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Purple" /></MenuItem.Header>
+                </MenuItem>
+            </MenuItem>
         </Menu>
         <DockPanel Grid.Row="1" Margin="5">
             <TextBlock Text="Game version" DockPanel.Dock="Left" Margin="0 0 5 0" VerticalAlignment="Center" />
