@@ -52,7 +52,7 @@ namespace RszTool.App.ViewModels
             get => base.Value;
             set
             {
-                object? result = ConvertUtils.ConvertRszValue(Field, value);
+                object? result = ConvertUtils.ConvertRszValue(Field, Value, value);
                 if (result != null)
                 {
                     base.Value = result;
@@ -157,7 +157,7 @@ namespace RszTool.App.ViewModels
             get => base.Value;
             set
             {
-                object? result = ConvertUtils.ConvertRszValue(Field, value);
+                object? result = ConvertUtils.ConvertRszValue(Field, Value, value);
                 if (result != null)
                 {
                     base.Value = result;

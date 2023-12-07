@@ -13,6 +13,7 @@
     <UserControl.Resources>
         <converters:ColorConverter x:Key="ColorConverter"/>
         <converters:GuidConverter x:Key="GuidConverter"/>
+        <converters:BytesConverter x:Key="BytesConverter"/>
 
         <DataTemplate x:Key="InputText">
             <TextBox Text="{Binding Value, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource AncestorType=UserControl}}" />
@@ -28,6 +29,9 @@
         </DataTemplate>
         <DataTemplate x:Key="InputBool">
             <CheckBox IsChecked="{Binding Value, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        </DataTemplate>
+        <DataTemplate x:Key="InputBytes">
+            <TextBox Text="{Binding Value, NotifyOnSourceUpdated=True, Converter={StaticResource BytesConverter}, RelativeSource={RelativeSource AncestorType=UserControl}}" />
         </DataTemplate>
         <DataTemplate x:Key="InputVec2">
             <Grid>

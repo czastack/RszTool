@@ -44,6 +44,7 @@ namespace RszTool.App.Views
                 RszFieldType.AABB => element.FindResource("InputAABB"),
                 RszFieldType.Capsule => element.FindResource("InputCapsule"),
                 RszFieldType.Area => element.FindResource("InputArea"),
+                RszFieldType.Data => element.FindResource("InputBytes"),
                 _ => element.FindResource("InputText"),
             };
             return (DataTemplate)resource;

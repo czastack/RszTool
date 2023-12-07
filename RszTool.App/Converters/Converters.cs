@@ -1,4 +1,5 @@
 using System.Windows.Data;
+using RszTool.App.Common;
 using RszTool.App.ViewModels;
 
 namespace RszTool.App.Converters
@@ -146,6 +147,37 @@ namespace RszTool.App.Converters
         public object? ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             return Guid.Parse((string)value);
+        }
+    }
+
+
+    public class BytesConverter : IValueConverter
+    {
+        private int byteCount;
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is byte[] bytes)
+            {
+                byteCount = bytes.Length;
+                return ConvertUtils.ToHexString(bytes, " ");
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is string str)
+            {
+                return ConvertUtils.FromHexString(str);
+            }
+            else
+            {
+                return Array.Empty<byte>();
+            }
         }
     }
 }
