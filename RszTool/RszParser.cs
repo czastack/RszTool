@@ -48,6 +48,64 @@ namespace RszTool
                         }
                     }
                 }
+
+                ReadPatch(jsonPath);
+            }
+        }
+
+        /// <summary>
+        /// Read patch json
+        /// </summary>
+        private void ReadPatch(string originalJsonPath)
+        {
+            string patchJsonPath = Path.Combine(
+                "RszPatchs",
+                Path.GetFileNameWithoutExtension(originalJsonPath) + "_patch.json");
+            if (!File.Exists(patchJsonPath)) return;
+            using FileStream fileStream = File.OpenRead(patchJsonPath);
+            var dict = JsonSerializer.Deserialize<Dictionary<string, RszClassPatch>>(fileStream);
+            if (dict != null)
+            {
+                foreach (var item in dict)
+                {
+                    var classPatch = item.Value;
+                    classPatch.Name = item.Key;
+                    if (classNameDict.TryGetValue(classPatch.Name, out var rszClass))
+                    {
+                        if (!string.IsNullOrEmpty(classPatch.ReplaceName))
+                        {
+                            rszClass.name = classPatch.ReplaceName!;
+                        }
+                        if (classPatch.FieldPatches != null)
+                        {
+                            foreach (var fieldPatch in classPatch.FieldPatches)
+                            {
+                                if (rszClass.GetField(fieldPatch.Name!) is RszField rszField)
+                                {
+                                    if (!string.IsNullOrEmpty(fieldPatch.ReplaceName))
+                                    {
+                                        rszField.name = fieldPatch.ReplaceName!;
+                                    }
+                                    if (!string.IsNullOrEmpty(fieldPatch.OriginalType))
+                                    {
+                                        rszField.original_type = fieldPatch.OriginalType!;
+                                    }
+                                    if (fieldPatch.Type != RszFieldType.ukn_error)
+                                    {
+                                        if (rszField.type != RszFieldType.Data)
+                                        {
+                                            Console.WriteLine(
+                                                $"Warning: {classPatch.Name}.{fieldPatch.Name} change type " +
+                                                $"from {rszField.type} to {fieldPatch.Type}");
+                                        }
+                                        rszField.type = fieldPatch.Type;
+                                        rszField.IsTypeInferred = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -238,5 +296,26 @@ namespace RszTool
 
         public bool IsReference => type == RszFieldType.Object || type == RszFieldType.UserData;
         public bool IsString => type == RszFieldType.String || type == RszFieldType.Resource;
+    }
+
+
+    /// <summary>
+    /// rsz json patch
+    /// </summary>
+    public class RszClassPatch
+    {
+        public string? Name { get; set; }
+        public string? ReplaceName { get; set; }
+        public RszFieldPatch[]? FieldPatches { get; set; }
+    }
+
+
+    public class RszFieldPatch
+    {
+        public string? Name { get; set; }
+        public string? ReplaceName { get; set; }
+        public string? OriginalType { get; set; }
+        [JsonConverter(typeof(EnumJsonConverter<RszFieldType>))]
+        public RszFieldType Type { get; set; }
     }
 }

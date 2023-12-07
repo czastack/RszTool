@@ -1,0 +1,97 @@
+{
+    "": {
+        "ReplaceName": "NULL"
+    },
+    "via.GameObject": {
+        "FieldPatches": [
+            {
+                "Name": "v4",
+                "Type": "F32"
+            }
+        ]
+    },
+    "via.render.Mesh": {
+        "FieldPatches": [
+            {
+                "Name": "v0",
+                "Type": "S32"
+            },
+            {
+                "Name": "v10",
+                "Type": "S32"
+            },
+            {
+                "Name": "v45",
+                "Type": "S32"
+            }
+        ]
+    },
+    "via.physics.Colliders": {
+        "FieldPatches": [
+            {
+                "Name": "v5",
+                "Type": "Object"
+            }
+        ]
+    },
+    "chainsaw.collision.GimmickSensorUserData": {
+        "FieldPatches": [
+            {
+                "Name": "v1",
+                "Type": "Object"
+            }
+        ]
+    },
+    "chainsaw.collision.GimmickDamageUserData": {
+        "FieldPatches": [
+            {
+                "Name": "v1",
+                "Type": "Object"
+            }
+        ]
+    },
+    "chainsaw.collision.AttackUserData": {
+        "FieldPatches": [
+            {
+                "Name": "v1",
+                "Type": "Object"
+            }
+        ]
+    },
+    "chainsaw.collision.DamageUserData": {
+        "FieldPatches": [
+            {
+                "Name": "v1",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.motion.Motion": {
+        "FieldPatches": [
+            {
+                "Name": "v17",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.navigation.AIMapEffector": {
+        "FieldPatches": [
+            {
+                "Name": "v3",
+                "Type": "Object"
+            },
+            {
+                "Name": "v9",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.physics.FilterInfo": {
+        "FieldPatches": [
+            {
+                "Name": "v1",
+                "Type": "S32"
+            }
+        ]
+    }
+}

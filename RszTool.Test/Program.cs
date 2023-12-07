@@ -7,7 +7,7 @@ namespace RszTool.Test
         static void Main(string[] args)
         {
             // TestParseUser();
-            // TestParseUserRead();
+            TestParseUserRead();
             // TestParsePfb();
             // TestParsePfbRe2();
             // TestParsePfbRead();
@@ -15,7 +15,7 @@ namespace RszTool.Test
             // TestParseScnRead();
             // TestScnExtractGameObjectRSZ();
             // TestScnExtractGameObjectToPfb();
-            TestImportGameObject();
+            // TestImportGameObject();
             // TestParseMdf();
             // TestMurMur3Hash();
         }

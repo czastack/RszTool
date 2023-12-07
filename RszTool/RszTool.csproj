@@ -21,4 +21,10 @@
                         ReferenceOutputAssembly="false" />
   </ItemGroup> -->
 
+  <ItemGroup>
+    <Content Include="RszPatchs\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
