@@ -70,6 +70,15 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Component 的本地化字符串。
+        /// </summary>
+        internal static string Component {
+            get {
+                return ResourceManager.GetString("Component", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Copy 的本地化字符串。
         /// </summary>
         internal static string Copy {
@@ -124,11 +133,47 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 File is changed, do you want to save it? 的本地化字符串。
+        /// </summary>
+        internal static string FileChangedPrompt {
+            get {
+                return ResourceManager.GetString("FileChangedPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Find GameObjects 的本地化字符串。
+        /// </summary>
+        internal static string FindGameObjects {
+            get {
+                return ResourceManager.GetString("FindGameObjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Find instances 的本地化字符串。
         /// </summary>
         internal static string FindInstances {
             get {
                 return ResourceManager.GetString("FindInstances", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 GameObject Name 的本地化字符串。
+        /// </summary>
+        internal static string GameObjectName {
+            get {
+                return ResourceManager.GetString("GameObjectName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Include Children 的本地化字符串。
+        /// </summary>
+        internal static string IncludeChildren {
+            get {
+                return ResourceManager.GetString("IncludeChildren", resourceCulture);
             }
         }
         
@@ -147,15 +192,6 @@ namespace RszTool.App.Resources {
         internal static string InputDulicateCount {
             get {
                 return ResourceManager.GetString("InputDulicateCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Instance name 的本地化字符串。
-        /// </summary>
-        internal static string InstanceName {
-            get {
-                return ResourceManager.GetString("InstanceName", resourceCulture);
             }
         }
         
@@ -183,6 +219,15 @@ namespace RszTool.App.Resources {
         internal static string Message {
             get {
                 return ResourceManager.GetString("Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Name 的本地化字符串。
+        /// </summary>
+        internal static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
             }
         }
         
@@ -291,6 +336,15 @@ namespace RszTool.App.Resources {
         internal static string SaveAs {
             get {
                 return ResourceManager.GetString("SaveAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Tag 的本地化字符串。
+        /// </summary>
+        internal static string Tag {
+            get {
+                return ResourceManager.GetString("Tag", resourceCulture);
             }
         }
         

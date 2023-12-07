@@ -174,7 +174,7 @@ namespace RszTool.App.ViewModels
             {
                 // Check changed
                 var result = MessageBoxUtils.YesNoCancel(
-                    $"File is changed, do you want to save it?\n{fileTab.FileViewModel.FilePath}");
+                    $"{Texts.FileChangedPrompt}\n{fileTab.FileViewModel.FilePath}");
                 if (result == MessageBoxResult.Yes)
                 {
                     AppUtils.TryAction(() => fileTab.FileViewModel.Save());

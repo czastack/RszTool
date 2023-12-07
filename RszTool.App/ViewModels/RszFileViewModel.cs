@@ -124,6 +124,7 @@ namespace RszTool.App.ViewModels
             {
                 rsz.ArrayRemoveItem(item.Values, item.Value);
                 item.Array.NotifyItemsChanged();
+                Changed = true;
             }
         }
 
@@ -138,11 +139,13 @@ namespace RszTool.App.ViewModels
             {
                 rsz.ArrayInsertInstance(item.Values, item.Instance, item.Index + 1);
                 item.Array.NotifyItemsChanged();
+                Changed = true;
             }
             else if (arg is RszFieldArrayNormalItemViewModel normalItem)
             {
                 rsz.ArrayInsertItem(normalItem.Values, normalItem.Value, normalItem.Index + 1);
                 normalItem.Array.NotifyItemsChanged();
+                Changed = true;
             }
         }
 
@@ -171,6 +174,7 @@ namespace RszTool.App.ViewModels
                     rsz.ArrayInsertInstance(item.Values, item.Instance, item.Index + 1);
                 }
                 item.Array.NotifyItemsChanged();
+                Changed = true;
             }
             else if (arg is RszFieldArrayNormalItemViewModel normalItem)
             {
@@ -179,6 +183,7 @@ namespace RszTool.App.ViewModels
                     rsz.ArrayInsertItem(normalItem.Values, normalItem.Value, normalItem.Index + 1);
                 }
                 normalItem.Array.NotifyItemsChanged();
+                Changed = true;
             }
         }
 
@@ -198,6 +203,7 @@ namespace RszTool.App.ViewModels
                 }
                 rsz.ArrayInsertInstance(item.Values, CopiedInstance, item.Index + 1);
                 item.Array.NotifyItemsChanged();
+                Changed = true;
             }
         }
 
@@ -234,6 +240,7 @@ namespace RszTool.App.ViewModels
                     rsz.ArrayInsertItem(item.Values, newItem);
                 }
                 item.NotifyItemsChanged();
+                Changed = true;
             }
         }
 
@@ -347,6 +354,7 @@ namespace RszTool.App.ViewModels
         private void OnRemoveGameObject(object arg)
         {
             ScnFile.RemoveGameObject((ScnFile.GameObjectData)arg);
+            Changed = true;
         }
 
         /// <summary>
@@ -356,6 +364,7 @@ namespace RszTool.App.ViewModels
         private void OnDuplicateGameObject(object arg)
         {
             ScnFile.DuplicateGameObject((ScnFile.GameObjectData)arg);
+            Changed = true;
         }
 
         /// <summary>
@@ -368,6 +377,7 @@ namespace RszTool.App.ViewModels
             {
                 ScnFile.ImportGameObject(CopiedGameObject);
                 OnPropertyChanged(nameof(GameObjects));
+                Changed = true;
             }
         }
 
@@ -381,6 +391,7 @@ namespace RszTool.App.ViewModels
             {
                 var folder = (ScnFile.FolderData)arg;
                 ScnFile.ImportGameObject(CopiedGameObject, folder);
+                Changed = true;
             }
         }
 
@@ -394,6 +405,7 @@ namespace RszTool.App.ViewModels
             {
                 var parent = (ScnFile.GameObjectData)arg;
                 ScnFile.ImportGameObject(CopiedGameObject, parent: parent);
+                Changed = true;
             }
         }
 
