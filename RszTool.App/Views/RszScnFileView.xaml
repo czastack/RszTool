@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:RszTool.App.Views"
              xmlns:common="clr-namespace:RszTool.App.Common"
+             xmlns:converters="clr-namespace:RszTool.App.Converters"
              xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
              xmlns:res="clr-namespace:RszTool.App.Resources"
              xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool"
@@ -18,8 +19,8 @@
                 <ResourceDictionary Source="TreeViewStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <viewmodels:ScnFolderDataSubItemsConverter x:Key="ScnFolderDataSubItemsConverter"/>
-            <viewmodels:ScnGameObjectDataSubItemsConverter x:Key="ScnGameObjectDataSubItemsConverter"/>
+            <converters:ScnFolderDataSubItemsConverter x:Key="ScnFolderDataSubItemsConverter"/>
+            <converters:ScnGameObjectDataSubItemsConverter x:Key="ScnGameObjectDataSubItemsConverter"/>
             <common:BindingProxy x:Key="ParentData" Data="{Binding}" />
 
             <HierarchicalDataTemplate DataType="{x:Type viewmodels:GameObjectsHeader}" ItemsSource="{Binding Items}">

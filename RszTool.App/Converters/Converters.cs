@@ -1,9 +1,10 @@
 using System.Windows.Data;
+using RszTool.App.ViewModels;
 
-namespace RszTool.App.ViewModels
+namespace RszTool.App.Converters
 {
     [ValueConversion(typeof(RszInstance), typeof(IEnumerable<BaseRszFieldViewModel>))]
-    public class RszInstanceToFieldViewModels : IValueConverter
+    public class RszInstanceFieldsConverter : IValueConverter
     {
         public static IEnumerable<BaseRszFieldViewModel> Convert(RszInstance instance)
         {

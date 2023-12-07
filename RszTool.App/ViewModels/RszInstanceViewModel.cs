@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using RszTool.App.Common;
+using RszTool.App.Converters;
 
 namespace RszTool.App.ViewModels
 {
@@ -74,7 +75,7 @@ namespace RszTool.App.ViewModels
     {
         public RszInstance Instance => (RszInstance)instance.Values[Index];
         public override string Name => $"{Field.name} : {Instance.Name}";
-        public IEnumerable<object> Items => RszInstanceToFieldViewModels.Convert(Instance);
+        public IEnumerable<object> Items => RszInstanceFieldsConverter.Convert(Instance);
 
         public override string ToString()
         {
@@ -179,7 +180,7 @@ namespace RszTool.App.ViewModels
     {
         public RszInstance Instance => (RszInstance)Values[Index];
         public override string Name => $"{Index}: {Instance.Name}";
-        public IEnumerable<object> Items => RszInstanceToFieldViewModels.Convert(Instance);
+        public IEnumerable<object> Items => RszInstanceFieldsConverter.Convert(Instance);
 
         public override string ToString()
         {
