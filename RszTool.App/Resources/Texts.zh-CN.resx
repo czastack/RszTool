@@ -226,4 +226,16 @@
   <data name="ClearRecentFilesHistory" xml:space="preserve">
     <value>清除最近打开记录</value>
   </data>
+  <data name="Help" xml:space="preserve">
+    <value>帮助</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="AboutProjectDetail" xml:space="preserve">
+    <value>RszTool是一个编辑RE引擎游戏资源文件的工具，目前支持.user, .pfb和.scn文件。</value>
+  </data>
+  <data name="ProjectRepo" xml:space="preserve">
+    <value>项目仓库</value>
+  </data>
 </root>

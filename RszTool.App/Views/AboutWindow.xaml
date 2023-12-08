@@ -1,0 +1,24 @@
+﻿<Window x:Class="RszTool.App.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RszTool.App.Views"
+        xmlns:res="clr-namespace:RszTool.App.Resources"
+        mc:Ignorable="d"
+        Title="{res:Text About}" Height="320" Width="480"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="RszTool" FontSize="24" Margin="10" Grid.Row="0" />
+        <TextBlock Text="{res:Text AboutProjectDetail}" Grid.Row="1" />
+        <TextBlock Grid.Row="2">
+            <TextBlock Text="{res:Text ProjectRepo}" />：
+            <Hyperlink NavigateUri="https://github.com/czastack/RszTool" Click="Hyperlink_Click">https://github.com/czastack/RszTool</Hyperlink>
+        </TextBlock>
+    </Grid>
+</Window>

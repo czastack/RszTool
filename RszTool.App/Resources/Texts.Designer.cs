@@ -61,6 +61,33 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 About 的本地化字符串。
+        /// </summary>
+        internal static string About {
+            get {
+                return ResourceManager.GetString("About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 RszTool is a tool that edit and create resource file for RE ENGINE game. Currently support .user, .pfb and .scn files. 的本地化字符串。
+        /// </summary>
+        internal static string AboutProjectDetail {
+            get {
+                return ResourceManager.GetString("AboutProjectDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Clear recent files history 的本地化字符串。
+        /// </summary>
+        internal static string ClearRecentFilesHistory {
+            get {
+                return ResourceManager.GetString("ClearRecentFilesHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Close 的本地化字符串。
         /// </summary>
         internal static string Close {
@@ -169,6 +196,15 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Help 的本地化字符串。
+        /// </summary>
+        internal static string Help {
+            get {
+                return ResourceManager.GetString("Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Include Children 的本地化字符串。
         /// </summary>
         internal static string IncludeChildren {
@@ -259,6 +295,15 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Open recent files 的本地化字符串。
+        /// </summary>
+        internal static string OpenRecentFiles {
+            get {
+                return ResourceManager.GetString("OpenRecentFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Paste after 的本地化字符串。
         /// </summary>
         internal static string PasteAfter {
@@ -282,6 +327,15 @@ namespace RszTool.App.Resources {
         internal static string PasteGameobjectAsChild {
             get {
                 return ResourceManager.GetString("PasteGameobjectAsChild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Project repo 的本地化字符串。
+        /// </summary>
+        internal static string ProjectRepo {
+            get {
+                return ResourceManager.GetString("ProjectRepo", resourceCulture);
             }
         }
         

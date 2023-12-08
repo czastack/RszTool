@@ -36,6 +36,7 @@ namespace RszTool.App.ViewModels
         public RelayCommand QuitCommand => new(OnQuit);
         public RelayCommand ClearRecentFilesHistory => new(OnClearRecentFilesHistory);
         public RelayCommand OpenRecentFile => new(OnOpenRecentFile);
+        public RelayCommand OpenAbout => new(OnOpenAbout);
 
         public ItemActionCallback ClosingTabItemHandler => ClosingTabItemHandlerImpl;
 
@@ -256,6 +257,12 @@ namespace RszTool.App.ViewModels
             }
             JsonUtils.DumpJson(SaveDataJsonPath, SaveData);
             return true;
+        }
+
+        private void OnOpenAbout(object arg)
+        {
+            var about = new AboutWindow();
+            about.ShowDialog();
         }
     }
 
