@@ -220,4 +220,10 @@
   <data name="FileChangedPrompt" xml:space="preserve">
     <value>文件已修改，是否保存？</value>
   </data>
+  <data name="OpenRecentFiles" xml:space="preserve">
+    <value>打开最近的文件</value>
+  </data>
+  <data name="ClearRecentFilesHistory" xml:space="preserve">
+    <value>清除最近打开记录</value>
+  </data>
 </root>

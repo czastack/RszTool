@@ -82,6 +82,24 @@
         <Menu Grid.Row="0">
             <MenuItem Header="{res:Text File}">
                 <MenuItem Header="{res:Text Open}" Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
+                <MenuItem Header="{res:Text OpenRecentFiles}">
+                    <MenuItem.Resources>
+                        <CollectionViewSource x:Key="RecentFiles" Source="{Binding SaveData.RecentFiles}"/>
+                    </MenuItem.Resources>
+                    <MenuItem.ItemsSource>
+                        <CompositeCollection>
+                            <CollectionContainer Collection="{Binding Source={StaticResource RecentFiles}}" />
+                            <Separator/>
+                            <MenuItem Header="{res:Text ClearRecentFilesHistory}" Command="{Binding ClearRecentFilesHistory}" />
+                        </CompositeCollection>
+                    </MenuItem.ItemsSource>
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="{x:Type MenuItem}">
+                            <Setter Property="Command" Value="{Binding DataContext.OpenRecentFile, RelativeSource={RelativeSource AncestorType=Window}}" />
+                            <Setter Property="CommandParameter" Value="{Binding}" />
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
                 <MenuItem Header="{res:Text Save}" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
                 <MenuItem Header="{res:Text SaveAs}" Command="{Binding SaveAsCommand}" InputGestureText="Ctrl+Shift+S" />
                 <MenuItem Header="{res:Text Reopen}" Command="{Binding ReopenCommand}" InputGestureText="Ctrl+R" />

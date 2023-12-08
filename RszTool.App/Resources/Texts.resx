@@ -220,4 +220,10 @@ Currently, user, scn, pfb files are supported</value>
   <data name="FileChangedPrompt" xml:space="preserve">
     <value>File is changed, do you want to save it?</value>
   </data>
+  <data name="OpenRecentFiles" xml:space="preserve">
+    <value>Open recent files</value>
+  </data>
+  <data name="ClearRecentFilesHistory" xml:space="preserve">
+    <value>Clear recent files history</value>
+  </data>
 </root>

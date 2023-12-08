@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using Dragablz;
@@ -24,6 +25,8 @@ namespace RszTool.App.ViewModels
             fileTabItemViewModel.FileViewModel : null;
 
         public CustomInterTabClient InterTabClient { get; } = new();
+        public SaveData SaveData { get; }
+        private const string SaveDataJsonPath = "RszTool.App.SaveData.json";
 
         public RelayCommand OpenCommand => new(OnOpen);
         public RelayCommand SaveCommand => new(OnSave);
@@ -31,8 +34,22 @@ namespace RszTool.App.ViewModels
         public RelayCommand ReopenCommand => new(OnReopen);
         public RelayCommand CloseCommand => new(OnClose);
         public RelayCommand QuitCommand => new(OnQuit);
+        public RelayCommand ClearRecentFilesHistory => new(OnClearRecentFilesHistory);
+        public RelayCommand OpenRecentFile => new(OnOpenRecentFile);
 
         public ItemActionCallback ClosingTabItemHandler => ClosingTabItemHandlerImpl;
+
+        public MainWindowModel()
+        {
+            SaveData? saveData = null;
+            if (File.Exists(SaveDataJsonPath))
+            {
+                using FileStream fileStream = File.OpenRead(SaveDataJsonPath);
+                saveData = JsonSerializer.Deserialize<SaveData>(fileStream);
+                if (saveData != null) SaveData = saveData;
+            }
+            SaveData = saveData ?? new();
+        }
 
         /// <summary>
         /// 打开文件
@@ -88,6 +105,16 @@ namespace RszTool.App.ViewModels
                 HeaderedItemViewModel header = new FileTabItemViewModel(fileViewModel, content);
                 Items.Add(header);
                 SelectedTabItem = header;
+
+                int recentIndex = SaveData.RecentFiles.IndexOf(path);
+                if (recentIndex >= 0)
+                {
+                    SaveData.RecentFiles.Move(recentIndex, 0);
+                }
+                else
+                {
+                    SaveData.RecentFiles.Insert(0, path);
+                }
             }
             else
             {
@@ -95,12 +122,17 @@ namespace RszTool.App.ViewModels
             }
         }
 
+        public void TryOpenFile(string path)
+        {
+            AppUtils.TryAction(() => OpenFile(path));
+        }
+
         public void OnDropFile(string[] files)
         {
             for (int i = 0; i < files.Length; i++)
             {
                 string file = files[i];
-                AppUtils.TryAction(() => OpenFile(file));
+                TryOpenFile(file);
             }
         }
 
@@ -134,7 +166,7 @@ namespace RszTool.App.ViewModels
             };
             if (dialog.ShowDialog() == true)
             {
-                AppUtils.TryAction(() => OpenFile(dialog.FileName));
+                TryOpenFile(dialog.FileName);
             }
         }
 
@@ -200,6 +232,19 @@ namespace RszTool.App.ViewModels
             }
         }
 
+        private void OnClearRecentFilesHistory(object arg)
+        {
+            SaveData.RecentFiles.Clear();
+        }
+
+        private void OnOpenRecentFile(object arg)
+        {
+            if (arg is string path)
+            {
+                TryOpenFile(path);
+            }
+        }
+
         public bool OnExit()
         {
             foreach (var item in Items)
@@ -209,6 +254,7 @@ namespace RszTool.App.ViewModels
                     if (!OnTabClose(fileTab)) return false;
                 }
             }
+            JsonUtils.DumpJson(SaveDataJsonPath, SaveData);
             return true;
         }
     }
@@ -229,5 +275,11 @@ namespace RszTool.App.ViewModels
         {
             Header = FileViewModel.FileName + (FileViewModel.Changed ? "*" : "");
         }
+    }
+
+
+    public class SaveData
+    {
+        public ObservableCollection<string> RecentFiles { get; set; } = new();
     }
 }
