@@ -2,8 +2,13 @@ using System.Reflection;
 
 namespace RszTool.App.ViewModels
 {
-    public class ClassViewModel(object instance, string[] properties) : BaseTreeItemViewModel(instance.GetType().Name)
+    public class ClassViewModel(string header, object instance, string[] properties) : BaseTreeItemViewModel(header)
     {
+        public ClassViewModel(object instance, string[] properties) :
+            this(instance.GetType().Name, instance, properties)
+        {
+        }
+
         public static List<ClassPropertyViewModel> MakePropertyViewModels(object instance, string[] properties)
         {
             Type type = instance.GetType();

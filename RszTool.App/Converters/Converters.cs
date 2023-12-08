@@ -4,18 +4,25 @@ using RszTool.App.ViewModels;
 
 namespace RszTool.App.Converters
 {
-    [ValueConversion(typeof(RszInstance), typeof(IEnumerable<BaseRszFieldViewModel>))]
+    [ValueConversion(typeof(RszInstance), typeof(IEnumerable<object>))]
     public class RszInstanceFieldsConverter : IValueConverter
     {
-        public static IEnumerable<BaseRszFieldViewModel> Convert(RszInstance instance)
+        public static IEnumerable<object> Convert(RszInstance instance)
         {
-            for (int i = 0; i < instance.Values.Length; i++)
+            if (instance.RSZUserData is RSZUserDataInfo userDataInfo)
             {
-                var field = instance.RszClass.fields[i];
-                yield return field.array ?
-                    new RszFieldArrayViewModel(instance, i) :
-                    field.IsReference ? new RszFieldInstanceViewModel(instance, i) :
-                                        new RszFieldNormalViewModel(instance, i);
+                yield return new ClassViewModel("UserDataInfo", userDataInfo, ["Path"]);
+            }
+            else
+            {
+                for (int i = 0; i < instance.Values.Length; i++)
+                {
+                    var field = instance.RszClass.fields[i];
+                    yield return field.array ?
+                        new RszFieldArrayViewModel(instance, i) :
+                        field.IsReference ? new RszFieldInstanceViewModel(instance, i) :
+                                            new RszFieldNormalViewModel(instance, i);
+                }
             }
         }
 
@@ -41,12 +48,13 @@ namespace RszTool.App.Converters
             {
                 yield return gameObject.Instance;
             }
-            yield return new TreeItemViewModel("Components", gameObject.Components);
-            yield return new TreeItemViewModel("Children", gameObject.Children);
+            yield return new ClassViewModel("GameObjectInfo", gameObject, ["Guid"]);
             if (gameObject.Prefab != null)
             {
                 yield return new ClassViewModel(gameObject.Prefab, ["Path"]);
             }
+            yield return new TreeItemViewModel("Components", gameObject.Components);
+            yield return new TreeItemViewModel("Children", gameObject.Children);
         }
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

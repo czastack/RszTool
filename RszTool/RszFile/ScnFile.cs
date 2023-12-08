@@ -166,6 +166,18 @@ namespace RszTool
 
             public int? ObjectId => Info?.Data.objectId;
 
+            public Guid Guid
+            {
+                get
+                {
+                    return Info?.Data.guid ?? Guid.Empty;
+                }
+                set
+                {
+                    if (Info != null) Info.Data.guid = value;
+                }
+            }
+
             public object Clone()
             {
                 GameObjectData gameObject = new()
