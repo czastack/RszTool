@@ -19,10 +19,10 @@ namespace RszTool
             public long userdataInfoOffset;
             public long dataOffset;
 
-            private int TdbVersion { get; }
+            private GameVersion Version { get; }
 
-            public HeaderStruct(int tdbVersion) {
-                TdbVersion = tdbVersion;
+            public HeaderStruct(GameVersion version) {
+                Version = version;
             }
 
             protected override bool DoRead(FileHandler handler)
@@ -31,10 +31,10 @@ namespace RszTool
                 handler.Read(ref infoCount);
                 handler.Read(ref resourceCount);
                 handler.Read(ref gameObjectRefInfoCount);
-                if (TdbVersion > 67) handler.Read(ref userdataCount);
+                if (Version > GameVersion.re2) handler.Read(ref userdataCount);
                 handler.Read(ref gameObjectRefInfoOffset);
                 handler.Read(ref resourceInfoOffset);
-                if (TdbVersion > 67) handler.Read(ref userdataInfoOffset);
+                if (Version > GameVersion.re2) handler.Read(ref userdataInfoOffset);
                 handler.Read(ref dataOffset);
                 return true;
             }
@@ -45,10 +45,10 @@ namespace RszTool
                 handler.Write(ref infoCount);
                 handler.Write(ref resourceCount);
                 handler.Write(ref gameObjectRefInfoCount);
-                if (TdbVersion > 67) handler.Write(ref userdataCount);
+                if (Version > GameVersion.re2) handler.Write(ref userdataCount);
                 handler.Write(ref gameObjectRefInfoOffset);
                 handler.Write(ref resourceInfoOffset);
-                if (TdbVersion > 67) handler.Write(ref userdataInfoOffset);
+                if (Version > GameVersion.re2) handler.Write(ref userdataInfoOffset);
                 handler.Write(ref dataOffset);
                 return true;
             }
@@ -135,7 +135,7 @@ namespace RszTool
 
         public PfbFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
-            Header = new(option.TdbVersion);
+            Header = new(option.Version);
             if (fileHandler.FilePath != null)
             {
                 RszUtils.CheckFileExtension(fileHandler.FilePath, Extension2, GetVersionExt());
@@ -149,11 +149,13 @@ namespace RszTool
         {
             return Option.GameName switch
             {
-                GameName.re2 => Option.TdbVersion == 66 ? ".16" : ".17",
+                GameName.re2 => ".16",
+                GameName.re2rt => ".17",
                 GameName.re3 => ".17",
                 GameName.re4 => ".17",
                 GameName.re8 => ".17",
-                GameName.re7 => Option.TdbVersion == 49 ? ".16" : ".17",
+                GameName.re7 => ".16",
+                GameName.re7rt => ".17",
                 GameName.dmc5 =>".16",
                 GameName.mhrise => ".17",
                 GameName.sf6 => ".17",
@@ -188,13 +190,13 @@ namespace RszTool
             for (int i = 0; i < header.resourceCount; i++)
             {
                 ResourceInfo item = new();
-                if (Option.TdbVersion <= 67) item.HasOffset = false;
+                if (Option.Version <= GameVersion.re2) item.HasOffset = false;
                 if (!item.Read(handler)) return false;
                 ResourceInfoList.Add(item);
             }
 
             handler.Seek(header.userdataInfoOffset);
-            if (Option.TdbVersion > 67)
+            if (Option.Version > GameVersion.re2)
             {
                 UserdataInfoList.Read(handler, (int)header.userdataCount);
             }
@@ -228,11 +230,11 @@ namespace RszTool
             // ResourceInfoList.Write(handler);
             foreach (var item in ResourceInfoList)
             {
-                if (Option.TdbVersion <= 67) item.HasOffset = false;
+                if (Option.Version <= GameVersion.re2) item.HasOffset = false;
                 if (!item.Write(handler)) return false;
             }
 
-            if (Option.TdbVersion > 67 && UserdataInfoList.Count > 0)
+            if (Option.Version > GameVersion.re2 && UserdataInfoList.Count > 0)
             {
                 handler.Align(16);
                 header.userdataInfoOffset = handler.Tell();

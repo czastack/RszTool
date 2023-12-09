@@ -40,11 +40,11 @@ namespace RszTool
             // tdbVersion >= 71, SF6+
             public long texIDsOffset;
 
-            private readonly int tdbVersion;
+            private GameVersion Version { get; }
 
-            public MatHeader(int tdbVersion)
+            public MatHeader(GameVersion version)
             {
-                this.tdbVersion = tdbVersion;
+                Version = version;
             }
 
             protected override bool DoRead(FileHandler handler)
@@ -53,18 +53,18 @@ namespace RszTool
                 handler.Read(ref matNameOffset);
                 matName = handler.ReadWString(matNameOffset);
                 handler.Read(ref matNameHash);
-                if (tdbVersion == 49) handler.Read(ref uknRE7);
+                if (Version == GameVersion.re7) handler.Read(ref uknRE7);
                 handler.Read(ref paramsSize);
                 handler.Read(ref paramCount);
                 handler.Read(ref texCount);
-                if (tdbVersion >= 69) handler.Read(ref skip);
+                if (Version >= GameVersion.re8) handler.Read(ref skip);
                 handler.Read(ref shaderType);
-                if (tdbVersion >= 71) handler.Read(ref ukn);
+                if (Version >= GameVersion.re4) handler.Read(ref ukn);
                 handler.Read(ref alphaFlags);
-                if (tdbVersion >= 71) handler.Read(ref ukn1);
+                if (Version >= GameVersion.re4) handler.Read(ref ukn1);
                 handler.Read(ref paramHeaderOffset);
                 handler.Read(ref texHeaderOffset);
-                if (tdbVersion >= 69)
+                if (Version >= GameVersion.re8)
                 {
                     handler.Read(ref firstMaterialNameOffset);
                     // firstMaterialName = handler.ReadWString(firstMaterialNameOffset);
@@ -72,7 +72,7 @@ namespace RszTool
                 handler.Read(ref paramsOffset);
                 handler.Read(ref mmtrPathOffset);
                 mmtrPath = handler.ReadWString(mmtrPathOffset);
-                if (tdbVersion >= 71) handler.Read(ref texIDsOffset);
+                if (Version >= GameVersion.re4) handler.Read(ref texIDsOffset);
                 return true;
             }
 
@@ -85,18 +85,18 @@ namespace RszTool
                 }
                 handler.Write(ref matNameOffset);
                 handler.Write(ref matNameHash);
-                if (tdbVersion == 49) handler.Write(ref uknRE7);
+                if (Version == GameVersion.re7) handler.Write(ref uknRE7);
                 handler.Write(ref paramsSize);
                 handler.Write(ref paramCount);
                 handler.Write(ref texCount);
-                if (tdbVersion >= 69) handler.Write(ref skip);
+                if (Version >= GameVersion.re8) handler.Write(ref skip);
                 handler.Write(ref shaderType);
-                if (tdbVersion >= 71) handler.Write(ref ukn);
+                if (Version >= GameVersion.re4) handler.Write(ref ukn);
                 handler.Write(ref alphaFlags);
-                if (tdbVersion >= 71) handler.Write(ref ukn1);
+                if (Version >= GameVersion.re4) handler.Write(ref ukn1);
                 handler.Write(ref paramHeaderOffset);
                 handler.Write(ref texHeaderOffset);
-                if (tdbVersion >= 69)
+                if (Version >= GameVersion.re8)
                 {
                     // handler.AddStringToWrite(firstMaterialName);
                     handler.Write(ref firstMaterialNameOffset);
@@ -104,7 +104,7 @@ namespace RszTool
                 handler.Write(ref paramsOffset);
                 handler.StringTableAdd(mmtrPath);
                 handler.Write(ref mmtrPathOffset);
-                if (tdbVersion >= 71) handler.Write(ref texIDsOffset);
+                if (Version >= GameVersion.re4) handler.Write(ref texIDsOffset);
                 return true;
             }
         }
@@ -118,11 +118,11 @@ namespace RszTool
             public long texPathOffset;
             public string? texPath;
 
-            private readonly int tdbVersion;
+            private GameVersion Version { get; }
 
-            public TexHeader(int tdbVersion)
+            public TexHeader(GameVersion version)
             {
-                this.tdbVersion = tdbVersion;
+                Version = version;
             }
 
             protected override bool DoRead(FileHandler handler)
@@ -134,7 +134,7 @@ namespace RszTool
                 texType = handler.ReadWString(texTypeOffset);
                 texPath = handler.ReadWString(texPathOffset);
                 // RE3R+
-                if (tdbVersion >= 68) handler.Skip(8);
+                if (Version >= GameVersion.re3) handler.Skip(8);
                 return true;
             }
 
@@ -151,7 +151,7 @@ namespace RszTool
                 handler.Write(ref asciiHash);
                 handler.StringTableAdd(texPath);
                 handler.Write(ref texPathOffset);
-                if (tdbVersion >= 68) handler.Skip(8);
+                if (Version >= GameVersion.re3) handler.Skip(8);
                 return true;
             }
         }
@@ -171,11 +171,11 @@ namespace RszTool
             public int gapSize;
             public Vector4 parameter;
 
-            private readonly int tdbVersion;
+            private GameVersion Version { get; }
 
-            public ParamHeader(int tdbVersion)
+            public ParamHeader(GameVersion version)
             {
-                this.tdbVersion = tdbVersion;
+                Version = version;
             }
 
             protected override bool DoRead(FileHandler handler)
@@ -184,7 +184,7 @@ namespace RszTool
                 handler.Read(ref hash);
                 handler.Read(ref asciiHash);
                 // RE3R+
-                if (tdbVersion >= 68)
+                if (Version >= GameVersion.re3)
                 {
                     handler.Read(ref paramRelOffset);
                     handler.Read(ref componentCount);
@@ -209,7 +209,7 @@ namespace RszTool
                 handler.Write(ref paramNameOffset);
                 handler.Write(ref hash);
                 handler.Write(ref asciiHash);
-                if (tdbVersion >= 68)
+                if (Version >= GameVersion.re3)
                 {
                     handler.Write(ref paramRelOffset);
                     handler.Write(ref componentCount);
@@ -249,11 +249,14 @@ namespace RszTool
         {
             return Option.GameName switch
             {
-                GameName.re2 => Option.TdbVersion == 66 ? ".10" : ".21",
-                GameName.re3 => Option.TdbVersion == 68 ? ".13" : ".21",
+                GameName.re2 => ".10",
+                GameName.re2rt => ".21",
+                GameName.re3 => ".13",
+                GameName.re3rt => ".21",
                 GameName.re4 => ".32",
                 GameName.re8 => ".19",
-                GameName.re7 => Option.TdbVersion == 49 ? ".6" : ".17",
+                GameName.re7 => ".6",
+                GameName.re7rt => ".21",
                 GameName.dmc5 =>".10",
                 GameName.mhrise => ".23",
                 GameName.sf6 => ".31",
@@ -275,7 +278,7 @@ namespace RszTool
             handler.Align(16);
             for (int i = 0; i < Header.Data.matCount; i++)
             {
-                MatData matData = new(new(Option.TdbVersion));
+                MatData matData = new(new(Option.Version));
                 matData.Header.Read(handler);
                 MatDatas.Add(matData);
             }
@@ -285,7 +288,7 @@ namespace RszTool
             {
                 for (int i = 0; i < matData.Header.texCount; i++)
                 {
-                    TexHeader texHeader = new(Option.TdbVersion);
+                    TexHeader texHeader = new(Option.Version);
                     texHeader.Read(handler);
                     matData.TexHeaders.Add(texHeader);
                 }
@@ -296,7 +299,7 @@ namespace RszTool
             {
                 for (int i = 0; i < matData.Header.paramCount; i++)
                 {
-                    ParamHeader paramHeader = new(Option.TdbVersion);
+                    ParamHeader paramHeader = new(Option.Version);
                     paramHeader.Read(handler);
                     paramHeader.paramAbsOffset = matData.Header.paramsOffset + paramHeader.paramRelOffset;
                     if (i == 0)

@@ -19,6 +19,7 @@ namespace RszTool
         C16,
         S8,
         U8,
+        UByte = U8,
         S16,
         U16,
         S32,
@@ -127,9 +128,27 @@ namespace RszTool
         re4,
         re8,
         re7,
+        re7rt,
         dmc5,
         mhrise,
         sf6,
+    }
+
+
+    public enum GameVersion
+    {
+        unknown,
+        re7 = 1,
+        re2 = 2,
+        dmc5 = re2,
+        re3 = 3,
+        re8 = 4,
+        mhrise = 5,
+        re2rt = 6,
+        re3rt = re2rt,
+        re7rt = re2rt,
+        re4 = 7,
+        sf6 = 8,
     }
 
 

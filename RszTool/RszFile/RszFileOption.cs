@@ -3,23 +3,26 @@ namespace RszTool
     public class RszFileOption
     {
         public GameName GameName { get; set; }
-        public int TdbVersion { get; set; }
+        public GameVersion Version { get; set; }
         public RszParser RszParser { get; set; }
 
         public RszFileOption(GameName gameName)
         {
             GameName = gameName;
-            TdbVersion = gameName switch
+            Version = gameName switch
             {
-                GameName.re4 => 71,
-                GameName.re2 => 66,
-                GameName.re2rt => 70,
-                GameName.re3 => 68,
-                GameName.re3rt => 70,
-                GameName.re7 => 49,
-                GameName.re8 => 69,
-                GameName.sf6 => 71,
-                _ => 71,
+                GameName.re4 => GameVersion.re4,
+                GameName.re2 => GameVersion.re2,
+                GameName.re2rt => GameVersion.re2rt,
+                GameName.re3 => GameVersion.re3,
+                GameName.re3rt => GameVersion.re3rt,
+                GameName.re7 => GameVersion.re7,
+                GameName.re7rt => GameVersion.re7rt,
+                GameName.re8 => GameVersion.re8,
+                GameName.dmc5 => GameVersion.dmc5,
+                GameName.mhrise => GameVersion.mhrise,
+                GameName.sf6 => GameVersion.sf6,
+                _ => GameVersion.unknown,
             };
             RszParser = RszParser.GetInstance($"rsz{gameName}.json");
         }

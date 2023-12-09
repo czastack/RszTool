@@ -820,7 +820,7 @@ namespace RszTool
             const string listPrefix = "System.Collections.Generic.List`1<";
             if (arrayType.StartsWith(listPrefix))
             {
-                return arrayType[listPrefix.Length..-1];
+                return arrayType[listPrefix.Length..^1];
             }
             return arrayType;
         }

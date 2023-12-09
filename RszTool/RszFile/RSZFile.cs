@@ -80,7 +80,7 @@ namespace RszTool
 
             handler.Seek(Header.Data.userdataOffset);
             Dictionary<int, int> instanceIdToUserData = new();
-            if (Option.TdbVersion <= 67)
+            if (Option.Version <= GameVersion.re2)
             {
                 if (Header.Data.userdataCount > 0)
                 {
@@ -177,7 +177,7 @@ namespace RszTool
             handler.StringTableFlush();
 
             // embedded userdata
-            if (Option.TdbVersion <= 67 && EmbeddedRSZFileList != null)
+            if (Option.Version <= GameVersion.re2 && EmbeddedRSZFileList != null)
             {
                 for (int i = 0; i < RSZUserDataInfoList.Count; i++)
                 {
@@ -481,6 +481,10 @@ namespace RszTool
         /// <param name="insertPos"></param>
         public void ArrayInsertItem(List<object> array, object item, int insertPos = -1)
         {
+            if (insertPos == -1)
+            {
+                insertPos = array.Count;
+            }
             array.Insert(insertPos, item);
             StructChanged = true;
         }

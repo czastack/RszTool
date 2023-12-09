@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using Dragablz;
@@ -10,6 +11,7 @@ using Microsoft.Win32;
 using RszTool.App.Common;
 using RszTool.App.Resources;
 using RszTool.App.Views;
+using RszTool.Common;
 
 namespace RszTool.App.ViewModels
 {
@@ -17,7 +19,6 @@ namespace RszTool.App.ViewModels
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         public ObservableCollection<HeaderedItemViewModel> Items { get; } = new();
-        public GameName GameName { get; set; } = GameName.re4;
         public HeaderedItemViewModel? SelectedTabItem { get; set; }
 
         private BaseRszFileViewModel? CurrentFile =>
@@ -71,7 +72,7 @@ namespace RszTool.App.ViewModels
                 }
             }
 
-            string rszJsonFile = $"rsz{GameName}.json";
+            string rszJsonFile = $"rsz{SaveData.GameName}.json";
             if (!File.Exists(rszJsonFile))
             {
                 MessageBoxUtils.Warning(string.Format(Texts.RszJsonNotFound, rszJsonFile));
@@ -80,7 +81,7 @@ namespace RszTool.App.ViewModels
 
             BaseRszFileViewModel? fileViewModel = null;
             ContentControl? content = null;
-            RszFileOption option = new(GameName);
+            RszFileOption option = new(SaveData.GameName);
             switch (RszUtils.GetFileType(path))
             {
                 case FileType.user:
@@ -287,6 +288,8 @@ namespace RszTool.App.ViewModels
 
     public class SaveData
     {
+        [JsonConverter(typeof(EnumJsonConverter<GameName>))]
+        public GameName GameName { get; set; }
         public ObservableCollection<string> RecentFiles { get; set; } = new();
     }
 }
