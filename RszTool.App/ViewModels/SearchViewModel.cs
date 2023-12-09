@@ -129,8 +129,9 @@ namespace RszTool.App.ViewModels
                 }
                 if (!matched) return false;
             }
-            if (fieldValueMatcher.Enable && instance.RSZUserData == null)
+            if (fieldValueMatcher.Enable)
             {
+                if (instance.RSZUserData == null) return false;
                 bool matched = false;
                 var fields = instance.Fields;
                 for (int i = 0; i < instance.Fields.Length; i++)

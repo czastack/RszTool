@@ -108,14 +108,11 @@ namespace RszTool.App.Views
 
         private void OnBindingSourceUpdated(object sender, DataTransferEventArgs args)
         {
-            if (args.Property == TextBox.TextProperty)
+            ValueChanged = true;
+            // if bind ValueType, force update source value
+            if (UpdateSource)
             {
-                ValueChanged = true;
-                // if bind ValueType, force update source value
-                if (UpdateSource)
-                {
-                    GetBindingExpression(ValueProperty).UpdateSource();
-                }
+                GetBindingExpression(ValueProperty).UpdateSource();
             }
         }
 

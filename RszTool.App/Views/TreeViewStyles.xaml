@@ -57,7 +57,15 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:RszFieldArrayNormalItemViewModel}">
-        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding Data.Changed, Source={StaticResource ParentData}}" />
+        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding Data.Changed, Source={StaticResource ParentData}}">
+            <local:FieldValueEdit.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{res:Text Remove}" Command="{Binding Data.ArrayItemRemove, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Duplicate}" Command="{Binding Data.ArrayItemDuplicate, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text DuplicateMulti}" Command="{Binding Data.ArrayItemDuplicateMulti, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </local:FieldValueEdit.ContextMenu>
+        </local:FieldValueEdit>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:ClassPropertyViewModel}">

@@ -178,6 +178,9 @@ namespace RszTool
                 }
             }
 
+            // Guid of GameObject Cloned from
+            public Guid OriginalGuid { get; set; }
+
             public object Clone()
             {
                 GameObjectData gameObject = new()
@@ -185,12 +188,10 @@ namespace RszTool
                     Info = Info != null ? new() { Data = Info.Data } : null,
                     Components = new(Components.Select(item => item.CloneCached())),
                     Instance = Instance?.CloneCached(),
-                    Prefab = Prefab != null ? (PrefabInfo)Prefab.Clone() : null
+                    Prefab = Prefab != null ? (PrefabInfo)Prefab.Clone() : null,
+                    OriginalGuid = Guid,
+                    Guid = Guid.NewGuid()
                 };
-                if (gameObject.Info != null)
-                {
-                    gameObject.Info.Data.guid = Guid.NewGuid();
-                }
                 foreach (var child in Children)
                 {
                     var newChild = (GameObjectData)child.Clone();
@@ -859,6 +860,73 @@ namespace RszTool
         }
 
         /// <summary>
+        /// Fix GameObjectRef after clone
+        /// </summary>
+        /// <param name="rootGameObject"></param>
+        private void FixGameObjectRef(GameObjectData rootGameObject)
+        {
+            Dictionary<Guid, List<GameObjectRefData>>? gameObjectRefDatas = null;
+            // record GameObjectRef
+            foreach (var item in IterGameObjectInstances(rootGameObject))
+            {
+                if (item.RszClass.name == "via.GameObject") continue;
+                foreach (var instance in item.Flatten())
+                {
+                    if (instance.RSZUserData != null) continue;
+                    var fields = instance.Fields;
+                    for (int i = 0; i < fields.Length; i++)
+                    {
+                        RszField field = fields[i];
+                        if (field.type == RszFieldType.GameObjectRef)
+                        {
+                            gameObjectRefDatas ??= new();
+                            if (field.array)
+                            {
+                                var items = (List<object>)instance.Values[i];
+                                for (int j = 0; j < items.Count; j++)
+                                {
+                                    Guid guid = (Guid)items[j];
+                                    if (guid != Guid.Empty)
+                                    {
+                                        if (!gameObjectRefDatas.TryGetValue(guid, out var refDatas))
+                                        {
+                                            gameObjectRefDatas[guid] = refDatas = new();
+                                        }
+                                        refDatas.Add(new(items, j));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Guid guid = (Guid)instance.Values[i];
+                                if (guid != Guid.Empty)
+                                {
+                                    if (!gameObjectRefDatas.TryGetValue(guid, out var refDatas))
+                                    {
+                                        gameObjectRefDatas[guid] = refDatas = new();
+                                    }
+                                    refDatas.Add(new(instance.Values, i));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (var item in IterGameObjects(rootGameObject, true))
+            {
+                // fix GameObjectRef
+                if (gameObjectRefDatas != null && item.OriginalGuid != Guid.Empty &&
+                    gameObjectRefDatas.TryGetValue(item.OriginalGuid, out var refDatas))
+                {
+                    foreach (var refData in refDatas)
+                    {
+                        refData.Values[refData.ValueIndex] = item.Guid;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 导入外部的游戏对象
         /// 文件夹和父对象只能指定一个
         /// </summary>
@@ -871,6 +939,7 @@ namespace RszTool
         {
             RszInstance.CleanCloneCache();
             GameObjectData newGameObject = (GameObjectData)gameObject.Clone();
+            FixGameObjectRef(newGameObject);
 
             newGameObject.Folder = null;
             newGameObject.Parent = null;
@@ -932,5 +1001,10 @@ namespace RszTool
         {
             ImportGameObject(gameObject, gameObject.Folder, gameObject.Parent, true);
         }
+    }
+
+
+    internal record GameObjectRefData(IList<object> Values, int ValueIndex)
+    {
     }
 }
