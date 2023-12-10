@@ -37,6 +37,8 @@ namespace RszTool.App.ViewModels
 
         public static RelayCommand CopyInstance => new(OnCopyInstance);
         public RelayCommand PasteInstance => new(OnPasteInstance);
+        public static RelayCommand CopyNormalField => new(OnCopyNormalField);
+        public RelayCommand PasteNormalField => new(OnPasteNormalField);
         public static RelayCommand ArrayItemCopy => new(OnArrayItemCopy);
         public RelayCommand ArrayItemRemove => new(OnArrayItemRemove);
         public RelayCommand ArrayItemDuplicate => new(OnArrayItemDuplicate);
@@ -154,6 +156,29 @@ namespace RszTool.App.ViewModels
             }
             RszInstance.CleanCloneCache();
             return result;
+        }
+
+        private static void OnCopyNormalField(object arg)
+        {
+            if (arg is RszFieldNormalViewModel item)
+            {
+                CopiedNormalField = item.Field;
+                CopiedNormalValue = item.Value;
+            }
+        }
+
+        private void OnPasteNormalField(object arg)
+        {
+            if (arg is RszFieldNormalViewModel item && CopiedNormalField != null && CopiedNormalValue != null)
+            {
+                if (CopiedNormalField.type != item.Field.type)
+                {
+                    MessageBoxUtils.Error(string.Format(Texts.RszClassMismatch, CopiedNormalField.type, item.Field.type));
+                    return;
+                }
+                item.Value = CopiedNormalValue;
+                Changed = true;
+            }
         }
 
         private static void OnArrayItemCopy(object arg)

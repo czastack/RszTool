@@ -62,7 +62,14 @@
     </HierarchicalDataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:RszFieldNormalViewModel}">
-        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding Data.Changed, Source={StaticResource ParentData}}" />
+        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding Data.Changed, Source={StaticResource ParentData}}">
+            <local:FieldValueEdit.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.CopyNormalField, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Paste}" Command="{Binding Data.PasteNormalField, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </local:FieldValueEdit.ContextMenu>
+        </local:FieldValueEdit>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:RszFieldArrayNormalItemViewModel}">
