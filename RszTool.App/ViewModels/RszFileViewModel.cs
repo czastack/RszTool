@@ -89,7 +89,9 @@ namespace RszTool.App.ViewModels
         {
             // TODO check Changed
             File.FileHandler.Reopen();
-            return Read();
+            bool result = Read();
+            OnPropertyChanged(nameof(TreeViewItems));
+            return result;
         }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")
