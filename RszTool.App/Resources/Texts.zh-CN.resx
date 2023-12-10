@@ -238,4 +238,10 @@
   <data name="ProjectRepo" xml:space="preserve">
     <value>项目仓库</value>
   </data>
+  <data name="Paste" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
+  <data name="RszClassMismatch" xml:space="preserve">
+    <value>类型不匹配，复制的类型是{0}，目标类型是{1}。</value>
+  </data>
 </root>

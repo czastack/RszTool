@@ -238,4 +238,10 @@ Currently, user, scn, pfb files are supported</value>
   <data name="ProjectRepo" xml:space="preserve">
     <value>Project repo</value>
   </data>
+  <data name="Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="RszClassMismatch" xml:space="preserve">
+    <value>Class mismatch, copied type is {0}, target type is {1}.</value>
+  </data>
 </root>

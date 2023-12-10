@@ -75,7 +75,12 @@ namespace RszTool.App.ViewModels
     {
         public RszInstance Instance => (RszInstance)instance.Values[Index];
         public override string Name => $"{Field.name} : {Instance.Name}";
-        public IEnumerable<object> Items => RszInstanceFieldsConverter.Convert(Instance);
+        public IEnumerable<object> Items => RszInstanceFieldsConverter.GetItems(Instance);
+
+        public void NotifyItemsChanged()
+        {
+            OnPropertyChanged(nameof(Items));
+        }
 
         public override string ToString()
         {
@@ -142,6 +147,11 @@ namespace RszTool.App.ViewModels
             }
         }
 
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new(propertyName));
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
     }
 
@@ -180,7 +190,12 @@ namespace RszTool.App.ViewModels
     {
         public RszInstance Instance => (RszInstance)Values[Index];
         public override string Name => $"{Index}: {Instance.Name}";
-        public IEnumerable<object> Items => RszInstanceFieldsConverter.Convert(Instance);
+        public IEnumerable<object> Items => RszInstanceFieldsConverter.GetItems(Instance);
+
+        public void NotifyItemsChanged()
+        {
+            OnPropertyChanged(nameof(Items));
+        }
 
         public override string ToString()
         {

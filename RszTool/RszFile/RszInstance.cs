@@ -28,6 +28,7 @@ namespace RszTool
         public IRSZUserDataInfo? RSZUserData { get; set; }
         public RszField[] Fields => RszClass.fields;
         public bool HasValues => Values.Length > 0;
+        public event Action<RszInstance>? ValuesChanged;
 
         public RszInstance(RszClass rszClass, int index = -1, IRSZUserDataInfo? userData = null, object[]? values = null)
         {
@@ -542,39 +543,56 @@ namespace RszTool
             IRSZUserDataInfo? userData = RSZUserData != null ? (IRSZUserDataInfo)RSZUserData.Clone() : null;
             copy = new(RszClass, -1, userData);
             if (cached) CloneCache[this] = copy;
-            Array.Copy(Values, copy.Values, Values.Length);
-            if (userData == null)
+            copy.CopyValuesFrom(this, cached);
+            return copy;
+        }
+
+        /// <summary>
+        /// 拷贝字段值
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool CopyValuesFrom(RszInstance other, bool cached = false)
+        {
+            if (other.RszClass != RszClass) return false;
+            if (RSZUserData == null)
             {
-                for (int i = 0; i < RszClass.fields.Length; i++)
+                var fields = RszClass.fields;
+                for (int i = 0; i < fields.Length; i++)
                 {
-                    var field = RszClass.fields[i];
+                    var field = fields[i];
                     if (field.array)
                     {
-                        var newArray = new List<object>((List<object>)copy.Values[i]);
-                        copy.Values[i] = newArray;
-                        for (int j = 0; j < newArray.Count; j++)
+                        var items = new List<object>();
+                        var otherItems = (List<object>)other.Values[i];
+                        Values[i] = items;
+                        if (field.IsReference)
                         {
-                            if (field.IsReference && newArray[j] is RszInstance item)
+                            for (int j = 0; j < otherItems.Count; j++)
                             {
-                                newArray[j] = item.CloneImpl(cached);
+                                items.Add(((RszInstance)otherItems[j]).CloneImpl(cached));
                             }
-                            else
+                        }
+                        else
+                        {
+                            for (int j = 0; j < otherItems.Count; j++)
                             {
-                                newArray[j] = CloneValueType(newArray[j]);
+                                items.Add(CloneValueType(otherItems[j]));
                             }
                         }
                     }
-                    else if (field.IsReference && copy.Values[i] is RszInstance instance)
+                    else if (field.IsReference)
                     {
-                        copy.Values[i] = instance.CloneImpl(cached);
+                        Values[i] = ((RszInstance)other.Values[i]).CloneImpl(cached);
                     }
                     else
                     {
-                        copy.Values[i] = CloneValueType(copy.Values[i]);
+                        Values[i] = CloneValueType(other.Values[i]);
                     }
                 }
+                ValuesChanged?.Invoke(this);
             }
-            return copy;
+            return true;
         }
 
         private static System.Reflection.MethodInfo? memberwiseClone;

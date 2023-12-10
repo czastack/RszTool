@@ -35,12 +35,14 @@ namespace RszTool.App.ViewModels
         public InstanceSearchViewModel InstanceSearchViewModel { get; } = new();
         public ObservableCollection<RszInstance>? SearchInstanceList { get; set; }
 
-        public RelayCommand CopyInstance => new(OnCopyInstance);
-        public RelayCommand ArrayItemCopy => new(OnArrayItemCopy);
+        public static RelayCommand CopyInstance => new(OnCopyInstance);
+        public RelayCommand PasteInstance => new(OnPasteInstance);
+        public static RelayCommand ArrayItemCopy => new(OnArrayItemCopy);
         public RelayCommand ArrayItemRemove => new(OnArrayItemRemove);
         public RelayCommand ArrayItemDuplicate => new(OnArrayItemDuplicate);
         public RelayCommand ArrayItemDuplicateMulti => new(OnArrayItemDuplicateMulti);
         public RelayCommand ArrayItemPasteAfter => new(OnArrayItemPasteAfter);
+        public RelayCommand ArrayItemPasteToSelf => new(OnArrayItemPasteToSelf);
         public RelayCommand ArrayItemNew => new(OnArrayItemNew);
         public RelayCommand SearchInstances => new(OnSearchInstances);
 
@@ -49,7 +51,14 @@ namespace RszTool.App.ViewModels
         /// </summary>
         public event Action? HeaderChanged;
 
+        /// <summary>
+        /// Item改变了，但Item本身不支持Notify，Items用了Convert的情况，通知TreeView更新
+        /// </summary>
+        // public event Action<object>? TreeViewItemChanged;
+
         public static RszInstance? CopiedInstance { get; private set; }
+        public static RszField? CopiedNormalField { get; private set; }
+        public static object? CopiedNormalValue { get; private set; }
 
         public virtual void PostRead() {}
 
@@ -104,8 +113,47 @@ namespace RszTool.App.ViewModels
             if (arg is RszInstance instance)
             {
                 CopiedInstance = instance;
-                Console.WriteLine(instance.Stringify());
             }
+            else if (arg is RszFieldInstanceViewModel fieldInstanceViewModel)
+            {
+                CopiedInstance = fieldInstanceViewModel.Instance;
+            }
+        }
+
+        private void OnPasteInstance(object arg)
+        {
+            if (arg is RszInstance instance)
+            {
+                if (DoPasteInstance(instance))
+                {
+                    Changed = true;
+                }
+            }
+            else if (arg is RszFieldInstanceViewModel fieldInstanceViewModel)
+            {
+                if (DoPasteInstance(fieldInstanceViewModel.Instance))
+                {
+                    fieldInstanceViewModel.NotifyItemsChanged();
+                    Changed = true;
+                }
+            }
+        }
+
+        private bool DoPasteInstance(RszInstance instance)
+        {
+            if (CopiedInstance == null) return false;
+            if (CopiedInstance.RszClass != instance.RszClass)
+            {
+                MessageBoxUtils.Error(string.Format(Texts.RszClassMismatch, CopiedInstance.RszClass.name, instance.RszClass.name));
+                return false;
+            }
+            bool result = instance.CopyValuesFrom(CopiedInstance, true);
+            if (File.GetRSZ() is RSZFile rsz)
+            {
+                rsz.FixInstanceIndexRecurse(instance);
+            }
+            RszInstance.CleanCloneCache();
+            return result;
         }
 
         private static void OnArrayItemCopy(object arg)
@@ -113,6 +161,11 @@ namespace RszTool.App.ViewModels
             if (arg is RszFieldArrayInstanceItemViewModel item)
             {
                 CopiedInstance = item.Instance;
+            }
+            else if (arg is RszFieldArrayNormalItemViewModel normalItem)
+            {
+                CopiedNormalField = normalItem.Field;
+                CopiedNormalValue = normalItem.Value;
             }
         }
 
@@ -195,16 +248,51 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private void OnArrayItemPasteAfter(object arg)
         {
-            if (arg is RszFieldArrayInstanceItemViewModel item && File.GetRSZ() is RSZFile rsz &&
-                CopiedInstance != null)
+            if (File.GetRSZ() is not RSZFile rsz) return;
+            if (arg is RszFieldArrayInstanceItemViewModel item && CopiedInstance != null)
             {
                 if (CopiedInstance.RszClass != item.Instance.RszClass)
                 {
-                    var error = new InvalidOperationException($"CopiedInstance is {CopiedInstance.RszClass.name}, missmatch {item.Instance.RszClass.name}");
-                    App.ShowUnhandledException(error, "OnArrayItemPasteAfter");
+                    MessageBoxUtils.Error(string.Format(Texts.RszClassMismatch, CopiedInstance.RszClass.name, item.Instance.RszClass.name));
+                    return;
                 }
                 rsz.ArrayInsertInstance(item.Values, CopiedInstance, item.Index + 1);
                 item.Array.NotifyItemsChanged();
+                Changed = true;
+            }
+            else if (arg is RszFieldArrayNormalItemViewModel normalItem
+                && CopiedNormalField != null && CopiedNormalValue != null)
+            {
+                if (CopiedNormalField.type != normalItem.Field.type)
+                {
+                    MessageBoxUtils.Error(string.Format(Texts.RszClassMismatch, CopiedNormalField.type, normalItem.Field.type));
+                    return;
+                }
+                rsz.ArrayInsertItem(normalItem.Values, CopiedNormalValue, normalItem.Index + 1);
+                normalItem.Array.NotifyItemsChanged();
+                Changed = true;
+            }
+        }
+
+        private void OnArrayItemPasteToSelf(object arg)
+        {
+            if (arg is RszFieldArrayInstanceItemViewModel item)
+            {
+                if (DoPasteInstance(item.Instance))
+                {
+                    item.NotifyItemsChanged();
+                    Changed = true;
+                }
+            }
+            else if (arg is RszFieldArrayNormalItemViewModel normalItem
+                && CopiedNormalField != null && CopiedNormalValue != null)
+            {
+                if (CopiedNormalField.type != normalItem.Field.type)
+                {
+                    MessageBoxUtils.Error(string.Format(Texts.RszClassMismatch, CopiedNormalField.type, normalItem.Field.type));
+                    return;
+                }
+                normalItem.Value = CopiedNormalValue;
                 Changed = true;
             }
         }

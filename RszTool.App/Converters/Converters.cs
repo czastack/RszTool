@@ -1,13 +1,14 @@
+using System.Collections.ObjectModel;
 using System.Windows.Data;
 using RszTool.App.Common;
 using RszTool.App.ViewModels;
 
 namespace RszTool.App.Converters
 {
-    [ValueConversion(typeof(RszInstance), typeof(IEnumerable<object>))]
+    [ValueConversion(typeof(RszInstance), typeof(ObservableCollection<object>))]
     public class RszInstanceFieldsConverter : IValueConverter
     {
-        public static IEnumerable<object> Convert(RszInstance instance)
+        public static IEnumerable<object> GetItems(RszInstance instance)
         {
             if (instance.RSZUserData is RSZUserDataInfo userDataInfo)
             {
@@ -24,6 +25,19 @@ namespace RszTool.App.Converters
                                             new RszFieldNormalViewModel(instance, i);
                 }
             }
+        }
+
+        public static ObservableCollection<object> Convert(RszInstance instance)
+        {
+            ObservableCollection<object> list = new(GetItems(instance));
+            instance.ValuesChanged += sender => {
+                list.Clear();
+                foreach (var item in GetItems(sender))
+                {
+                    list.Add(item);
+                }
+            };
+            return list;
         }
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

@@ -304,6 +304,15 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Paste 的本地化字符串。
+        /// </summary>
+        internal static string Paste {
+            get {
+                return ResourceManager.GetString("Paste", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Paste after 的本地化字符串。
         /// </summary>
         internal static string PasteAfter {
@@ -363,6 +372,15 @@ namespace RszTool.App.Resources {
         internal static string Reopen {
             get {
                 return ResourceManager.GetString("Reopen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Class mismatch, copied type is {0}, target type is {1}. 的本地化字符串。
+        /// </summary>
+        internal static string RszClassMismatch {
+            get {
+                return ResourceManager.GetString("RszClassMismatch", resourceCulture);
             }
         }
         
