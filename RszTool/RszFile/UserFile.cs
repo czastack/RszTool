@@ -52,7 +52,7 @@ namespace RszTool
                 throw new InvalidDataException($"{handler.FilePath} Not a SCN file");
             }
 
-            handler.Seek(Header.Data.dataOffset);
+            handler.Seek(Header.Data.resourceInfoOffset);
             ResourceInfoList.Read(handler, Header.Data.resourceCount);
 
             handler.Seek(Header.Data.userdataInfoOffset);
