@@ -244,6 +244,9 @@ Currently, user, scn, pfb files are supported</value>
   <data name="RszClassMismatch" xml:space="preserve">
     <value>Class mismatch, copied type is {0}, target type is {1}.</value>
   </data>
+  <data name="RszClassMismatchConfirm" xml:space="preserve">
+    <value>Class mismatch, copied type is {0}, target type is {1}. Continue?</value>
+  </data>
   <data name="AddComponent" xml:space="preserve">
     <value>Add component</value>
   </data>

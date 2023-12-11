@@ -37,6 +37,7 @@
             <TextBlock.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="{res:Text NewItem}" Command="{Binding Data.ArrayItemNew, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Paste}" Command="{Binding Data.ArrayItemPaste, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
                 </ContextMenu>
             </TextBlock.ContextMenu>
         </TextBlock>

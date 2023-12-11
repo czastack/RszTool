@@ -385,6 +385,15 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Class mismatch, copied type is {0}, target type is {1}. 的本地化字符串。
+        /// </summary>
+        internal static string RszClassMismatchConfirm {
+            get {
+                return ResourceManager.GetString("RszClassMismatchConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 {0} not found, please copy it from RE_RSZ manually 的本地化字符串。
         /// </summary>
         internal static string RszJsonNotFound {

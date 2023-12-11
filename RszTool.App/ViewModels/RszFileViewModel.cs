@@ -46,6 +46,7 @@ namespace RszTool.App.ViewModels
         public RelayCommand ArrayItemPasteAfter => new(OnArrayItemPasteAfter);
         public RelayCommand ArrayItemPasteToSelf => new(OnArrayItemPasteToSelf);
         public RelayCommand ArrayItemNew => new(OnArrayItemNew);
+        public RelayCommand ArrayItemPaste => new(OnArrayItemPaste);
         public RelayCommand SearchInstances => new(OnSearchInstances);
 
         /// <summary>
@@ -294,6 +295,10 @@ namespace RszTool.App.ViewModels
             }
         }
 
+        /// <summary>
+        /// 粘贴到自身
+        /// </summary>
+        /// <param name="arg"></param>
         private void OnArrayItemPasteToSelf(object arg)
         {
             if (arg is RszFieldArrayInstanceItemViewModel item)
@@ -343,12 +348,33 @@ namespace RszTool.App.ViewModels
                 if (newItem == null) return;
                 if (newItem is RszInstance instance)
                 {
-                    rsz.ArrayInsertInstance(item.Values, instance);
+                    rsz.ArrayInsertInstance(item.Values, instance, clone: false);
                 }
                 else
                 {
                     rsz.ArrayInsertItem(item.Values, newItem);
                 }
+                item.NotifyItemsChanged();
+                Changed = true;
+            }
+        }
+
+        /// <summary>
+        /// 粘贴到数组
+        /// </summary>
+        private void OnArrayItemPaste(object arg)
+        {
+            if (arg is RszFieldArrayViewModel item && CopiedInstance != null &&
+                File.GetRSZ() is RSZFile rsz)
+            {
+                string className = RszInstance.GetElementType(item.Field.original_type);
+                if (className != CopiedInstance.RszClass.name &&
+                    !MessageBoxUtils.Confirm(string.Format(
+                        Texts.RszClassMismatchConfirm, CopiedInstance.RszClass.name, className)))
+                {
+                    return;
+                }
+                rsz.ArrayInsertInstance(item.Values, CopiedInstance);
                 item.NotifyItemsChanged();
                 Changed = true;
             }

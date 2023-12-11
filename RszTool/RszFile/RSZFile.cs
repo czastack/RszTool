@@ -483,9 +483,9 @@ namespace RszTool
         /// <param name="insertPos">插入位置</param>
         /// <param name="isDuplicate">在原先元素的后面插入</param>
         public RszInstance ArrayInsertInstance(List<object> array, RszInstance insertItem,
-                                               int insertPos = -1, bool isDuplicate = false)
+                                               int insertPos = -1, bool clone = true, bool isDuplicate = false)
         {
-            RszInstance newItem = CloneInstance(insertItem);
+            RszInstance newItem = clone ? CloneInstance(insertItem) : insertItem;
             if (insertPos == -1 && isDuplicate)
             {
                 insertPos = array.IndexOf(insertItem);
@@ -496,6 +496,7 @@ namespace RszTool
                 insertPos = array.Count;
             }
             array.Insert(insertPos, newItem);
+            StructChanged = true;
             return newItem;
         }
 
