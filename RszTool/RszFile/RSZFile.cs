@@ -443,7 +443,40 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 数组拷贝并插入Object
+        /// 创建实例，会设置StructChanged
+        /// </summary>
+        /// <param name="className"></param>
+        public RszInstance CreateInstance(string className)
+        {
+            var rszClass = RszParser.GetRSZClass(className) ??
+                throw new Exception($"RszClass {className} not found!");
+            RszInstance instance = RszInstance.CreateInstance(RszParser, rszClass);
+            FixInstanceIndexRecurse(instance);
+            StructChanged = true;
+            return instance;
+        }
+
+        /// <summary>
+        /// 拷贝实例，会设置StructChanged
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="cached"></param>
+        /// <returns></returns>
+        public RszInstance CloneInstance(RszInstance src, bool cached = true)
+        {
+            RszInstance newItem = cached ? src.CloneCached() : (RszInstance)src.Clone();
+            if (cached)
+            {
+                RszInstance.CleanCloneCache();
+            }
+            // 为了可视化重新排序号，否则会显示序号是-1，但实际上保存的时候的序号和现在编号的可能不一致
+            FixInstanceIndexRecurse(newItem);
+            StructChanged = true;
+            return newItem;
+        }
+
+        /// <summary>
+        /// 数组拷贝并插入Object，会设置StructChanged
         /// </summary>
         /// <param name="array">数组</param>
         /// <param name="insertItem">待插入元素</param>
@@ -452,8 +485,7 @@ namespace RszTool
         public RszInstance ArrayInsertInstance(List<object> array, RszInstance insertItem,
                                                int insertPos = -1, bool isDuplicate = false)
         {
-            RszInstance.CleanCloneCache();
-            RszInstance newItem = insertItem.CloneCached();
+            RszInstance newItem = CloneInstance(insertItem);
             if (insertPos == -1 && isDuplicate)
             {
                 insertPos = array.IndexOf(insertItem);
@@ -463,18 +495,12 @@ namespace RszTool
             {
                 insertPos = array.Count;
             }
-
-            // 为了可视化重新排序号，否则会显示序号是-1，但实际上保存的时候的序号和现在编号的可能不一致
-            FixInstanceIndexRecurse(newItem);
-
             array.Insert(insertPos, newItem);
-            StructChanged = true;
-            RszInstance.CleanCloneCache();
             return newItem;
         }
 
         /// <summary>
-        /// 数组插入普通项
+        /// 数组插入普通项，会设置StructChanged
         /// </summary>
         /// <param name="array"></param>
         /// <param name="item"></param>
@@ -490,7 +516,7 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 数组移除元素
+        /// 数组移除元素，会设置StructChanged
         /// </summary>
         /// <param name="array">数组</param>
         /// <param name="item">待移除元素</param>
@@ -498,6 +524,21 @@ namespace RszTool
         {
             array.Remove(item);
             StructChanged = true;
+        }
+
+        /// <summary>
+        /// 将instanceSrc的值复制到instanceDst，会设置StructChanged
+        /// </summary>
+        /// <param name="instanceDst"></param>
+        /// <param name="instanceSrc"></param>
+        /// <returns></returns>
+        public bool InstanceCopyValues(RszInstance instanceDst, RszInstance instanceSrc)
+        {
+            bool result = instanceDst.CopyValuesFrom(instanceSrc, true);
+            RszInstance.CleanCloneCache();
+            FixInstanceIndexRecurse(instanceDst);
+            StructChanged = true;
+            return result;
         }
     }
 

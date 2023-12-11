@@ -55,6 +55,8 @@
                             <MenuItem Header="{res:Text Remove}" Command="{common:ParentBinding RemoveGameObject}" CommandParameter="{Binding}" />
                             <MenuItem Header="{res:Text Duplicate}" Command="{common:ParentBinding DuplicateGameObject}" CommandParameter="{Binding}" />
                             <MenuItem Header="{res:Text PasteGameobjectAsChild}" Command="{common:ParentBinding PasteGameobjectAsChild}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text AddComponent}" Command="{common:ParentBinding AddComponent}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text PasteInstanceAsComponent}" Command="{common:ParentBinding PasteInstanceAsComponent}" CommandParameter="{Binding}" />
                         </ContextMenu>
                     </TextBlock.ContextMenu>
                 </TextBlock>

@@ -312,6 +312,31 @@ namespace RszTool
             }
         }
 
+        public IEnumerable<GameObjectData> IterGameObjects(GameObjectData? parent = null, bool includeChildren = false)
+        {
+            var items = parent?.Children ?? GameObjectDatas;
+            if (items == null)
+            {
+                yield break;
+            }
+            foreach (var item in items)
+            {
+                yield return item;
+                if (includeChildren)
+                {
+                    foreach (var child in IterGameObjects(item, includeChildren))
+                    {
+                        yield return child;
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<GameObjectData> IterAllGameObjects(bool includeChildren = false)
+        {
+            return IterGameObjects(includeChildren: includeChildren);
+        }
+
         /// <summary>
         /// 根据GameObjectDatas和FolderDatas重建其他表
         /// </summary>
@@ -391,6 +416,29 @@ namespace RszTool
             }
             GameObjectDatas.Add(gameObject);
             RebuildInfoTable();
+        }
+
+        /// <summary>
+        /// 添加组件
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="className"></param>
+        public void AddComponent(GameObjectData gameObject, string className)
+        {
+            var component = RSZ!.CreateInstance(className);
+            gameObject.Components.Add(component);
+            StructChanged = true;
+        }
+
+        /// <summary>
+        /// 添加组件
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="component"></param>
+        public void AddComponent(GameObjectData gameObject, RszInstance component)
+        {
+            gameObject.Components.Add(component);
+            StructChanged = true;
         }
     }
 }

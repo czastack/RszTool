@@ -168,13 +168,13 @@ namespace RszTool.App.ViewModels
     }
 
 
-    public class ScnGameObjectFilter
+    public class GameObjectFilter
     {
         private readonly TextMatcher gameObjectNameMatcher;
         private readonly InstanceFilter componentFilter;
         public bool Enable => gameObjectNameMatcher.Enable || componentFilter.Enable;
 
-        public ScnGameObjectFilter(GameObjectSearchViewModel args)
+        public GameObjectFilter(GameObjectSearchViewModel args)
         {
             gameObjectNameMatcher = new(args.GameObjectName, args.GameObjectNameOption);
             componentFilter = new(args.ComponentSearch);

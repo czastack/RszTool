@@ -244,4 +244,10 @@
   <data name="RszClassMismatch" xml:space="preserve">
     <value>类型不匹配，复制的类型是{0}，目标类型是{1}。</value>
   </data>
+  <data name="AddComponent" xml:space="preserve">
+    <value>添加组件</value>
+  </data>
+  <data name="PasteInstanceAsComponent" xml:space="preserve">
+    <value>粘贴实例作为组件</value>
+  </data>
 </root>

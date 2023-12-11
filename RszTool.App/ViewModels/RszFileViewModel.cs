@@ -149,13 +149,8 @@ namespace RszTool.App.ViewModels
                 MessageBoxUtils.Error(string.Format(Texts.RszClassMismatch, CopiedInstance.RszClass.name, instance.RszClass.name));
                 return false;
             }
-            bool result = instance.CopyValuesFrom(CopiedInstance, true);
-            if (File.GetRSZ() is RSZFile rsz)
-            {
-                rsz.FixInstanceIndexRecurse(instance);
-            }
-            RszInstance.CleanCloneCache();
-            return result;
+            if (File.GetRSZ() is not RSZFile rsz) return false;
+            return rsz.InstanceCopyValues(instance, CopiedInstance);
         }
 
         private static void OnCopyNormalField(object arg)
@@ -403,6 +398,12 @@ namespace RszTool.App.ViewModels
         public PfbFile PfbFile { get; } = file;
         public RszViewModel RszViewModel => new(PfbFile.RSZ!);
         public IEnumerable<PfbFile.GameObjectData>? GameObjects => PfbFile.GameObjectDatas;
+        public GameObjectSearchViewModel GameObjectSearchViewModel { get; } = new() { IncludeChildren = true };
+        public ObservableCollection<PfbFile.GameObjectData>? SearchGameObjectList { get; set; }
+
+        public RelayCommand SearchGameObjects => new(OnSearchGameObjects);
+        public RelayCommand AddComponent => new(OnAddComponent);
+        public RelayCommand PasteInstanceAsComponent => new(OnPasteInstanceAsComponent);
 
         public override void PostRead()
         {
@@ -414,6 +415,58 @@ namespace RszTool.App.ViewModels
             get
             {
                 yield return new TreeItemViewModel("GameObjects", GameObjects);
+            }
+        }
+
+        private void OnSearchGameObjects(object arg)
+        {
+            SearchGameObjectList ??= new();
+            SearchGameObjectList.Clear();
+            GameObjectFilter filter = new(GameObjectSearchViewModel);
+            if (!filter.Enable) return;
+            if (PfbFile.GameObjectDatas == null) return;
+            foreach (var gameObject in PfbFile.IterAllGameObjects(GameObjectSearchViewModel.IncludeChildren))
+            {
+                if (filter.IsMatch(gameObject))
+                {
+                    SearchGameObjectList.Add(gameObject);
+                }
+            }
+        }
+
+        private string lastInputClassName = "";
+        private void OnAddComponent(object arg)
+        {
+            var gameObject = (PfbFile.GameObjectData)arg;
+            Views.InputDialog dialog = new()
+            {
+                Title = Texts.NewItem,
+                Message = Texts.InputClassName,
+                InputText = lastInputClassName,
+                Owner = Application.Current.MainWindow,
+            };
+            if (dialog.ShowDialog() != true) return;
+            lastInputClassName = dialog.InputText;
+            if (string.IsNullOrWhiteSpace(lastInputClassName))
+            {
+                MessageBoxUtils.Error("ClassName is empty");
+                return;
+            }
+            AppUtils.TryActionSimple(() =>
+            {
+                PfbFile.AddComponent(gameObject, lastInputClassName);
+                Changed = true;
+            });
+        }
+
+        private void OnPasteInstanceAsComponent(object arg)
+        {
+            var gameObject = (PfbFile.GameObjectData)arg;
+            if (CopiedInstance != null && File.GetRSZ() is RSZFile rsz)
+            {
+                RszInstance component = rsz.CloneInstance(CopiedInstance);
+                PfbFile.AddComponent(gameObject, component);
+                Changed = true;
             }
         }
     }
@@ -452,6 +505,8 @@ namespace RszTool.App.ViewModels
         public RelayCommand PasteGameObjectToFolder => new(OnPasteGameObjectToFolder);
         public RelayCommand PasteGameobjectAsChild => new(OnPasteGameobjectAsChild);
         public RelayCommand SearchGameObjects => new(OnSearchGameObjects);
+        public RelayCommand AddComponent => new(OnAddComponent);
+        public RelayCommand PasteInstanceAsComponent => new(OnPasteInstanceAsComponent);
 
         /// <summary>
         /// 复制游戏对象
@@ -528,7 +583,7 @@ namespace RszTool.App.ViewModels
         {
             SearchGameObjectList ??= new();
             SearchGameObjectList.Clear();
-            ScnGameObjectFilter filter = new(GameObjectSearchViewModel);
+            GameObjectFilter filter = new(GameObjectSearchViewModel);
             if (!filter.Enable) return;
             if (ScnFile.GameObjectDatas == null) return;
             foreach (var gameObject in ScnFile.IterAllGameObjects(GameObjectSearchViewModel.IncludeChildren))
@@ -537,6 +592,42 @@ namespace RszTool.App.ViewModels
                 {
                     SearchGameObjectList.Add(gameObject);
                 }
+            }
+        }
+
+        private string lastInputClassName = "";
+        private void OnAddComponent(object arg)
+        {
+            var gameObject = (ScnFile.GameObjectData)arg;
+            Views.InputDialog dialog = new()
+            {
+                Title = Texts.NewItem,
+                Message = Texts.InputClassName,
+                InputText = lastInputClassName,
+                Owner = Application.Current.MainWindow,
+            };
+            if (dialog.ShowDialog() != true) return;
+            lastInputClassName = dialog.InputText;
+            if (string.IsNullOrWhiteSpace(lastInputClassName))
+            {
+                MessageBoxUtils.Error("ClassName is empty");
+                return;
+            }
+            AppUtils.TryActionSimple(() =>
+            {
+                ScnFile.AddComponent(gameObject, lastInputClassName);
+                Changed = true;
+            });
+        }
+
+        private void OnPasteInstanceAsComponent(object arg)
+        {
+            var gameObject = (ScnFile.GameObjectData)arg;
+            if (CopiedInstance != null && File.GetRSZ() is RSZFile rsz)
+            {
+                RszInstance component = rsz.CloneInstance(CopiedInstance);
+                ScnFile.AddComponent(gameObject, component);
+                Changed = true;
             }
         }
     }

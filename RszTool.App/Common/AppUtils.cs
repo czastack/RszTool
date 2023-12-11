@@ -20,5 +20,21 @@ namespace RszTool.App.Common
                 App.ShowUnhandledException(e, name);
             }
         }
+
+        public static void TryActionSimple(Action action)
+        {
+            if (Debugger.IsAttached)
+            {
+                action();
+            }
+            else try
+            {
+                action();
+            }
+            catch (Exception e)
+            {
+                MessageBoxUtils.Error(e.Message);
+            }
+        }
     }
 }

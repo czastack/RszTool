@@ -530,6 +530,7 @@ namespace RszTool
 
         /// <summary>
         /// 拷贝自身，如果字段值是RszInstance，则递归拷贝
+        /// 同一个Instance引用只会拷贝一次
         /// </summary>
         /// <returns></returns>
         public RszInstance CloneCached()

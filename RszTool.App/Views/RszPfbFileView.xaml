@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:RszTool.App.Views"
+             xmlns:common="clr-namespace:RszTool.App.Common"
              xmlns:converters="clr-namespace:RszTool.App.Converters"
              xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
              xmlns:res="clr-namespace:RszTool.App.Resources"
@@ -19,9 +20,18 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:PfbGameObjectDataSubItemsConverter x:Key="PfbGameObjectDataSubItemsConverter"/>
+            <common:BindingProxy x:Key="ParentData" Data="{Binding}" />
+
             <HierarchicalDataTemplate DataType="{x:Type rsztool:PfbFile+GameObjectData}"
                                       ItemsSource="{Binding ., Converter={StaticResource PfbGameObjectDataSubItemsConverter}}">
-                <TextBlock Text="{Binding Name}"/>
+                <TextBlock Text="{Binding Name}">
+                    <TextBlock.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{res:Text AddComponent}" Command="{common:ParentBinding AddComponent}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text PasteInstanceAsComponent}" Command="{common:ParentBinding PasteInstanceAsComponent}" CommandParameter="{Binding}" />
+                        </ContextMenu>
+                    </TextBlock.ContextMenu>
+                </TextBlock>
             </HierarchicalDataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
