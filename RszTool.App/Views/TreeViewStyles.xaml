@@ -21,6 +21,18 @@
         </TextBlock>
     </HierarchicalDataTemplate>
 
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:GameObejctComponentViewModel}" ItemsSource="{Binding Items}">
+        <TextBlock Text="{Binding Name}">
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.CopyInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Paste}" Command="{Binding Data.PasteInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Remove}" Command="{Binding Data.RemoveComponent, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+        </TextBlock>
+    </HierarchicalDataTemplate>
+
     <HierarchicalDataTemplate DataType="{x:Type viewmodels:RszFieldInstanceViewModel}" ItemsSource="{Binding Items}">
         <TextBlock Text="{Binding Name}">
             <TextBlock.ContextMenu>

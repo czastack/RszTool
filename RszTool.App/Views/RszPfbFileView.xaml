@@ -23,7 +23,8 @@
             <common:BindingProxy x:Key="ParentData" Data="{Binding}" />
 
             <HierarchicalDataTemplate DataType="{x:Type rsztool:PfbFile+GameObjectData}"
-                                      ItemsSource="{Binding ., Converter={StaticResource PfbGameObjectDataSubItemsConverter}}">
+                                      ItemsSource="{Binding ., Converter={StaticResource PfbGameObjectDataSubItemsConverter}}"
+                                      ItemContainerStyle="{StaticResource TreeViewItemHideIfEmpty}">
                 <TextBlock Text="{Binding Name}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>

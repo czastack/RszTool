@@ -32,10 +32,13 @@ namespace RszTool.App.Views
             var resource = fieldType switch
             {
                 RszFieldType.Bool => element.FindResource("InputBool"),
-                RszFieldType.Vec2 or RszFieldType.Float2 or RszFieldType.Point
-                    or RszFieldType.Size or RszFieldType.Range or RszFieldType.RangeI => element.FindResource("InputVec2"),
-                RszFieldType.Vec3 or RszFieldType.Float3 => element.FindResource("InputVec3"),
-                RszFieldType.Vec4 or RszFieldType.Float4 or RszFieldType.Quaternion => element.FindResource("InputVec4"),
+                RszFieldType.Vec2 or RszFieldType.Float2 or RszFieldType.Int2 or RszFieldType.Uint2
+                    or RszFieldType.Point or RszFieldType.Size or RszFieldType.Range or RszFieldType.RangeI
+                    => element.FindResource("InputVec2"),
+                RszFieldType.Vec3 or RszFieldType.Float3 or RszFieldType.Int3 or RszFieldType.Uint3
+                    => element.FindResource("InputVec3"),
+                RszFieldType.Vec4 or RszFieldType.Float4 or RszFieldType.Int4 or RszFieldType.Uint4 or RszFieldType.Quaternion
+                    => element.FindResource("InputVec4"),
                 RszFieldType.Mat4 => element.FindResource("InputMat4"),
                 RszFieldType.Guid or RszFieldType.GameObjectRef or RszFieldType.Uri => element.FindResource("InputGuid"),
                 RszFieldType.Color => element.FindResource("InputColor"),

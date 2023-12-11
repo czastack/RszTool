@@ -67,7 +67,8 @@ namespace RszTool.App.Converters
             {
                 yield return new ClassViewModel(gameObject.Prefab, ["Path"]);
             }
-            yield return new TreeItemViewModel("Components", gameObject.Components);
+            yield return new TreeItemViewModel("Components",
+                GameObejctComponentViewModel.MakeList(gameObject));
             yield return new TreeItemViewModel("Children", gameObject.Children);
         }
 
@@ -120,14 +121,9 @@ namespace RszTool.App.Converters
             {
                 yield return gameObject.Instance;
             }
-            if (gameObject.Components.Count > 0)
-            {
-                yield return new TreeItemViewModel("Components", gameObject.Components);
-            }
-            if (gameObject.Children.Count > 0)
-            {
-                yield return new TreeItemViewModel("Children", gameObject.Children);
-            }
+            yield return new TreeItemViewModel("Components",
+                GameObejctComponentViewModel.MakeList(gameObject));
+            yield return new TreeItemViewModel("Children", gameObject.Children);
         }
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

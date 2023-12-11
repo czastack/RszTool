@@ -4,6 +4,212 @@ using System.Runtime.InteropServices;
 
 namespace RszTool.via
 {
+    public static class ValueTypeUtils
+    {
+        public static void CheckIndex(int index, int length)
+        {
+            if (index < 0 || index >= length) throw new IndexOutOfRangeException($"Index must be 0..{length-1}, got {index}");
+        }
+
+        public static IndexOutOfRangeException IndexError(int index, int length)
+        {
+            return new IndexOutOfRangeException($"Index must be 0..{length-1}, got {index}");
+        }
+    }
+
+
+    public struct Int2
+    {
+        public int x;
+        public int y;
+
+        public readonly override string ToString()
+        {
+            return $"<{x}, {y}>";
+        }
+
+        public int this[int index]
+        {
+            readonly get
+            {
+                ValueTypeUtils.CheckIndex(index, 2);
+                return index == 0 ? x : y;
+            }
+            set
+            {
+                ValueTypeUtils.CheckIndex(index, 2);
+                if (index == 0) x = value;
+                else y = value;
+            }
+        }
+    }
+
+
+    public struct Int3
+    {
+        public int x;
+        public int y;
+        public int z;
+
+        public readonly override string ToString()
+        {
+            return $"<{x}, {y}, {z}>";
+        }
+
+        public int this[int index]
+        {
+            readonly get => index switch {
+                0 => x,
+                1 => y,
+                2 => z,
+                _ => throw ValueTypeUtils.IndexError(index, 3)
+            };
+            set
+            {
+                switch (index)
+                {
+                    case 0: x = value; break;
+                    case 1: y = value; break;
+                    case 2: z = value; break;
+                    default: throw ValueTypeUtils.IndexError(index, 3);
+                }
+            }
+        }
+    }
+
+
+    public struct Int4
+    {
+        public int x;
+        public int y;
+        public int z;
+        public int w;
+
+        public readonly override string ToString()
+        {
+            return $"<{x}, {y}, {z}, {w}>";
+        }
+
+        public int this[int index]
+        {
+            readonly get => index switch {
+                0 => x,
+                1 => y,
+                2 => z,
+                3 => w,
+                _ => throw ValueTypeUtils.IndexError(index, 4)
+            };
+            set
+            {
+                switch (index)
+                {
+                    case 0: x = value; break;
+                    case 1: y = value; break;
+                    case 2: z = value; break;
+                    case 3: w = value; break;
+                    default: throw ValueTypeUtils.IndexError(index, 4);
+                }
+            }
+        }
+    }
+
+
+    public struct Uint2
+    {
+        public uint x;
+        public uint y;
+
+        public readonly override string ToString()
+        {
+            return $"<{x}, {y}>";
+        }
+
+        public uint this[int index]
+        {
+            readonly get
+            {
+                ValueTypeUtils.CheckIndex(index, 2);
+                return index == 0 ? x : y;
+            }
+            set
+            {
+                ValueTypeUtils.CheckIndex(index, 2);
+                if (index == 0) x = value;
+                else y = value;
+            }
+        }
+    }
+
+
+    public struct Uint3
+    {
+        public uint x;
+        public uint y;
+        public uint z;
+
+        public readonly override string ToString()
+        {
+            return $"<{x}, {y}, {z}>";
+        }
+
+        public uint this[int index]
+        {
+            readonly get => index switch {
+                0 => x,
+                1 => y,
+                2 => z,
+                _ => throw ValueTypeUtils.IndexError(index, 3)
+            };
+            set
+            {
+                switch (index)
+                {
+                    case 0: x = value; break;
+                    case 1: y = value; break;
+                    case 2: z = value; break;
+                    default: throw ValueTypeUtils.IndexError(index, 3);
+                }
+            }
+        }
+    }
+
+
+    public struct Uint4
+    {
+        public uint x;
+        public uint y;
+        public uint z;
+        public uint w;
+
+        public readonly override string ToString()
+        {
+            return $"<{x}, {y}, {z}, {w}>";
+        }
+
+        public uint this[int index]
+        {
+            readonly get => index switch {
+                0 => x,
+                1 => y,
+                2 => z,
+                3 => w,
+                _ => throw ValueTypeUtils.IndexError(index, 4)
+            };
+            set
+            {
+                switch (index)
+                {
+                    case 0: x = value; break;
+                    case 1: y = value; break;
+                    case 2: z = value; break;
+                    case 3: w = value; break;
+                    default: throw ValueTypeUtils.IndexError(index, 4);
+                }
+            }
+        }
+    }
+
+
     // Size=8
     public struct Range
     {
@@ -29,12 +235,12 @@ namespace RszTool.via
         {
             readonly get
             {
-                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                ValueTypeUtils.CheckIndex(index, 2);
                 return index == 0 ? r : s;
             }
             set
             {
-                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                ValueTypeUtils.CheckIndex(index, 2);
                 if (index == 0) r = value;
                 else s = value;
             }
@@ -57,12 +263,12 @@ namespace RszTool.via
         {
             readonly get
             {
-                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                ValueTypeUtils.CheckIndex(index, 2);
                 return index == 0 ? r : s;
             }
             set
             {
-                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                ValueTypeUtils.CheckIndex(index, 2);
                 if (index == 0) r = value;
                 else s = value;
             }
@@ -115,13 +321,13 @@ namespace RszTool.via
         {
             get
             {
-                if (index < 0 || index > 15) throw new IndexOutOfRangeException($"Index must be between 0 and 15, got {index}");
+                ValueTypeUtils.CheckIndex(index, 16);
                 ref float ptr = ref m00;
                 return Unsafe.Add(ref ptr, index);
             }
             set
             {
-                if (index < 0 || index > 15) throw new IndexOutOfRangeException($"Index must be between 0 and 15, got {index}");
+                ValueTypeUtils.CheckIndex(index, 16);
                 ref float ptr = ref m00;
                 Unsafe.Add(ref ptr, index) = value;
             }
@@ -230,7 +436,7 @@ namespace RszTool.via
                 0 => x,
                 1 => y,
                 2 => z,
-                _ => throw new IndexOutOfRangeException($"Index must be between 0 and 2, got {index}")
+                _ => throw ValueTypeUtils.IndexError(index, 3)
             };
             set
             {
@@ -239,7 +445,7 @@ namespace RszTool.via
                     case 0: x = value; break;
                     case 1: y = value; break;
                     case 2: z = value; break;
-                    default: throw new IndexOutOfRangeException($"Index must be between 0 and 2, got {index}");
+                    default: throw ValueTypeUtils.IndexError(index, 3);
                 }
             }
         }
@@ -320,12 +526,12 @@ namespace RszTool.via
         {
             readonly get
             {
-                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                ValueTypeUtils.CheckIndex(index, 2);
                 return index == 0 ? w : h;
             }
             set
             {
-                if (index < 0 || index > 2) throw new IndexOutOfRangeException($"Index must be between 0 and 1, got {index}");
+                ValueTypeUtils.CheckIndex(index, 2);
                 if (index == 0) w = value;
                 else h = value;
             }
@@ -417,13 +623,13 @@ namespace RszTool.via
         {
             get
             {
-                if (index < 0 || index > 3) throw new IndexOutOfRangeException($"Index must be between 0 and 3, got {index}");
+                ValueTypeUtils.CheckIndex(index, 4);
                 ref float ptr = ref l;
                 return Unsafe.Add(ref ptr, index);
             }
             set
             {
-                if (index < 0 || index > 3) throw new IndexOutOfRangeException($"Index must be between 0 and 3, got {index}");
+                ValueTypeUtils.CheckIndex(index, 4);
                 ref float ptr = ref l;
                 Unsafe.Add(ref ptr, index) = value;
             }

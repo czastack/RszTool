@@ -1007,7 +1007,7 @@ namespace RszTool
         /// </summary>
         /// <param name="gameObject"></param>
         /// <param name="className"></param>
-        public void AddComponent(GameObjectData gameObject, string className)
+        public void AddComponent(IGameObjectData gameObject, string className)
         {
             var component = RSZ!.CreateInstance(className);
             gameObject.Components.Add(component);
@@ -1019,10 +1019,22 @@ namespace RszTool
         /// </summary>
         /// <param name="gameObject"></param>
         /// <param name="component"></param>
-        public void AddComponent(GameObjectData gameObject, RszInstance component)
+        public void AddComponent(IGameObjectData gameObject, RszInstance component)
         {
             gameObject.Components.Add(component);
             StructChanged = true;
+        }
+
+        /// <summary>
+        /// 移除组件
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="component"></param>
+        public bool RemoveComponent(IGameObjectData gameObject, RszInstance component)
+        {
+            bool result = gameObject.Components.Remove(component);
+            if (result) StructChanged = true;
+            return result;
         }
     }
 

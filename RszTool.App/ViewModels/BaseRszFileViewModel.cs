@@ -1,10 +1,12 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using RszTool.App.Common;
 using RszTool.App.Resources;
+
 
 namespace RszTool.App.ViewModels
 {
@@ -121,6 +123,10 @@ namespace RszTool.App.ViewModels
             {
                 CopiedInstance = fieldInstanceViewModel.Instance;
             }
+            else if (arg is GameObejctComponentViewModel componentViewModel)
+            {
+                CopiedInstance = componentViewModel.Instance;
+            }
         }
 
         private void OnPasteInstance(object arg)
@@ -137,6 +143,14 @@ namespace RszTool.App.ViewModels
                 if (DoPasteInstance(fieldInstanceViewModel.Instance))
                 {
                     fieldInstanceViewModel.NotifyItemsChanged();
+                    Changed = true;
+                }
+            }
+            else if (arg is GameObejctComponentViewModel componentViewModel)
+            {
+                if (DoPasteInstance(componentViewModel.Instance))
+                {
+                    componentViewModel.NotifyItemsChanged();
                     Changed = true;
                 }
             }
@@ -400,269 +414,32 @@ namespace RszTool.App.ViewModels
     }
 
 
-    public class UserFileViewModel(UserFile file) : BaseRszFileViewModel
+    public class GameObejctComponentViewModel(IGameObjectData gameObject, RszInstance instance) : BaseViewModel
     {
-        public override BaseRszFile File => UserFile;
-        public UserFile UserFile { get; } = file;
+        public IGameObjectData GameObject { get; } = gameObject;
+        public RszInstance Instance { get; } = instance;
 
-        public RszViewModel RszViewModel => new(UserFile.RSZ!);
+        public string Name => Instance.Name;
+        public IEnumerable<object> Items => Converters.RszInstanceFieldsConverter.GetItems(Instance);
 
-        public override IEnumerable<object> TreeViewItems
+        public void NotifyItemsChanged()
         {
-            get
+            OnPropertyChanged(nameof(Items));
+        }
+
+        public static ObservableCollection<GameObejctComponentViewModel> MakeList(IGameObjectData gameObject)
+        {
+            ObservableCollection<GameObejctComponentViewModel> list = new();
+            foreach (var item in gameObject.Components)
             {
-                yield return new TreeItemViewModel("Instances", RszViewModel.Instances);
-                yield return new TreeItemViewModel("Objects", RszViewModel.Objects);
+                list.Add(new(gameObject, item));
             }
-        }
-    }
-
-
-    public class PfbFileViewModel(PfbFile file) : BaseRszFileViewModel
-    {
-        public override BaseRszFile File => PfbFile;
-        public PfbFile PfbFile { get; } = file;
-        public RszViewModel RszViewModel => new(PfbFile.RSZ!);
-        public IEnumerable<PfbFile.GameObjectData>? GameObjects => PfbFile.GameObjectDatas;
-        public GameObjectSearchViewModel GameObjectSearchViewModel { get; } = new() { IncludeChildren = true };
-        public ObservableCollection<PfbFile.GameObjectData>? SearchGameObjectList { get; set; }
-
-        public RelayCommand SearchGameObjects => new(OnSearchGameObjects);
-        public RelayCommand AddComponent => new(OnAddComponent);
-        public RelayCommand PasteInstanceAsComponent => new(OnPasteInstanceAsComponent);
-
-        public override void PostRead()
-        {
-            PfbFile.SetupGameObjects();
-        }
-
-        public override IEnumerable<object> TreeViewItems
-        {
-            get
+            gameObject.Components.CollectionChanged += (_, e) =>
             {
-                yield return new TreeItemViewModel("GameObjects", GameObjects);
-            }
-        }
-
-        private void OnSearchGameObjects(object arg)
-        {
-            SearchGameObjectList ??= new();
-            SearchGameObjectList.Clear();
-            GameObjectFilter filter = new(GameObjectSearchViewModel);
-            if (!filter.Enable) return;
-            if (PfbFile.GameObjectDatas == null) return;
-            foreach (var gameObject in PfbFile.IterAllGameObjects(GameObjectSearchViewModel.IncludeChildren))
-            {
-                if (filter.IsMatch(gameObject))
-                {
-                    SearchGameObjectList.Add(gameObject);
-                }
-            }
-        }
-
-        private string lastInputClassName = "";
-        private void OnAddComponent(object arg)
-        {
-            var gameObject = (PfbFile.GameObjectData)arg;
-            Views.InputDialog dialog = new()
-            {
-                Title = Texts.NewItem,
-                Message = Texts.InputClassName,
-                InputText = lastInputClassName,
-                Owner = Application.Current.MainWindow,
+                ObjectModelUtils.SyncObservableCollection(list,
+                    obj => new GameObejctComponentViewModel(gameObject, (RszInstance)obj), e);
             };
-            if (dialog.ShowDialog() != true) return;
-            lastInputClassName = dialog.InputText;
-            if (string.IsNullOrWhiteSpace(lastInputClassName))
-            {
-                MessageBoxUtils.Error("ClassName is empty");
-                return;
-            }
-            AppUtils.TryActionSimple(() =>
-            {
-                PfbFile.AddComponent(gameObject, lastInputClassName);
-                Changed = true;
-            });
+            return list;
         }
-
-        private void OnPasteInstanceAsComponent(object arg)
-        {
-            var gameObject = (PfbFile.GameObjectData)arg;
-            if (CopiedInstance != null && File.GetRSZ() is RSZFile rsz)
-            {
-                RszInstance component = rsz.CloneInstance(CopiedInstance);
-                PfbFile.AddComponent(gameObject, component);
-                Changed = true;
-            }
-        }
-    }
-
-
-    public class ScnFileViewModel(ScnFile file) : BaseRszFileViewModel
-    {
-        public ScnFile ScnFile { get; } = file;
-        public override BaseRszFile File => ScnFile;
-        public RszViewModel RszViewModel => new(ScnFile.RSZ!);
-        public ObservableCollection<ScnFile.FolderData>? Folders => ScnFile.FolderDatas;
-        public ObservableCollection<ScnFile.GameObjectData>? GameObjects => ScnFile.GameObjectDatas;
-        public GameObjectSearchViewModel GameObjectSearchViewModel { get; } = new();
-        public ObservableCollection<ScnFile.GameObjectData>? SearchGameObjectList { get; set; }
-
-        public static ScnFile.GameObjectData? CopiedGameObject { get; private set; }
-
-        public override void PostRead()
-        {
-            ScnFile.SetupGameObjects();
-        }
-
-        public override IEnumerable<object> TreeViewItems
-        {
-            get
-            {
-                yield return new TreeItemViewModel("Folders", Folders);
-                yield return new GameObjectsHeader("GameObjects", GameObjects);
-            }
-        }
-
-        public RelayCommand CopyGameObject => new(OnCopyGameObject);
-        public RelayCommand RemoveGameObject => new(OnRemoveGameObject);
-        public RelayCommand DuplicateGameObject => new(OnDuplicateGameObject);
-        public RelayCommand PasteGameObject => new(OnPasteGameObject);
-        public RelayCommand PasteGameObjectToFolder => new(OnPasteGameObjectToFolder);
-        public RelayCommand PasteGameobjectAsChild => new(OnPasteGameobjectAsChild);
-        public RelayCommand SearchGameObjects => new(OnSearchGameObjects);
-        public RelayCommand AddComponent => new(OnAddComponent);
-        public RelayCommand PasteInstanceAsComponent => new(OnPasteInstanceAsComponent);
-
-        /// <summary>
-        /// 复制游戏对象
-        /// </summary>
-        /// <param name="arg"></param>
-        private static void OnCopyGameObject(object arg)
-        {
-            CopiedGameObject = (ScnFile.GameObjectData)arg;
-        }
-
-        /// <summary>
-        /// 删除游戏对象
-        /// </summary>
-        /// <param name="arg"></param>
-        private void OnRemoveGameObject(object arg)
-        {
-            ScnFile.RemoveGameObject((ScnFile.GameObjectData)arg);
-            Changed = true;
-        }
-
-        /// <summary>
-        /// 重复游戏对象
-        /// </summary>
-        /// <param name="arg"></param>
-        private void OnDuplicateGameObject(object arg)
-        {
-            ScnFile.DuplicateGameObject((ScnFile.GameObjectData)arg);
-            Changed = true;
-        }
-
-        /// <summary>
-        /// 粘贴游戏对象
-        /// </summary>
-        /// <param name="arg"></param>
-        private void OnPasteGameObject(object arg)
-        {
-            if (CopiedGameObject != null)
-            {
-                ScnFile.ImportGameObject(CopiedGameObject);
-                OnPropertyChanged(nameof(GameObjects));
-                Changed = true;
-            }
-        }
-
-        /// <summary>
-        /// 粘贴游戏对象到文件夹
-        /// </summary>
-        /// <param name="arg"></param>
-        private void OnPasteGameObjectToFolder(object arg)
-        {
-            if (CopiedGameObject != null)
-            {
-                var folder = (ScnFile.FolderData)arg;
-                ScnFile.ImportGameObject(CopiedGameObject, folder);
-                Changed = true;
-            }
-        }
-
-        /// <summary>
-        /// 粘贴游戏对象到父对象
-        /// </summary>
-        /// <param name="arg"></param>
-        private void OnPasteGameobjectAsChild(object arg)
-        {
-            if (CopiedGameObject != null)
-            {
-                var parent = (ScnFile.GameObjectData)arg;
-                ScnFile.ImportGameObject(CopiedGameObject, parent: parent);
-                Changed = true;
-            }
-        }
-
-        private void OnSearchGameObjects(object arg)
-        {
-            SearchGameObjectList ??= new();
-            SearchGameObjectList.Clear();
-            GameObjectFilter filter = new(GameObjectSearchViewModel);
-            if (!filter.Enable) return;
-            if (ScnFile.GameObjectDatas == null) return;
-            foreach (var gameObject in ScnFile.IterAllGameObjects(GameObjectSearchViewModel.IncludeChildren))
-            {
-                if (filter.IsMatch(gameObject))
-                {
-                    SearchGameObjectList.Add(gameObject);
-                }
-            }
-        }
-
-        private string lastInputClassName = "";
-        private void OnAddComponent(object arg)
-        {
-            var gameObject = (ScnFile.GameObjectData)arg;
-            Views.InputDialog dialog = new()
-            {
-                Title = Texts.NewItem,
-                Message = Texts.InputClassName,
-                InputText = lastInputClassName,
-                Owner = Application.Current.MainWindow,
-            };
-            if (dialog.ShowDialog() != true) return;
-            lastInputClassName = dialog.InputText;
-            if (string.IsNullOrWhiteSpace(lastInputClassName))
-            {
-                MessageBoxUtils.Error("ClassName is empty");
-                return;
-            }
-            AppUtils.TryActionSimple(() =>
-            {
-                ScnFile.AddComponent(gameObject, lastInputClassName);
-                Changed = true;
-            });
-        }
-
-        private void OnPasteInstanceAsComponent(object arg)
-        {
-            var gameObject = (ScnFile.GameObjectData)arg;
-            if (CopiedInstance != null && File.GetRSZ() is RSZFile rsz)
-            {
-                RszInstance component = rsz.CloneInstance(CopiedInstance);
-                ScnFile.AddComponent(gameObject, component);
-                Changed = true;
-            }
-        }
-    }
-
-
-    public class RszViewModel(RSZFile rsz)
-    {
-        public List<RszInstance> Instances => rsz.InstanceList;
-
-        public IEnumerable<RszInstance> Objects => rsz.ObjectList;
     }
 }
