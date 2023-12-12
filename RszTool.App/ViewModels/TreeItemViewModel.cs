@@ -7,6 +7,11 @@ namespace RszTool.App.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
         public string Name { get; set; } = name;
         public abstract IEnumerable<object>? Items { get; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
 

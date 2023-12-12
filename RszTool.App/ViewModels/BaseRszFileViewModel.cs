@@ -427,6 +427,11 @@ namespace RszTool.App.ViewModels
             OnPropertyChanged(nameof(Items));
         }
 
+        public override string ToString()
+        {
+            return Instance.Name;
+        }
+
         public static ObservableCollection<GameObejctComponentViewModel> MakeList(IGameObjectData gameObject)
         {
             ObservableCollection<GameObejctComponentViewModel> list = new();
