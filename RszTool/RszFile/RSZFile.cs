@@ -209,7 +209,10 @@ namespace RszTool
         public void ClearInstances()
         {
             InstanceList.Clear();
-            InstanceList.Add(RszInstance.NULL);
+            if (RszParser.GetRSZClass(0) != null)
+            {
+                InstanceList.Add(RszInstance.NULL);
+            }
         }
 
         public void ClearObjects()
@@ -300,9 +303,8 @@ namespace RszTool
         /// </summary>
         public void RebuildInstanceList()
         {
+            ClearInstances();
             var list = InstanceList;
-            list.Clear();
-            list.Add(RszInstance.NULL);
             foreach (var instance in ObjectList)
             {
                 instance.Index = -1;

@@ -513,7 +513,11 @@ namespace RszTool
             }
 
             // 重新生成实例表
-            List<RszInstance> rszInstances = new() { RszInstance.NULL };
+            List<RszInstance> rszInstances = new();
+            if (RszParser.GetRSZClass(0) != null)
+            {
+                rszInstances.Add(RszInstance.NULL);
+            }
             if (GameObjectDatas != null)
             {
                 foreach (var gameObjectData in GameObjectDatas)
