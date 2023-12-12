@@ -59,7 +59,7 @@ namespace RszTool
         private void ReadPatch(string originalJsonPath)
         {
             string patchJsonPath = Path.Combine(
-                "RszPatchs",
+                "RszPatch",
                 Path.GetFileNameWithoutExtension(originalJsonPath) + "_patch.json");
             if (!File.Exists(patchJsonPath)) return;
             using FileStream fileStream = File.OpenRead(patchJsonPath);
