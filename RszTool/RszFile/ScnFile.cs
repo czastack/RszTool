@@ -112,6 +112,11 @@ namespace RszTool
                 handler.Write(ref parentId);
                 return true;
             }
+
+            public override string ToString()
+            {
+                return Path ?? "";
+            }
         }
 
 
@@ -518,19 +523,18 @@ namespace RszTool
             {
                 rszInstances.Add(RszInstance.NULL);
             }
-            if (GameObjectDatas != null)
-            {
-                foreach (var gameObjectData in GameObjectDatas)
-                {
-                    CollectGameObjectInstances(gameObjectData, rszInstances);
-                }
-            }
-
             if (FolderDatas != null)
             {
                 foreach (var folder in FolderDatas)
                 {
                     CollectFolderGameObjectInstances(folder, rszInstances);
+                }
+            }
+            if (GameObjectDatas != null)
+            {
+                foreach (var gameObjectData in GameObjectDatas)
+                {
+                    CollectGameObjectInstances(gameObjectData, rszInstances);
                 }
             }
 
