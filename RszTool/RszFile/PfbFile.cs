@@ -82,7 +82,6 @@ namespace RszTool
             /// <returns></returns>
             public static GameObjectData FromScnGameObject(ScnFile.GameObjectData scnGameObject)
             {
-                RszInstance.CleanCloneCache();
                 GameObjectData gameObject = new()
                 {
                     Info = new()
@@ -90,6 +89,8 @@ namespace RszTool
                         Data = new GameObjectInfo
                         {
                             // objectId 和 parentId 应该重新生成
+                            objectId = -1,
+                            parentId = -1,
                             componentCount = scnGameObject.Components.Count,
                         }
                     },
@@ -486,7 +487,6 @@ namespace RszTool
         public void ImportGameObject(GameObjectData gameObject,
                                      GameObjectData? parent = null, bool isDuplicate = false)
         {
-            RszInstance.CleanCloneCache();
             GameObjectData newGameObject = (GameObjectData)gameObject.Clone();
 
             newGameObject.Parent = null;

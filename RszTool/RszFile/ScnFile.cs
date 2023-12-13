@@ -210,6 +210,35 @@ namespace RszTool
             {
                 return Name ?? "";
             }
+
+            public static GameObjectData FromPfbGameObject(PfbFile.GameObjectData pfbGameObject)
+            {
+                GameObjectData gameObject = new()
+                {
+                    Info = new()
+                    {
+                        Data = new GameObjectInfo
+                        {
+                            // objectId 和 parentId 应该重新生成
+                            guid = Guid.NewGuid(),
+                            objectId = -1,
+                            parentId = -1,
+                            componentCount = (short)pfbGameObject.Components.Count,
+                            prefabId = -1,
+                        }
+                    },
+                    Components = new(pfbGameObject.Components.Select(item => item.CloneCached())),
+                    Instance = pfbGameObject.Instance?.CloneCached()
+                };
+                foreach (var child in pfbGameObject.Children)
+                {
+                    var newChild = FromPfbGameObject(child);
+                    newChild.Parent = gameObject;
+                    gameObject.Children.Add(newChild);
+                }
+                RszInstance.CleanCloneCache();
+                return gameObject;
+            }
         }
 
         public HeaderStruct Header { get; }
@@ -944,7 +973,6 @@ namespace RszTool
         public void ImportGameObject(GameObjectData gameObject, FolderData? folder = null,
                                      GameObjectData? parent = null, bool isDuplicate = false)
         {
-            RszInstance.CleanCloneCache();
             GameObjectData newGameObject = (GameObjectData)gameObject.Clone();
             FixGameObjectRef(newGameObject);
 
