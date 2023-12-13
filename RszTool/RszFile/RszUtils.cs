@@ -53,7 +53,7 @@ namespace RszTool
             }
             void CheckResouce(string path)
             {
-                if (path.Contains('/') && !addedPath.Contains(path))
+                if (path.Contains('/') && Path.GetExtension(path) != "" && !addedPath.Contains(path))
                 {
                     addedPath.Add(path);
                     resourcesInfos.Add(new ResourceInfo { Path = path });

@@ -15,6 +15,14 @@ namespace RszTool.App.ViewModels
         public GameObjectSearchViewModel GameObjectSearchViewModel { get; } = new() { IncludeChildren = true };
         public ObservableCollection<PfbFile.GameObjectData>? SearchGameObjectList { get; set; }
 
+
+        public static PfbFile.GameObjectData? CopiedGameObject { get; private set; }
+
+        public RelayCommand CopyGameObject => new(OnCopyGameObject);
+        public RelayCommand RemoveGameObject => new(OnRemoveGameObject);
+        public RelayCommand DuplicateGameObject => new(OnDuplicateGameObject);
+        public RelayCommand PasteGameObject => new(OnPasteGameObject);
+        public RelayCommand PasteGameobjectAsChild => new(OnPasteGameobjectAsChild);
         public RelayCommand SearchGameObjects => new(OnSearchGameObjects);
         public RelayCommand AddComponent => new(OnAddComponent);
         public RelayCommand PasteInstanceAsComponent => new(OnPasteInstanceAsComponent);
@@ -29,7 +37,64 @@ namespace RszTool.App.ViewModels
         {
             get
             {
-                yield return new TreeItemViewModel("GameObjects", GameObjects);
+                yield return new GameObjectsHeader("GameObjects", GameObjects);
+            }
+        }
+
+        /// <summary>
+        /// 复制游戏对象
+        /// </summary>
+        /// <param name="arg"></param>
+        private static void OnCopyGameObject(object arg)
+        {
+            CopiedGameObject = (PfbFile.GameObjectData)arg;
+        }
+
+        /// <summary>
+        /// 删除游戏对象
+        /// </summary>
+        /// <param name="arg"></param>
+        private void OnRemoveGameObject(object arg)
+        {
+            PfbFile.RemoveGameObject((PfbFile.GameObjectData)arg);
+            Changed = true;
+        }
+
+        /// <summary>
+        /// 重复游戏对象
+        /// </summary>
+        /// <param name="arg"></param>
+        private void OnDuplicateGameObject(object arg)
+        {
+            PfbFile.DuplicateGameObject((PfbFile.GameObjectData)arg);
+            Changed = true;
+        }
+
+        /// <summary>
+        /// 粘贴游戏对象
+        /// </summary>
+        /// <param name="arg"></param>
+        private void OnPasteGameObject(object arg)
+        {
+            if (CopiedGameObject != null)
+            {
+                PfbFile.ImportGameObject(CopiedGameObject);
+                OnPropertyChanged(nameof(GameObjects));
+                Changed = true;
+            }
+        }
+
+        /// <summary>
+        /// 粘贴游戏对象到父对象
+        /// </summary>
+        /// <param name="arg"></param>
+        private void OnPasteGameobjectAsChild(object arg)
+        {
+            if (CopiedGameObject != null)
+            {
+                var parent = (PfbFile.GameObjectData)arg;
+                PfbFile.ImportGameObject(CopiedGameObject, parent: parent);
+                Changed = true;
             }
         }
 

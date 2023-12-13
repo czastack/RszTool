@@ -22,12 +22,26 @@
             <converters:PfbGameObjectDataSubItemsConverter x:Key="PfbGameObjectDataSubItemsConverter"/>
             <common:BindingProxy x:Key="ParentData" Data="{Binding}" />
 
+            <HierarchicalDataTemplate DataType="{x:Type viewmodels:GameObjectsHeader}" ItemsSource="{Binding Items}">
+                <TextBlock Text="{Binding Name}">
+                    <TextBlock.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{res:Text PasteGameobject}" Command="{common:ParentBinding PasteGameObject}" />
+                        </ContextMenu>
+                    </TextBlock.ContextMenu>
+                </TextBlock>
+            </HierarchicalDataTemplate>
+
             <HierarchicalDataTemplate DataType="{x:Type rsztool:PfbFile+GameObjectData}"
                                       ItemsSource="{Binding ., Converter={StaticResource PfbGameObjectDataSubItemsConverter}}"
                                       ItemContainerStyle="{StaticResource TreeViewItemHideIfEmpty}">
                 <TextBlock Text="{Binding Name}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>
+                            <MenuItem Header="{res:Text Copy}" Command="{common:ParentBinding CopyGameObject}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text Remove}" Command="{common:ParentBinding RemoveGameObject}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text Duplicate}" Command="{common:ParentBinding DuplicateGameObject}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text PasteGameobjectAsChild}" Command="{common:ParentBinding PasteGameobjectAsChild}" CommandParameter="{Binding}" />
                             <MenuItem Header="{res:Text AddComponent}" Command="{common:ParentBinding AddComponent}" CommandParameter="{Binding}" />
                             <MenuItem Header="{res:Text PasteInstanceAsComponent}" Command="{common:ParentBinding PasteInstanceAsComponent}" CommandParameter="{Binding}" />
                         </ContextMenu>

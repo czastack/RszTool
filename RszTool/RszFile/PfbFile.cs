@@ -116,6 +116,23 @@ namespace RszTool
 
             public int? ObjectId => Info?.Data.objectId;
 
+            public object Clone()
+            {
+                GameObjectData gameObject = new()
+                {
+                    Info = Info != null ? new() { Data = Info.Data } : null,
+                    Components = new(Components.Select(item => item.CloneCached())),
+                    Instance = Instance?.CloneCached(),
+                };
+                foreach (var child in Children)
+                {
+                    var newChild = (GameObjectData)child.Clone();
+                    newChild.Parent = gameObject;
+                    gameObject.Children.Add(newChild);
+                }
+                return gameObject;
+            }
+
             public override string ToString()
             {
                 return Name ?? "";
@@ -171,6 +188,7 @@ namespace RszTool
             GameObjectRefInfoList.Clear();
             ResourceInfoList.Clear();
             UserdataInfoList.Clear();
+            GameObjectDatas?.Clear();
 
             var handler = FileHandler;
             var header = Header;
@@ -312,6 +330,27 @@ namespace RszTool
             }
         }
 
+        /// <summary>
+        /// 迭代GameObject以及子物体的实例和组件实例
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public static IEnumerable<RszInstance> IterGameObjectInstances(GameObjectData gameObject)
+        {
+            yield return gameObject.Instance!;
+            foreach (var item in gameObject.Components)
+            {
+                yield return item;
+            }
+            foreach (var child in gameObject.Children)
+            {
+                foreach (var item in IterGameObjectInstances(child))
+                {
+                    yield return item;
+                }
+            }
+        }
+
         public IEnumerable<GameObjectData> IterGameObjects(GameObjectData? parent = null, bool includeChildren = false)
         {
             var items = parent?.Children ?? GameObjectDatas;
@@ -420,6 +459,89 @@ namespace RszTool
             }
             GameObjectDatas.Add(gameObject);
             RebuildInfoTable();
+        }
+
+        public void RemoveGameObject(GameObjectData gameObject)
+        {
+            if (gameObject.Parent != null)
+            {
+                gameObject.Parent.Children.Remove(gameObject);
+                gameObject.Parent = null;
+            }
+            else
+            {
+                GameObjectDatas?.Remove(gameObject);
+            }
+            StructChanged = true;
+        }
+
+        /// <summary>
+        /// 导入外部的游戏对象
+        /// 文件夹和父对象只能指定一个
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="folder">文件夹</param>
+        /// <param name="parent">父对象</param>
+        /// <param name="isDuplicate">在原对象的位置后面添加</param>
+        public void ImportGameObject(GameObjectData gameObject,
+                                     GameObjectData? parent = null, bool isDuplicate = false)
+        {
+            RszInstance.CleanCloneCache();
+            GameObjectData newGameObject = (GameObjectData)gameObject.Clone();
+
+            newGameObject.Parent = null;
+            ObservableCollection<GameObjectData> collection;
+            if (parent != null)
+            {
+                newGameObject.Parent = parent;
+                collection = parent.Children;
+            }
+            else
+            {
+                GameObjectDatas ??= [];
+                collection = GameObjectDatas;
+            }
+
+            // 为了可视化重新排序号，否则会显示序号是-1，但实际上保存的时候的序号和现在编号的可能不一致
+            // 所以要考虑这步操作是否有必要
+            RSZ!.FixInstanceListIndex(IterGameObjectInstances(newGameObject));
+
+            if (isDuplicate)
+            {
+                int index = collection.IndexOf(gameObject);
+                index = index == -1 ? collection.Count : index + 1;
+                collection.Insert(index, newGameObject);
+            }
+            else
+            {
+                collection.Add(newGameObject);
+            }
+            StructChanged = true;
+            RszInstance.CleanCloneCache();
+        }
+
+        /// <summary>
+        /// 导入外部的游戏对象
+        /// 批量添加建议直接GameObjectDatas添加，最后再RebuildInfoTable
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public void ImportGameObjects(
+            IEnumerable<GameObjectData> gameObjects,
+            GameObjectData? parent = null)
+        {
+            foreach (var gameObject in gameObjects)
+            {
+                ImportGameObject(gameObject, parent);
+            }
+        }
+
+        /// <summary>
+        /// 复制游戏对象
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public void DuplicateGameObject(GameObjectData gameObject)
+        {
+            ImportGameObject(gameObject, gameObject.Parent, true);
         }
 
         /// <summary>

@@ -551,19 +551,18 @@ namespace RszTool
             GameObjectInfoList.Clear();
             FolderInfoList.Clear();
             PrefabInfoList.Clear();
-            if (GameObjectDatas != null)
-            {
-                foreach (var gameObjectData in GameObjectDatas)
-                {
-                    AddGameObjectInfoRecursion(gameObjectData);
-                }
-            }
-
             if (FolderDatas != null)
             {
                 foreach (var folder in FolderDatas)
                 {
                     AddFolderInfoRecursion(folder);
+                }
+            }
+            if (GameObjectDatas != null)
+            {
+                foreach (var gameObjectData in GameObjectDatas)
+                {
+                    AddGameObjectInfoRecursion(gameObjectData);
                 }
             }
             RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);

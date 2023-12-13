@@ -286,6 +286,11 @@ namespace RszTool.via
             return rgba.ToString("X8");
         }
 
+        public readonly override string ToString()
+        {
+            return Hex();
+        }
+
         /// <summary>
         /// Parse a hex string
         /// </summary>

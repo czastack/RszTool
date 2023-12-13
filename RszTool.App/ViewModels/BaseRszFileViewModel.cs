@@ -95,6 +95,7 @@ namespace RszTool.App.ViewModels
             {
                 Changed = false;
                 HeaderChanged?.Invoke();
+                OnPropertyChanged(nameof(FilePath));
             }
             return result;
         }

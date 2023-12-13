@@ -27,7 +27,7 @@
                 <TextBlock Text="{Binding Name}">
                     <TextBlock.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="{res:Text PasteGameobject}" Command="{Binding Data.PasteGameObject, Source={StaticResource ParentData}}" />
+                            <MenuItem Header="{res:Text PasteGameobject}" Command="{common:ParentBinding PasteGameObject}" />
                         </ContextMenu>
                     </TextBlock.ContextMenu>
                 </TextBlock>

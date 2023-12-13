@@ -85,6 +85,9 @@
                 <MenuItem Header="{res:Text OpenRecentFiles}">
                     <MenuItem.Resources>
                         <CollectionViewSource x:Key="RecentFiles" Source="{Binding SaveData.RecentFiles}"/>
+                        <DataTemplate x:Key="StringOnlyTemplate">
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
                     </MenuItem.Resources>
                     <MenuItem.ItemsSource>
                         <CompositeCollection>
@@ -97,6 +100,7 @@
                         <Style TargetType="{x:Type MenuItem}">
                             <Setter Property="Command" Value="{Binding DataContext.OpenRecentFile, RelativeSource={RelativeSource AncestorType=Window}}" />
                             <Setter Property="CommandParameter" Value="{Binding}" />
+                            <Setter Property="HeaderTemplate" Value="{StaticResource StringOnlyTemplate}" />
                         </Style>
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
