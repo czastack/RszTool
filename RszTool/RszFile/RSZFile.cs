@@ -132,11 +132,19 @@ namespace RszTool
                 {
                     userDataIdx = -1;
                 }
-                RszInstance instance = new(rszClass, i, userDataIdx != -1 ?
-                    RSZUserDataInfoList[userDataIdx] : null);
-                if (instance.RSZUserData == null)
+                RszInstance instance;
+                if (rszClass == RszClass.Empty)
                 {
-                    instance.Read(handler);
+                    instance = RszInstance.NULL;
+                }
+                else
+                {
+                    instance = new(rszClass, i, userDataIdx != -1 ?
+                        RSZUserDataInfoList[userDataIdx] : null);
+                    if (instance.RSZUserData == null)
+                    {
+                        instance.Read(handler);
+                    }
                 }
                 InstanceList.Add(instance);
             }
@@ -168,6 +176,8 @@ namespace RszTool
             handler.Align(16);
             header.instanceOffset = handler.Tell();
             InstanceInfoList.Write(handler);
+            Console.WriteLine($"InstanceInfoList.Count: {InstanceInfoList.Count}");
+            Console.WriteLine($"InstanceInfoList[7]: {InstanceInfoList[7].CRC}");
 
             handler.Align(16);
             header.userdataOffset = handler.Tell();
@@ -209,10 +219,7 @@ namespace RszTool
         public void ClearInstances()
         {
             InstanceList.Clear();
-            if (RszParser.GetRSZClass(0) != null)
-            {
-                InstanceList.Add(RszInstance.NULL);
-            }
+            InstanceList.Add(RszInstance.NULL);
         }
 
         public void ClearObjects()

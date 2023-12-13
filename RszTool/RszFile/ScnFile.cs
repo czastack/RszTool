@@ -547,11 +547,7 @@ namespace RszTool
             }
 
             // 重新生成实例表
-            List<RszInstance> rszInstances = new();
-            if (RszParser.GetRSZClass(0) != null)
-            {
-                rszInstances.Add(RszInstance.NULL);
-            }
+            List<RszInstance> rszInstances = new() { RszInstance.NULL };
             if (FolderDatas != null)
             {
                 foreach (var folder in FolderDatas)
