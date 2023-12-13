@@ -19,6 +19,10 @@ namespace RszTool
             {
                 index = value;
                 name = null;
+                if (RSZUserData != null)
+                {
+                    RSZUserData.InstanceId = value;
+                }
             }
         }
         // 在ObjectTable中的序号，-1表示不在

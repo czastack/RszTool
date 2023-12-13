@@ -278,11 +278,6 @@ namespace RszTool
             foreach (var item in instance.Flatten())
             {
                 FixInstanceIndex(item);
-
-                if (item.RSZUserData != null)
-                {
-                    item.RSZUserData.InstanceId = item.Index;
-                }
             }
         }
 
