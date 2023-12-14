@@ -176,8 +176,6 @@ namespace RszTool
             handler.Align(16);
             header.instanceOffset = handler.Tell();
             InstanceInfoList.Write(handler);
-            Console.WriteLine($"InstanceInfoList.Count: {InstanceInfoList.Count}");
-            Console.WriteLine($"InstanceInfoList[7]: {InstanceInfoList[7].CRC}");
 
             handler.Align(16);
             header.userdataOffset = handler.Tell();
@@ -344,17 +342,25 @@ namespace RszTool
                         var items = (List<object>)instance.Values[i];
                         for (int j = 0; j < items.Count; j++)
                         {
-                            if (items[j] is int objectId)
+                            if (items[j] is int instanceId)
                             {
-                                items[j] = InstanceList[objectId];
-                                InstanceUnflatten(InstanceList[objectId]);
+                                if (instanceId >= instance.Index && field.IsTypeInferred)
+                                {
+                                    // TODO: may detect error, should roll back
+                                }
+                                items[j] = InstanceList[instanceId];
+                                InstanceUnflatten(InstanceList[instanceId]);
                             }
                         }
                     }
-                    else if (instance.Values[i] is int objectId)
+                    else if (instance.Values[i] is int instanceId)
                     {
-                        instance.Values[i] = InstanceList[objectId];
-                        InstanceUnflatten(InstanceList[objectId]);
+                        if (instanceId >= instance.Index && field.IsTypeInferred)
+                        {
+                            // TODO: may detect error, should roll back
+                        }
+                        instance.Values[i] = InstanceList[instanceId];
+                        InstanceUnflatten(InstanceList[instanceId]);
                     }
                 }
             }

@@ -568,6 +568,11 @@ namespace RszTool
 
         private RszInstance CloneImpl(bool cached)
         {
+            if (this == NULL)
+            {
+                // do not clone NULL
+                return NULL;
+            }
             if (cached && CloneCache.TryGetValue(this, out RszInstance? copy)) return copy;
             IRSZUserDataInfo? userData = RSZUserData != null ? (IRSZUserDataInfo)RSZUserData.Clone() : null;
             copy = new(RszClass, -1, userData);
