@@ -108,7 +108,7 @@ namespace RszTool
                 {
                     throw new InvalidDataException($"{field.name} count {count} < 0");
                 }
-                if (count > 1024)
+                if (count > 2048)
                 {
                     throw new InvalidDataException($"{field.name} count {count} too large");
                 }
