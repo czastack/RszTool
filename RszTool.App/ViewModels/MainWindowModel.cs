@@ -99,8 +99,27 @@ namespace RszTool.App.ViewModels
             }
             if (fileViewModel != null && content != null)
             {
-                if (!fileViewModel.Read())
+                bool readSuccess = false;
+                for (int tryCount = 0; tryCount < 3; tryCount++)
                 {
+                    try
+                    {
+                        readSuccess = fileViewModel.Read();
+                        break;
+                    }
+                    catch (RszRetryOpenException e)
+                    {
+                        fileViewModel.File.FileHandler.Seek(0);
+                        MessageBoxUtils.Info(string.Format(Texts.TryReopen, e.Message));
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+                if (!readSuccess)
+                {
+                    MessageBoxUtils.Error(Texts.ReadFailed);
                     return;
                 }
                 content.DataContext = fileViewModel;

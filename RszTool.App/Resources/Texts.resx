@@ -253,4 +253,10 @@ Currently, user, scn, pfb files are supported</value>
   <data name="PasteInstanceAsComponent" xml:space="preserve">
     <value>Paste instance as component</value>
   </data>
+  <data name="ReadFailed" xml:space="preserve">
+    <value>Read failed.</value>
+  </data>
+  <data name="TryReopen" xml:space="preserve">
+    <value>Will try reopen, because {0}, better reopen other opened file manually.</value>
+  </data>
 </root>

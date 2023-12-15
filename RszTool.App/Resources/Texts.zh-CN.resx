@@ -253,4 +253,10 @@
   <data name="PasteInstanceAsComponent" xml:space="preserve">
     <value>粘贴实例作为组件</value>
   </data>
+  <data name="ReadFaild" xml:space="preserve">
+    <value>读取失败。</value>
+  </data>
+  <data name="TryReopen" xml:space="preserve">
+    <value>正在尝试重新打开，因为 {0}，最好重新打开其他已经打开的文件.</value>
+  </data>
 </root>

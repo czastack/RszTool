@@ -358,6 +358,15 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 ReadFailed 的本地化字符串。
+        /// </summary>
+        internal static string ReadFailed {
+            get {
+                return ResourceManager.GetString("ReadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Remove 的本地化字符串。
         /// </summary>
         internal static string Remove {
@@ -426,6 +435,15 @@ namespace RszTool.App.Resources {
         internal static string Tag {
             get {
                 return ResourceManager.GetString("Tag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 TryReopen 的本地化字符串。
+        /// </summary>
+        internal static string TryReopen {
+            get {
+                return ResourceManager.GetString("TryReopen", resourceCulture);
             }
         }
         

@@ -93,5 +93,17 @@
                 "Type": "S32"
             }
         ]
+    },
+    "via.geometry.GeometryBrush": {
+        "FieldPatches": [
+            {
+                "Name": "v0",
+                "Type": "S32"
+            },
+            {
+                "Name": "v14",
+                "Type": "S32"
+            }
+        ]
     }
 }

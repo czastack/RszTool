@@ -1,0 +1,122 @@
+{
+    "via.motion.Chain": {
+        "FieldPatches": [
+            {
+                "Name": "v2",
+                "Type": "S32"
+            },
+            {
+                "Name": "v8",
+                "Type": "S32"
+            }
+        ]
+    },
+    "via.render.Mesh": {
+        "FieldPatches": [
+            {
+                "Name": "v23",
+                "Type": "S32"
+            }
+        ]
+    },
+    "via.motion.Motion": {
+        "FieldPatches": [
+            {
+                "Name": "v14",
+                "Type": "Object"
+            },
+            {
+                "Name": "v16",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.motion.MotionFsm2": {
+        "FieldPatches": [
+            {
+                "Name": "v12",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.physics.Collider": {
+        "FieldPatches": [
+            {
+                "Name": "v2",
+                "Type": "Object"
+            },
+            {
+                "Name": "v3",
+                "Type": "Object"
+            },
+            {
+                "Name": "v4",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.physics.Colliders": {
+        "FieldPatches": [
+            {
+                "Name": "v5",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.physics.FilterInfo": {
+        "FieldPatches": [
+            {
+                "Name": "v0",
+                "Type": "S32"
+            },
+            {
+                "Name": "v1",
+                "Type": "S32"
+            },
+            {
+                "Name": "v4",
+                "Type": "S32"
+            }
+        ]
+    },
+    "via.behaviortree.BehaviorTree": {
+        "FieldPatches": [
+            {
+                "Name": "v1",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.motion.ActorMotion": {
+        "FieldPatches": [
+            {
+                "Name": "v4",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.motion.JointConstraints": {
+        "FieldPatches": [
+            {
+                "Name": "v2",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.render.AmbientOcclusionGeometry": {
+        "FieldPatches": [
+            {
+                "Name": "v2",
+                "Type": "Object"
+            }
+        ]
+    },
+    "via.navigation.NavigationSurface": {
+        "FieldPatches": [
+            {
+                "Name": "v6",
+                "Type": "Object"
+            }
+        ]
+    }
+}
