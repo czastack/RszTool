@@ -27,6 +27,14 @@ namespace RszTool.App.Views
             DependencyProperty.Register("UpdateSource", typeof(bool), typeof(FieldValueInput),
                 new PropertyMetadata(false));
 
+        public static readonly DependencyProperty TypeNameProperty =
+            DependencyProperty.Register("TypeName", typeof(string), typeof(FieldValueInput),
+                new PropertyMetadata(null));
+
+        public static readonly DependencyProperty EnumDictProperty =
+            DependencyProperty.Register("EnumDict", typeof(EnumDict), typeof(FieldValueInput),
+                new PropertyMetadata(null));
+
         private static DataTemplate SelectTemplate(RszFieldType fieldType, FrameworkElement element)
         {
             var resource = fieldType switch
@@ -48,7 +56,8 @@ namespace RszTool.App.Views
                 RszFieldType.Capsule => element.FindResource("InputCapsule"),
                 RszFieldType.Area => element.FindResource("InputArea"),
                 RszFieldType.Data => element.FindResource("InputBytes"),
-                _ => element.FindResource("InputText"),
+                _ => (element is FieldValueInput control && control.EnumItems != null) ?
+                    element.FindResource("InputEnum") : element.FindResource("InputText"),
             };
             return (DataTemplate)resource;
         }
@@ -108,6 +117,20 @@ namespace RszTool.App.Views
             get { return (bool)GetValue(UpdateSourceProperty); }
             set { SetValue(UpdateSourceProperty, value); }
         }
+
+        public string? TypeName
+        {
+            get => GetValue(TypeNameProperty) as string;
+            set => SetValue(TypeNameProperty, value);
+        }
+
+        public EnumDict? EnumDict
+        {
+            get => GetValue(EnumDictProperty) as EnumDict;
+            set => SetValue(EnumDictProperty, value);
+        }
+
+        public EnumItem[]? EnumItems => TypeName != null ? EnumDict?[TypeName]?.Items : null;
 
         private void OnBindingSourceUpdated(object sender, DataTransferEventArgs args)
         {

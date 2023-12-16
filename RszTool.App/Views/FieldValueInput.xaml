@@ -14,9 +14,23 @@
         <converters:ColorConverter x:Key="ColorConverter"/>
         <converters:GuidConverter x:Key="GuidConverter"/>
         <converters:BytesConverter x:Key="BytesConverter"/>
+        <converters:RszFieldEnumConverter x:Key="RszFieldEnumConverter"/>
 
         <DataTemplate x:Key="InputText">
             <TextBox Text="{Binding Value, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        </DataTemplate>
+        <DataTemplate x:Key="InputEnum">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding Value, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource AncestorType=UserControl}}" Grid.Column="0" />
+                <ComboBox DisplayMemberPath="Name" SelectedValuePath="Value"
+                          ItemsSource="{Binding EnumItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                          SelectedValue="{Binding Value, Converter={StaticResource RszFieldEnumConverter}, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                          Grid.Column="1" />
+            </Grid>
         </DataTemplate>
         <DataTemplate x:Key="InputColor">
             <TextBox Text="{Binding Value, NotifyOnSourceUpdated=True, Converter={StaticResource ColorConverter}, RelativeSource={RelativeSource AncestorType=UserControl}}" />

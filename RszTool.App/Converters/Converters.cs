@@ -169,6 +169,7 @@ namespace RszTool.App.Converters
     }
 
 
+    [ValueConversion(typeof(byte[]), typeof(string))]
     public class BytesConverter : IValueConverter
     {
         private int byteCount;

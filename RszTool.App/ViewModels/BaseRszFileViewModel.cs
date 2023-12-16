@@ -36,6 +36,8 @@ namespace RszTool.App.ViewModels
         public object? SelectedItem { get; set; }
         public InstanceSearchViewModel InstanceSearchViewModel { get; } = new();
         public ObservableCollection<RszInstance>? SearchInstanceList { get; set; }
+        public RszFileOption? RszFileOption => File.GetRSZ()?.Option;
+        public EnumDict? EnumDict => RszFileOption?.EnumParser?.EnumDict;
 
         public static RelayCommand CopyInstance => new(OnCopyInstance);
         public RelayCommand PasteInstance => new(OnPasteInstance);
@@ -197,6 +199,7 @@ namespace RszTool.App.ViewModels
             if (arg is RszFieldArrayInstanceItemViewModel item)
             {
                 CopiedInstance = item.Instance;
+                Console.WriteLine(CopiedInstance?.Stringify());
             }
             else if (arg is RszFieldArrayNormalItemViewModel normalItem)
             {

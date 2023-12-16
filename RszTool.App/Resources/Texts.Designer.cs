@@ -79,6 +79,15 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Add component 的本地化字符串。
+        /// </summary>
+        internal static string AddComponent {
+            get {
+                return ResourceManager.GetString("AddComponent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Clear recent files history 的本地化字符串。
         /// </summary>
         internal static string ClearRecentFilesHistory {
@@ -340,6 +349,15 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Paste instance as component 的本地化字符串。
+        /// </summary>
+        internal static string PasteInstanceAsComponent {
+            get {
+                return ResourceManager.GetString("PasteInstanceAsComponent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Project repo 的本地化字符串。
         /// </summary>
         internal static string ProjectRepo {
@@ -358,7 +376,7 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
-        ///   查找类似 ReadFailed 的本地化字符串。
+        ///   查找类似 Read failed. 的本地化字符串。
         /// </summary>
         internal static string ReadFailed {
             get {
@@ -394,7 +412,7 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Class mismatch, copied type is {0}, target type is {1}. 的本地化字符串。
+        ///   查找类似 Class mismatch, copied type is {0}, target type is {1}. Continue? 的本地化字符串。
         /// </summary>
         internal static string RszClassMismatchConfirm {
             get {
@@ -439,7 +457,7 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
-        ///   查找类似 TryReopen 的本地化字符串。
+        ///   查找类似 Will try reopen, because {0}, better reopen other opened file manually. 的本地化字符串。
         /// </summary>
         internal static string TryReopen {
             get {

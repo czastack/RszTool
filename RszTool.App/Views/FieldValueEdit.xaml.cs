@@ -25,6 +25,10 @@ namespace RszTool.App.Views
             DependencyProperty.Register("ValueChanged", typeof(bool), typeof(FieldValueEdit),
                 new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+        public static readonly DependencyProperty EnumDictProperty =
+            DependencyProperty.Register("EnumDict", typeof(EnumDict), typeof(FieldValueEdit),
+                new PropertyMetadata(null));
+
         public FieldValueEdit()
         {
             InitializeComponent();
@@ -34,6 +38,12 @@ namespace RszTool.App.Views
         {
             get => (bool)GetValue(ValueChangedProperty);
             set => SetValue(ValueChangedProperty, value);
+        }
+
+        public EnumDict? EnumDict
+        {
+            get => GetValue(EnumDictProperty) as EnumDict;
+            set => SetValue(EnumDictProperty, value);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace RszTool.Test
             // TestImportGameObject();
             // TestParseMdf();
             // TestMurMur3Hash();
+            // PrintEnums();
         }
 
         private static void TestRszParser()
@@ -272,6 +273,28 @@ namespace RszTool.Test
                 uint hash = PakHash.GetHash(strings[i]);
                 string result = hash == hashes[i] ? "" : $", expacted {hashes[i]:X}";
                 Console.WriteLine($"hash of {strings[i]} is {hash:X}{result}");
+            }
+        }
+
+        static void PrintEnums()
+        {
+            RszFileOption option = new(GameName.re4);
+            HashSet<string> enumSet = new();
+            foreach (var rszClass in option.RszParser.ClassDict.Values)
+            {
+                foreach (var field in rszClass.fields)
+                {
+                    if (field.type is RszFieldType.S8 or RszFieldType.S16 or RszFieldType.S32 or RszFieldType.S64 or
+                        RszFieldType.U8 or RszFieldType.U16 or RszFieldType.U32 or RszFieldType.U64 &&
+                        field.original_type != "" && !field.original_type.StartsWith("System."))
+                    {
+                        enumSet.Add(field.original_type);
+                    }
+                }
+            }
+            foreach (var item in enumSet)
+            {
+                Console.WriteLine(item);
             }
         }
     }

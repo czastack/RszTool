@@ -21,9 +21,9 @@ namespace RszTool.App.Common
             {
                 return Convert.ChangeType(value, type);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBoxUtils.Warning("Format error");
+                MessageBoxUtils.Warning($"Format error: {e.Message}");
             }
             return null;
         }

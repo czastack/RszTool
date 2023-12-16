@@ -25,6 +25,8 @@ namespace RszTool
         private readonly Dictionary<uint, RszClass> classDict;
         private readonly Dictionary<string, RszClass> classNameDict;
 
+        public Dictionary<uint, RszClass> ClassDict => classDict;
+
         public RszParser(string jsonPath)
         {
             classDict = new();
@@ -59,7 +61,7 @@ namespace RszTool
         private void ReadPatch(string originalJsonPath)
         {
             string patchJsonPath = Path.Combine(
-                "RszPatch",
+                "Data", "RszPatch",
                 Path.GetFileNameWithoutExtension(originalJsonPath) + "_patch.json");
             if (!File.Exists(patchJsonPath)) return;
             using FileStream fileStream = File.OpenRead(patchJsonPath);
