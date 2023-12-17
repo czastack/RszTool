@@ -103,6 +103,22 @@
             }
         ]
     },
+    "via.motion.IkJacobian.Link": {
+        "FieldPatches": [
+            {
+                "Name": "v1",
+                "Type": "S32"
+            }
+        ]
+    },
+    "via.motion.IkJacobian.Effector": {
+        "FieldPatches": [
+            {
+                "Name": "v2",
+                "Type": "S32"
+            }
+        ]
+    },
     "via.render.AmbientOcclusionGeometry": {
         "FieldPatches": [
             {
