@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RszTool.App": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}

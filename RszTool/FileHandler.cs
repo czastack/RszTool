@@ -173,14 +173,48 @@ namespace RszTool
             }
         }
 
+        public readonly struct JumpBackGuard : IDisposable
+        {
+            private readonly FileHandler handler;
+            private readonly long position;
+            private readonly bool jumpBack;
+
+            public JumpBackGuard(FileHandler handler, bool jumpBack = true)
+            {
+                this.handler = handler;
+                position = handler.Tell();
+                this.jumpBack = jumpBack;
+            }
+
+            public void Dispose()
+            {
+                if (jumpBack)
+                {
+                    handler.Seek(position);
+                }
+            }
+        }
+
+        public JumpBackGuard SeekJumpBack(bool jumpBack = true)
+        {
+            return new JumpBackGuard(this, jumpBack);
+        }
+
+        public JumpBackGuard SeekJumpBack(long tell, bool jumpBack = true)
+        {
+            var defer = new JumpBackGuard(this, jumpBack);
+            Seek(tell);
+            return defer;
+        }
+
         public byte ReadByte()
         {
             return (byte)Stream.ReadByte();
         }
 
-        public byte ReadByte(long tell)
+        public byte ReadByte(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return (byte)Stream.ReadByte();
         }
 
@@ -189,9 +223,9 @@ namespace RszTool
             return (sbyte)Stream.ReadByte();
         }
 
-        public sbyte ReadSByte(long tell)
+        public sbyte ReadSByte(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return (sbyte)Stream.ReadByte();
         }
 
@@ -200,9 +234,9 @@ namespace RszTool
             return Read<char>();
         }
 
-        public char ReadChar(long tell)
+        public char ReadChar(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Read<char>();
         }
 
@@ -211,9 +245,9 @@ namespace RszTool
             return Stream.ReadByte() != 0;
         }
 
-        public bool ReadBoolean(long tell)
+        public bool ReadBoolean(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Stream.ReadByte() != 0;
         }
 
@@ -222,9 +256,9 @@ namespace RszTool
             return Read<short>();
         }
 
-        public short ReadShort(long tell)
+        public short ReadShort(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Read<short>();
         }
 
@@ -233,15 +267,15 @@ namespace RszTool
             return Read<ushort>();
         }
 
-        public ushort ReadUShort(long tell)
+        public ushort ReadUShort(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Read<ushort>();
         }
 
-        public int ReadInt(long tell)
+        public int ReadInt(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Read<int>();
         }
 
@@ -250,9 +284,9 @@ namespace RszTool
             return Read<int>();
         }
 
-        public uint ReadUInt(long tell)
+        public uint ReadUInt(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Read<uint>();
         }
 
@@ -266,9 +300,9 @@ namespace RszTool
             return Read<long>();
         }
 
-        public long ReadInt64(long tell)
+        public long ReadInt64(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Read<long>();
         }
 
@@ -277,15 +311,15 @@ namespace RszTool
             return Read<ulong>();
         }
 
-        public ulong ReadUInt64(long tell)
+        public ulong ReadUInt64(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Read<ulong>();
         }
 
-        public float ReadFloat(long tell)
+        public float ReadFloat(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Read<float>();
         }
 
@@ -294,9 +328,9 @@ namespace RszTool
             return Read<float>();
         }
 
-        public double ReadDouble(long tell)
+        public double ReadDouble(long tell, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Read<double>();
         }
 
@@ -310,9 +344,9 @@ namespace RszTool
             return Stream.Read(buffer, 0, length == -1 ? buffer.Length : length);
         }
 
-        public int ReadBytes(byte[] buffer, long tell, int length = -1)
+        public int ReadBytes(byte[] buffer, long tell, int length = -1, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             return Stream.Read(buffer, 0, length == -1 ? buffer.Length : length);
         }
 
@@ -321,9 +355,9 @@ namespace RszTool
             Stream.WriteByte(value);
         }
 
-        public void WriteByte(long tell, byte value)
+        public void WriteByte(long tell, byte value, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             Stream.WriteByte(value);
         }
 
@@ -332,9 +366,9 @@ namespace RszTool
             Stream.WriteByte((byte)value);
         }
 
-        public void WriteSByte(long tell, sbyte value)
+        public void WriteSByte(long tell, sbyte value, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             Stream.WriteByte((byte)value);
         }
 
@@ -343,9 +377,9 @@ namespace RszTool
             Write(value);
         }
 
-        public void WriteChar(long tell, char value)
+        public void WriteChar(long tell, char value, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             Write(value);
         }
 
@@ -354,9 +388,9 @@ namespace RszTool
             Stream.WriteByte(value ? (byte)1 : (byte)0);
         }
 
-        public void WriteBoolean(long tell, bool value)
+        public void WriteBoolean(long tell, bool value, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             Stream.WriteByte(value ? (byte)1 : (byte)0);
         }
 
@@ -365,9 +399,9 @@ namespace RszTool
             Write(value);
         }
 
-        public void WriteShort(long tell, short value)
+        public void WriteShort(long tell, short value, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             Write(value);
         }
 
@@ -376,9 +410,9 @@ namespace RszTool
             Write(value);
         }
 
-        public void WriteUShort(long tell, ushort value)
+        public void WriteUShort(long tell, ushort value, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             Write(value);
         }
 
@@ -387,9 +421,9 @@ namespace RszTool
             Write(value);
         }
 
-        public void WriteInt(long tell, int value)
+        public void WriteInt(long tell, int value, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             Write(value);
         }
 
@@ -398,9 +432,9 @@ namespace RszTool
             Write(value);
         }
 
-        public void WriteUInt(long tell, uint value)
+        public void WriteUInt(long tell, uint value, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             Write(value);
         }
 
@@ -409,9 +443,9 @@ namespace RszTool
             Write(value);
         }
 
-        public void WriteInt64(long tell, long value)
+        public void WriteInt64(long tell, long value, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             Write(value);
         }
 
@@ -420,9 +454,9 @@ namespace RszTool
             Write(value);
         }
 
-        public void WriteUInt64(long tell, ulong value)
+        public void WriteUInt64(long tell, ulong value, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             Write(value);
         }
 
@@ -431,9 +465,9 @@ namespace RszTool
             Stream.Write(buffer, 0, length == -1 ? buffer.Length : length);
         }
 
-        public void WriteBytes(long tell, byte[] buffer, int length = -1)
+        public void WriteBytes(long tell, byte[] buffer, int length = -1, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             WriteBytes(buffer, length);
         }
 
@@ -466,9 +500,9 @@ namespace RszTool
             }
         }
 
-        public void FillBytes(long tell, byte value, int length)
+        public void FillBytes(long tell, byte value, int length, bool jumpBack = true)
         {
-            Seek(tell);
+            using var defer = SeekJumpBack(tell, jumpBack);
             FillBytes(value, length);
         }
 
@@ -480,6 +514,55 @@ namespace RszTool
                 text = text.Substring(0, n);
             }
             return text;
+        }
+
+        public string ReadAsciiString(long pos = -1, int charCount = -1, bool jumpBack = true)
+        {
+            long originPos = Tell();
+            if (pos != -1) Seek(pos);
+            string? result = null;
+            if (charCount > 1024)
+            {
+                throw new Exception($"{nameof(charCount)} {charCount} too large");
+            }
+            if (charCount == -1) charCount = 128;
+            Span<byte> buffer = charCount <= 128 ? stackalloc byte[charCount] : new byte[charCount];
+            int readCount = Stream.Read(buffer);
+            if (readCount != 0)
+            {
+                int n = buffer.IndexOf((byte)0);
+                if (n != -1)
+                {
+                    result = n == 0 ? "" : Encoding.ASCII.GetString(buffer.Slice(0, n));
+                }
+            }
+            else
+            {
+                result = "";
+            }
+            if (result == null)
+            {
+                StringBuilder sb = new();
+                sb.Append(Encoding.ASCII.GetString(buffer));
+                do
+                {
+                    readCount = Stream.Read(buffer);
+                    if (readCount != 0)
+                    {
+                        int n = buffer.IndexOf((byte)0);
+                        sb.Append(Encoding.ASCII.GetString(n != -1 ? buffer.Slice(0, n): buffer));
+                        if (n != -1) break;
+                    }
+                } while (readCount == buffer.Length);
+                result = sb.ToString();
+            }
+            Seek(jumpBack ? originPos : originPos + result.Length + 1);
+            return result;
+        }
+
+        public bool WriteAsciiString(string text)
+        {
+            return WriteBytes(Encoding.ASCII.GetBytes(text)) && Write<byte>(0);
         }
 
         public string ReadWString(long pos = -1, int charCount = -1, bool jumpBack = true)
