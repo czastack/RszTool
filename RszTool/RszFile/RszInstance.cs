@@ -647,7 +647,12 @@ namespace RszTool
             return value;
         }
 
-        public IEnumerable<RszInstance> Flatten()
+        /// <summary>
+        /// 遍历所有子实例
+        /// </summary>
+        /// <param name="paths">记录当前instance父实例路径</param>
+        /// <returns></returns>
+        public IEnumerable<RszInstance> Flatten(List<RszInstanceFieldRecord>? paths = null)
         {
             if (RSZUserData == null)
             {
@@ -657,6 +662,7 @@ namespace RszTool
                     var field = fields[i];
                     if (field.IsReference)
                     {
+                        paths?.Add(new(this, field));
                         if (field.array)
                         {
                             var items = (List<object>)Values[i];
@@ -664,7 +670,7 @@ namespace RszTool
                             {
                                 if (items[j] is RszInstance instanceValue)
                                 {
-                                    foreach (var item in instanceValue.Flatten())
+                                    foreach (var item in instanceValue.Flatten(paths))
                                     {
                                         yield return item;
                                     }
@@ -677,7 +683,7 @@ namespace RszTool
                         }
                         else if (Values[i] is RszInstance instanceValue)
                         {
-                            foreach (var item in instanceValue.Flatten())
+                            foreach (var item in instanceValue.Flatten(paths))
                             {
                                 yield return item;
                             }
@@ -686,6 +692,7 @@ namespace RszTool
                         {
                             throw new InvalidOperationException("Instance should unflatten first");
                         }
+                        paths?.RemoveAt(paths.Count - 1);
                     }
                 }
             }
@@ -875,6 +882,15 @@ namespace RszTool
                 return arrayType[listPrefix.Length..^1];
             }
             return arrayType;
+        }
+    }
+
+
+    public record RszInstanceFieldRecord(RszInstance Instance, RszField Field)
+    {
+        public override string ToString()
+        {
+            return $"{Instance.Name}.{Field.name}";
         }
     }
 }

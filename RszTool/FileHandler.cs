@@ -516,6 +516,15 @@ namespace RszTool
             return text;
         }
 
+        private static string AsciiGetString(Span<byte> buffer)
+        {
+#if !NET5_0_OR_GREATER
+            return Encoding.ASCII.GetString(buffer.ToArray());
+#else
+            return Encoding.ASCII.GetString(buffer);
+#endif
+        }
+
         public string ReadAsciiString(long pos = -1, int charCount = -1, bool jumpBack = true)
         {
             long originPos = Tell();
@@ -533,7 +542,7 @@ namespace RszTool
                 int n = buffer.IndexOf((byte)0);
                 if (n != -1)
                 {
-                    result = n == 0 ? "" : Encoding.ASCII.GetString(buffer.Slice(0, n));
+                    result = n == 0 ? "" : AsciiGetString(buffer.Slice(0, n));
                 }
             }
             else
@@ -543,14 +552,14 @@ namespace RszTool
             if (result == null)
             {
                 StringBuilder sb = new();
-                sb.Append(Encoding.ASCII.GetString(buffer));
+                sb.Append(AsciiGetString(buffer));
                 do
                 {
                     readCount = Stream.Read(buffer);
                     if (readCount != 0)
                     {
                         int n = buffer.IndexOf((byte)0);
-                        sb.Append(Encoding.ASCII.GetString(n != -1 ? buffer.Slice(0, n): buffer));
+                        sb.Append(AsciiGetString(n != -1 ? buffer.Slice(0, n): buffer));
                         if (n != -1) break;
                     }
                 } while (readCount == buffer.Length);

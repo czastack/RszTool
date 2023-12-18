@@ -116,6 +116,15 @@ namespace RszTool.App.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        /// Update re4 chainsaw.ContextID
+        /// </summary>
+        /// <param name="gameObject"></param>
+        private void UpdateInstanceContextID(RszInstance instance)
+        {
+            GameObjectCopyHelper.UpdateInstanceContextID(RszFileOption!, instance);
+        }
+
         private static void OnCopyInstance(object arg)
         {
             if (arg is RszInstance instance)
@@ -168,7 +177,12 @@ namespace RszTool.App.ViewModels
                 return false;
             }
             if (File.GetRSZ() is not RSZFile rsz) return false;
-            return rsz.InstanceCopyValues(instance, CopiedInstance);
+            bool result = rsz.InstanceCopyValues(instance, CopiedInstance);
+            if (result)
+            {
+                UpdateInstanceContextID(instance);
+            }
+            return result;
         }
 
         private static void OnCopyNormalField(object arg)
@@ -231,7 +245,8 @@ namespace RszTool.App.ViewModels
             if (File.GetRSZ() is not RSZFile rsz) return;
             if (arg is RszFieldArrayInstanceItemViewModel item)
             {
-                rsz.ArrayInsertInstance(item.Values, item.Instance, item.Index + 1);
+                var newItem = rsz.ArrayInsertInstance(item.Values, item.Instance, item.Index + 1);
+                UpdateInstanceContextID(newItem);
                 item.Array.NotifyItemsChanged();
                 Changed = true;
             }
@@ -265,7 +280,8 @@ namespace RszTool.App.ViewModels
             {
                 for (int i = 0; i < count; i++)
                 {
-                    rsz.ArrayInsertInstance(item.Values, item.Instance, item.Index + 1);
+                    var newItem = rsz.ArrayInsertInstance(item.Values, item.Instance, item.Index + 1);
+                    UpdateInstanceContextID(newItem);
                 }
                 item.Array.NotifyItemsChanged();
                 Changed = true;
@@ -295,7 +311,8 @@ namespace RszTool.App.ViewModels
                     MessageBoxUtils.Error(string.Format(Texts.RszClassMismatch, CopiedInstance.RszClass.name, item.Instance.RszClass.name));
                     return;
                 }
-                rsz.ArrayInsertInstance(item.Values, CopiedInstance, item.Index + 1);
+                var newItem = rsz.ArrayInsertInstance(item.Values, CopiedInstance, item.Index + 1);
+                UpdateInstanceContextID(newItem);
                 item.Array.NotifyItemsChanged();
                 Changed = true;
             }
@@ -392,7 +409,8 @@ namespace RszTool.App.ViewModels
                 {
                     return;
                 }
-                rsz.ArrayInsertInstance(item.Values, CopiedInstance);
+                var newItem = rsz.ArrayInsertInstance(item.Values, CopiedInstance);
+                UpdateInstanceContextID(newItem);
                 item.NotifyItemsChanged();
                 Changed = true;
             }

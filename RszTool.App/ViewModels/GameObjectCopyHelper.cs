@@ -44,12 +44,36 @@ namespace RszTool.App.ViewModels
         {
             if (fileOption.GameName == GameName.re4)
             {
-                var contextIDs = IterGameObjectContextID(gameObjectData);
-                UpdateContextIDWindow dialog = new()
+                var contextIDs = IterGameObjectContextID(gameObjectData).ToArray();
+                if (contextIDs.Length > 0)
                 {
-                    TreeViewItems = contextIDs
-                };
-                dialog.ShowDialog();
+                    UpdateContextIDWindow dialog = new()
+                    {
+                        TreeViewItems = contextIDs
+                    };
+                    dialog.ShowDialog();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update re4 chainsaw.ContextID
+        /// </summary>
+        /// <param name="fileOption"></param>
+        /// <param name="gameObjectData"></param>
+        public static void UpdateInstanceContextID(RszFileOption fileOption, RszInstance instance)
+        {
+            if (fileOption.GameName == GameName.re4)
+            {
+                var contextIDs = IterInstanceContextID(instance).ToArray();
+                if (contextIDs.Length > 0)
+                {
+                    UpdateContextIDWindow dialog = new()
+                    {
+                        TreeViewItems = contextIDs
+                    };
+                    dialog.ShowDialog();
+                }
             }
         }
 
@@ -70,7 +94,7 @@ namespace RszTool.App.ViewModels
                     {
                         if (instanceField.RszClass.name == "chainsaw.ContextID")
                         {
-                            yield return new GameObjectContextID($"{gameObject}/{component}/{fields[i].name}", instanceField);
+                            yield return new GameObjectContextID($"{gameObject}/{component}.{fields[i].name}", instanceField);
                         }
                     }
                 }
@@ -80,6 +104,28 @@ namespace RszTool.App.ViewModels
                 foreach (var item in IterGameObjectContextID(child))
                 {
                     yield return item;
+                }
+            }
+        }
+
+        public static IEnumerable<GameObjectContextID> IterInstanceContextID(RszInstance instance)
+        {
+            List<RszInstanceFieldRecord> paths = new();
+            foreach (var item in instance.Flatten(paths))
+            {
+                if (item.RSZUserData != null) continue;
+                var fields = item.Fields;
+                string? parentPath = null;
+                for (int i = 0; i < item.Values.Length; i++)
+                {
+                    if (fields[i].IsReference && item.Values[i] is RszInstance instanceField)
+                    {
+                        if (instanceField.RszClass.name == "chainsaw.ContextID")
+                        {
+                            parentPath ??= string.Join("/", paths.Select(x => x.ToString()));
+                            yield return new GameObjectContextID($"{parentPath}/{item}.{fields[i].name}", instanceField);
+                        }
+                    }
                 }
             }
         }
