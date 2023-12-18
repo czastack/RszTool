@@ -15,8 +15,6 @@ namespace RszTool.App.ViewModels
         public GameObjectSearchViewModel GameObjectSearchViewModel { get; } = new();
         public ObservableCollection<ScnFile.GameObjectData>? SearchGameObjectList { get; set; }
 
-        public static ScnFile.GameObjectData? CopiedGameObject { get; private set; }
-
         public override void PostRead()
         {
             ScnFile.SetupGameObjects();
@@ -48,7 +46,7 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private static void OnCopyGameObject(object arg)
         {
-            CopiedGameObject = (ScnFile.GameObjectData)arg;
+            GameObjectCopyHelper.CopyGameObject((ScnFile.GameObjectData)arg);
         }
 
         /// <summary>
@@ -77,9 +75,10 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private void OnPasteGameObject(object arg)
         {
-            if (CopiedGameObject != null)
+            var gameObject = GameObjectCopyHelper.GetCopiedScnGameObject();
+            if (gameObject != null)
             {
-                ScnFile.ImportGameObject(CopiedGameObject);
+                ScnFile.ImportGameObject(gameObject);
                 OnPropertyChanged(nameof(GameObjects));
                 Changed = true;
             }
@@ -91,10 +90,11 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private void OnPasteGameObjectToFolder(object arg)
         {
-            if (CopiedGameObject != null)
+            var gameObject = GameObjectCopyHelper.GetCopiedScnGameObject();
+            if (gameObject != null)
             {
                 var folder = (ScnFile.FolderData)arg;
-                ScnFile.ImportGameObject(CopiedGameObject, folder);
+                ScnFile.ImportGameObject(gameObject, folder);
                 Changed = true;
             }
         }
@@ -105,10 +105,11 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private void OnPasteGameobjectAsChild(object arg)
         {
-            if (CopiedGameObject != null)
+            var gameObject = GameObjectCopyHelper.GetCopiedScnGameObject();
+            if (gameObject != null)
             {
                 var parent = (ScnFile.GameObjectData)arg;
-                ScnFile.ImportGameObject(CopiedGameObject, parent: parent);
+                ScnFile.ImportGameObject(gameObject, parent: parent);
                 Changed = true;
             }
         }

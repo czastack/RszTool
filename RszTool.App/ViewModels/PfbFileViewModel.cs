@@ -15,9 +15,6 @@ namespace RszTool.App.ViewModels
         public GameObjectSearchViewModel GameObjectSearchViewModel { get; } = new() { IncludeChildren = true };
         public ObservableCollection<PfbFile.GameObjectData>? SearchGameObjectList { get; set; }
 
-
-        public static PfbFile.GameObjectData? CopiedGameObject { get; private set; }
-
         public RelayCommand CopyGameObject => new(OnCopyGameObject);
         public RelayCommand RemoveGameObject => new(OnRemoveGameObject);
         public RelayCommand DuplicateGameObject => new(OnDuplicateGameObject);
@@ -47,7 +44,7 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private static void OnCopyGameObject(object arg)
         {
-            CopiedGameObject = (PfbFile.GameObjectData)arg;
+            GameObjectCopyHelper.CopyGameObject((PfbFile.GameObjectData)arg);
         }
 
         /// <summary>
@@ -76,9 +73,10 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private void OnPasteGameObject(object arg)
         {
-            if (CopiedGameObject != null)
+            var gameObject = GameObjectCopyHelper.GetCopiedPfbGameObject();
+            if (gameObject != null)
             {
-                PfbFile.ImportGameObject(CopiedGameObject);
+                PfbFile.ImportGameObject(gameObject);
                 OnPropertyChanged(nameof(GameObjects));
                 Changed = true;
             }
@@ -90,10 +88,11 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private void OnPasteGameobjectAsChild(object arg)
         {
-            if (CopiedGameObject != null)
+            var gameObject = GameObjectCopyHelper.GetCopiedPfbGameObject();
+            if (gameObject != null)
             {
                 var parent = (PfbFile.GameObjectData)arg;
-                PfbFile.ImportGameObject(CopiedGameObject, parent: parent);
+                PfbFile.ImportGameObject(gameObject, parent: parent);
                 Changed = true;
             }
         }
