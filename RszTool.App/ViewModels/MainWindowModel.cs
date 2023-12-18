@@ -26,8 +26,7 @@ namespace RszTool.App.ViewModels
             fileTabItemViewModel.FileViewModel : null;
 
         public CustomInterTabClient InterTabClient { get; } = new();
-        public SaveData SaveData { get; }
-        private const string SaveDataJsonPath = "RszTool.App.SaveData.json";
+        public static SaveData SaveData => App.Instance.SaveData;
 
         public RelayCommand OpenCommand => new(OnOpen);
         public RelayCommand SaveCommand => new(OnSave);
@@ -40,18 +39,6 @@ namespace RszTool.App.ViewModels
         public RelayCommand OpenAbout => new(OnOpenAbout);
 
         public ItemActionCallback ClosingTabItemHandler => ClosingTabItemHandlerImpl;
-
-        public MainWindowModel()
-        {
-            SaveData? saveData = null;
-            if (File.Exists(SaveDataJsonPath))
-            {
-                using FileStream fileStream = File.OpenRead(SaveDataJsonPath);
-                saveData = JsonSerializer.Deserialize<SaveData>(fileStream);
-                if (saveData != null) SaveData = saveData;
-            }
-            SaveData = saveData ?? new();
-        }
 
         /// <summary>
         /// 打开文件
@@ -275,7 +262,6 @@ namespace RszTool.App.ViewModels
                     if (!OnTabClose(fileTab)) return false;
                 }
             }
-            JsonUtils.DumpJson(SaveDataJsonPath, SaveData);
             return true;
         }
 
@@ -302,13 +288,5 @@ namespace RszTool.App.ViewModels
         {
             Header = FileViewModel.FileName + (FileViewModel.Changed ? "*" : "");
         }
-    }
-
-
-    public class SaveData
-    {
-        [JsonConverter(typeof(EnumJsonConverter<GameName>))]
-        public GameName GameName { get; set; }
-        public ObservableCollection<string> RecentFiles { get; set; } = new();
     }
 }

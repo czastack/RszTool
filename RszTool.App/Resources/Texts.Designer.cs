@@ -466,6 +466,15 @@ namespace RszTool.App.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Update ContextID 的本地化字符串。
+        /// </summary>
+        internal static string UpdateContextID {
+            get {
+                return ResourceManager.GetString("UpdateContextID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Open a file from the file menu or drag it in .
         ///Currently, user, scn, pfb files are supported 的本地化字符串。
         /// </summary>

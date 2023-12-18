@@ -1,7 +1,8 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
 using System.Windows;
+using RszTool.App.Common;
 
 namespace RszTool.App
 {
@@ -10,6 +11,21 @@ namespace RszTool.App
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            SaveData? saveData = null;
+            if (File.Exists(SaveData.JsonPath))
+            {
+                using FileStream fileStream = File.OpenRead(SaveData.JsonPath);
+                saveData = JsonSerializer.Deserialize<SaveData>(fileStream);
+                if (saveData != null) SaveData = saveData;
+            }
+            SaveData = saveData ?? new();
+        }
+
+        public static App Instance => (App)Current;
+        public SaveData SaveData { get; }
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -18,6 +34,12 @@ namespace RszTool.App
 
             // 添加全局异常处理程序
             SetupUnhandledExceptionHandling();
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            JsonUtils.DumpJson(SaveData.JsonPath, SaveData);
         }
 
         private void SwitchTheme(bool isDarkTheme)

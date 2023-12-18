@@ -1,0 +1,33 @@
+﻿<Window x:Class="RszTool.App.Views.UpdateContextIDWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:app="clr-namespace:RszTool.App"
+        xmlns:local="clr-namespace:RszTool.App.Views"
+        xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
+        xmlns:res="clr-namespace:RszTool.App.Resources"
+        mc:Ignorable="d"
+        Title="{res:Text UpdateContextID}" Height="480" Width="960"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="TreeViewStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <HierarchicalDataTemplate DataType="{x:Type viewmodels:GameObjectContextID}" ItemsSource="{Binding Items}">
+                <TextBlock Text="{Binding Name}" />
+            </HierarchicalDataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="{Binding SaveData.LastContextID.Text, Source={x:Static app:App.Instance}}" Margin="0 0 0 10" />
+        <TreeView Grid.Row="1" ItemsSource="{Binding TreeViewItems, RelativeSource={RelativeSource AncestorType=Window}}" />
+    </Grid>
+</Window>

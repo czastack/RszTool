@@ -41,6 +41,15 @@ namespace RszTool.App.ViewModels
         public RelayCommand RemoveComponent => new(OnRemoveComponent);
 
         /// <summary>
+        /// Update re4 chainsaw.ContextID
+        /// </summary>
+        /// <param name="gameObject"></param>
+        private void UpdateContextID(IGameObjectData gameObject)
+        {
+            GameObjectCopyHelper.UpdateContextID(ScnFile.Option, gameObject);
+        }
+
+        /// <summary>
         /// 复制游戏对象
         /// </summary>
         /// <param name="arg"></param>
@@ -65,7 +74,8 @@ namespace RszTool.App.ViewModels
         /// <param name="arg"></param>
         private void OnDuplicateGameObject(object arg)
         {
-            ScnFile.DuplicateGameObject((ScnFile.GameObjectData)arg);
+            var newGameObject = ScnFile.DuplicateGameObject((ScnFile.GameObjectData)arg);
+            UpdateContextID(newGameObject);
             Changed = true;
         }
 
@@ -78,7 +88,8 @@ namespace RszTool.App.ViewModels
             var gameObject = GameObjectCopyHelper.GetCopiedScnGameObject();
             if (gameObject != null)
             {
-                ScnFile.ImportGameObject(gameObject);
+                var newGameObject = ScnFile.ImportGameObject(gameObject);
+                UpdateContextID(newGameObject);
                 OnPropertyChanged(nameof(GameObjects));
                 Changed = true;
             }
@@ -94,7 +105,8 @@ namespace RszTool.App.ViewModels
             if (gameObject != null)
             {
                 var folder = (ScnFile.FolderData)arg;
-                ScnFile.ImportGameObject(gameObject, folder);
+                var newGameObject = ScnFile.ImportGameObject(gameObject, folder);
+                UpdateContextID(newGameObject);
                 Changed = true;
             }
         }
@@ -109,7 +121,8 @@ namespace RszTool.App.ViewModels
             if (gameObject != null)
             {
                 var parent = (ScnFile.GameObjectData)arg;
-                ScnFile.ImportGameObject(gameObject, parent: parent);
+                var newGameObject = ScnFile.ImportGameObject(gameObject, parent: parent);
+                UpdateContextID(newGameObject);
                 Changed = true;
             }
         }

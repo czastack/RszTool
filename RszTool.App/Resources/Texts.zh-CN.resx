@@ -259,4 +259,7 @@
   <data name="TryReopen" xml:space="preserve">
     <value>正在尝试重新打开，因为 {0}，最好重新打开其他已经打开的文件.</value>
   </data>
+  <data name="UpdateContextID" xml:space="preserve">
+    <value>更新ContextID</value>
+  </data>
 </root>

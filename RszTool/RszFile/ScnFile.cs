@@ -239,6 +239,8 @@ namespace RszTool
                 RszInstance.CleanCloneCache();
                 return gameObject;
             }
+
+            public IEnumerable<IGameObjectData> GetChildren() => Children;
         }
 
         public HeaderStruct Header { get; }
@@ -966,7 +968,8 @@ namespace RszTool
         /// <param name="folder">文件夹</param>
         /// <param name="parent">父对象</param>
         /// <param name="isDuplicate">在原对象的位置后面添加</param>
-        public void ImportGameObject(GameObjectData gameObject, FolderData? folder = null,
+        /// <returns>新游戏对象</returns>
+        public GameObjectData ImportGameObject(GameObjectData gameObject, FolderData? folder = null,
                                      GameObjectData? parent = null, bool isDuplicate = false)
         {
             GameObjectData newGameObject = (GameObjectData)gameObject.Clone();
@@ -1007,6 +1010,7 @@ namespace RszTool
             }
             StructChanged = true;
             RszInstance.CleanCloneCache();
+            return newGameObject;
         }
 
         /// <summary>
@@ -1028,9 +1032,10 @@ namespace RszTool
         /// 复制游戏对象
         /// </summary>
         /// <param name="gameObject"></param>
-        public void DuplicateGameObject(GameObjectData gameObject)
+        /// <returns>新游戏对象</returns>
+        public GameObjectData DuplicateGameObject(GameObjectData gameObject)
         {
-            ImportGameObject(gameObject, gameObject.Folder, gameObject.Parent, true);
+            return ImportGameObject(gameObject, gameObject.Folder, gameObject.Parent, true);
         }
 
         /// <summary>
