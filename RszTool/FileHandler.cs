@@ -1,7 +1,8 @@
-using System.Text;
 using RszTool.Common;
-using System.Runtime.InteropServices;
 using System.Collections;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace RszTool
 {
@@ -699,6 +700,44 @@ namespace RszTool
             return result;
         }
 
+        /// <summary>
+        /// 获取start..end之间的数据，长度在2-128
+        /// 涉及unsafe操作，注意内存范围
+        /// </summary>
+        public static Span<byte> GetRangeSpan<TS, TE>(ref TS start, ref TE end) where TS : struct where TE : struct
+        {
+            unsafe
+            {
+                var startPtr = (nint)Unsafe.AsPointer(ref start);
+                var endPtr = (nint)Unsafe.AsPointer(ref end) + Unsafe.SizeOf<TE>();
+                int size = (int)(endPtr - startPtr);
+                if (size < 2 || size > 128)
+                {
+                    throw new InvalidDataException($"Size {size} is out of range [2, 128]");
+                }
+                return new Span<byte>((void*)startPtr, size);
+            }
+        }
+
+        /// <summary>
+        /// 读取数据到start..end，长度在2-128
+        /// 涉及unsafe操作，注意内存范围
+        /// </summary>
+        public int ReadRange<TS, TE>(ref TS start, ref TE end) where TS : struct where TE : struct
+        {
+            return Stream.Read(GetRangeSpan(ref start, ref end));
+        }
+
+        /// <summary>
+        /// 写入start..end范围内的数据，长度在2-128
+        /// 涉及unsafe操作，注意内存范围
+        /// </summary>
+        public bool WriteRange<TS, TE>(ref TS start, ref TE end) where TS : struct where TE : struct
+        {
+            Stream.Write(GetRangeSpan(ref start, ref end));
+            return true;
+        }
+
         public byte[] ReadBytes(int length)
         {
             byte[] buffer = new byte[length];
@@ -955,5 +994,56 @@ namespace RszTool
         public IEnumerator<StringTableItem> GetEnumerator() => Items.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => Items.GetEnumerator();
+    }
+
+
+    public interface IFileHandlerAction
+    {
+        bool Success { get; }
+        public IFileHandlerAction? Then<T>(ref T value) where T : struct;
+    }
+
+
+    public static class IFileHandlerActionExtension
+    {
+        public static IFileHandlerAction? Then<T>(this IFileHandlerAction action, bool condition, ref T value) where T : struct
+        {
+            return condition ? action.Then(ref value) : action;
+        }
+    }
+
+
+    public struct FileHandlerRead(FileHandler handler) : IFileHandlerAction
+    {
+        public FileHandler Handler { get; set; } = handler;
+        public int LastResult { get; set; } = -1;
+        public readonly bool Success => LastResult != 0;
+
+        public IFileHandlerAction? Then<T>(ref T value) where T : struct
+        {
+            if (Success)
+            {
+                LastResult = Handler.Read(ref value);
+                return this;
+            }
+            return null;
+        }
+    }
+
+
+    public struct FileHandlerWrite(FileHandler handler) : IFileHandlerAction
+    {
+        public FileHandler Handler { get; set; } = handler;
+        public bool Success { get; set; }
+
+        public IFileHandlerAction? Then<T>(ref T value) where T : struct
+        {
+            if (Success)
+            {
+                Success = Handler.Write(ref value);
+                return this;
+            }
+            return null;
+        }
     }
 }
