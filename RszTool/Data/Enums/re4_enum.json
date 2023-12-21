@@ -35586,27 +35586,27 @@
   "chainsaw.ItemID": {
     "Items": [
       {
-        "Name": "it_sm70_500_00_0 (手枪弹药)",
+        "Name": "it_sm70_500_00_0 (Handgun Ammo)",
         "Value": 112800000
       },
       {
-        "Name": "it_sm70_501_00_0 (马格南弹药)",
+        "Name": "it_sm70_501_00_0 (Magnum Ammo)",
         "Value": 112801600
       },
       {
-        "Name": "it_sm70_502_00_0 (霰弹枪弹药)",
+        "Name": "it_sm70_502_00_0 (Shotgun Shells)",
         "Value": 112803200
       },
       {
-        "Name": "it_sm70_503_00_0 (步枪弹药)",
+        "Name": "it_sm70_503_00_0 (Rifle Ammo)",
         "Value": 112804800
       },
       {
-        "Name": "it_sm70_504_00_0 (冲锋枪弹药)",
+        "Name": "it_sm70_504_00_0 (Submachine Gun Ammo)",
         "Value": 112806400
       },
       {
-        "Name": "it_sm70_505_00_0 (弩箭)",
+        "Name": "it_sm70_505_00_0 (Bolts)",
         "Value": 112808000
       },
       {
@@ -35626,7 +35626,7 @@
         "Value": 112814400
       },
       {
-        "Name": "it_sm70_300_00_0 (艾达篇 炸药箭)",
+        "Name": "it_sm70_300_00_0 (SW - Blast Arrows)",
         "Value": 112480000
       },
       {
@@ -35634,15 +35634,15 @@
         "Value": 112480160
       },
       {
-        "Name": "it_sm70_200_00_0",
+        "Name": "it_sm70_200_00_0 (Mercenaries Explosive Arrows)",
         "Value": 112320000
       },
       {
-        "Name": "it_sm71_300_00_0 (艾达篇 格雷戈里奥水道之主)",
+        "Name": "it_sm71_300_00_0 (SW - Lord of the Waterway)",
         "Value": 114080000
       },
       {
-        "Name": "it_sm71_500_00_0 (绿色草药)",
+        "Name": "it_sm71_500_00_0 (Green Herb)",
         "Value": 114400000
       },
       {
@@ -35650,7 +35650,7 @@
         "Value": 114400160
       },
       {
-        "Name": "it_sm71_501_00_0 (红色草药)",
+        "Name": "it_sm71_501_00_0 (Red Herb)",
         "Value": 114401600
       },
       {
@@ -35658,283 +35658,283 @@
         "Value": 114401760
       },
       {
-        "Name": "it_sm71_502_00_0 (黄色草药)",
+        "Name": "it_sm71_502_00_0 (Yellow Herb)",
         "Value": 114403200
       },
       {
-        "Name": "it_sm71_503_00_0 (混合草药（绿+绿）)",
+        "Name": "it_sm71_503_00_0 (Mixed Herb (G+G))",
         "Value": 114404800
       },
       {
-        "Name": "it_sm71_504_00_0 (混合草药（绿+绿+绿）)",
+        "Name": "it_sm71_504_00_0 (Mixed Herb (G+G+G))",
         "Value": 114406400
       },
       {
-        "Name": "it_sm71_505_00_0 (混合草药（绿+红）)",
+        "Name": "it_sm71_505_00_0 (Mixed Herb (G+R))",
         "Value": 114408000
       },
       {
-        "Name": "it_sm71_506_00_0 (混合草药（绿+黄）)",
+        "Name": "it_sm71_506_00_0 (Mixed Herb (G+Y))",
         "Value": 114409600
       },
       {
-        "Name": "it_sm71_507_00_0 (混合草药（红+黄）)",
+        "Name": "it_sm71_507_00_0 (Mixed Herb (R+Y))",
         "Value": 114411200
       },
       {
-        "Name": "it_sm71_508_00_0 (混合草药（绿+红+黄）)",
+        "Name": "it_sm71_508_00_0 (Mixed Herb (G+R+Y))",
         "Value": 114412800
       },
       {
-        "Name": "it_sm71_509_00_0 (混合草药（绿+绿+黄）)",
+        "Name": "it_sm71_509_00_0 (Mixed Herb (G+G+Y))",
         "Value": 114414400
       },
       {
-        "Name": "it_sm71_510_00_0 (急救喷雾)",
+        "Name": "it_sm71_510_00_0 (First Aid Spray)",
         "Value": 114416000
       },
       {
-        "Name": "it_sm71_511_00_0 (黑鲈鱼)",
+        "Name": "it_sm71_511_00_0 (Black Bass)",
         "Value": 114417600
       },
       {
-        "Name": "it_sm71_512_00_0 (大鲈鱼)",
+        "Name": "it_sm71_512_00_0 (Lunker Bass)",
         "Value": 114419200
       },
       {
-        "Name": "it_sm71_513_00_0 (黑鲈鱼（大）)",
+        "Name": "it_sm71_513_00_0 (Black Bass (L))",
         "Value": 114420800
       },
       {
-        "Name": "it_sm71_514_00_0 (蝰蛇)",
+        "Name": "it_sm71_514_00_0 (Viper)",
         "Value": 114422400
       },
       {
-        "Name": "it_sm71_515_00_0 (独角仙)",
+        "Name": "it_sm71_515_00_0 (Rhinoceros Beetle)",
         "Value": 114424000
       },
       {
-        "Name": "it_sm72_500_00_0 (瞄准镜)",
+        "Name": "it_sm72_500_00_0 (Scope)",
         "Value": 116000000
       },
       {
-        "Name": "it_sm72_501_00_0 (枪托（Red9）)",
+        "Name": "it_sm72_501_00_0 (Red9 Stock)",
         "Value": 116001600
       },
       {
-        "Name": "it_sm72_502_00_0 (高倍瞄准镜)",
+        "Name": "it_sm72_502_00_0 (High-power Scope)",
         "Value": 116003200
       },
       {
-        "Name": "it_sm72_503_00_0 (生物传感镜)",
+        "Name": "it_sm72_503_00_0 (Biosensor Scope)",
         "Value": 116004800
       },
       {
-        "Name": "it_sm72_504_00_0 (枪托（TMP）)",
+        "Name": "it_sm72_504_00_0 (TMP Stock)",
         "Value": 116006400
       },
       {
-        "Name": "it_sm72_505_00_0 (激光瞄准器)",
+        "Name": "it_sm72_505_00_0 (Laser Sight)",
         "Value": 116008000
       },
       {
-        "Name": "it_sm72_506_00_0 (枪托（玛蒂尔达）)",
+        "Name": "it_sm72_506_00_0 (Matilda Stock)",
         "Value": 116009600
       },
       {
-        "Name": "it_sm73_500_00_0 (火药)",
+        "Name": "it_sm73_500_00_0 (Gunpowder)",
         "Value": 117600000
       },
       {
-        "Name": "it_sm73_501_00_0 (物资（大）)",
+        "Name": "it_sm73_501_00_0 (Resources (L))",
         "Value": 117601600
       },
       {
-        "Name": "it_sm73_502_00_0 (弩箭雷)",
+        "Name": "it_sm73_502_00_0 (Attachable Mines)",
         "Value": 117603200
       },
       {
-        "Name": "it_sm73_503_00_0 (破损的小刀)",
+        "Name": "it_sm73_503_00_0 (Broken Knife)",
         "Value": 117604800
       },
       {
-        "Name": "it_sm73_504_00_0 (物资（小）)",
+        "Name": "it_sm73_504_00_0 (Resources (S))",
         "Value": 117606400
       },
       {
-        "Name": "it_sm74_502_00_0 (六边形浮雕)",
+        "Name": "it_sm74_502_00_0 (Hexagonal Emblem)",
         "Value": 119203200
       },
       {
-        "Name": "it_sm74_503_00_0 (徽记钥匙)",
+        "Name": "it_sm74_503_00_0 (Insignia Key)",
         "Value": 119204800
       },
       {
-        "Name": "it_sm74_504_00_0 (光晕转轮)",
+        "Name": "it_sm74_504_00_0 (Halo Wheel)",
         "Value": 119206400
       },
       {
-        "Name": "it_sm74_506_00_0 (绯红提灯)",
+        "Name": "it_sm74_506_00_0 (Crimson Lantern)",
         "Value": 119209600
       },
       {
-        "Name": "it_sm74_507_00_0 (1级钥匙卡)",
+        "Name": "it_sm74_507_00_0 (Level 1 Keycard)",
         "Value": 119211200
       },
       {
-        "Name": "it_sm74_508_00_0 (2级钥匙卡)",
+        "Name": "it_sm74_508_00_0 (Level 2 Keycard)",
         "Value": 119212800
       },
       {
-        "Name": "it_sm74_509_00_0 (3级钥匙卡)",
+        "Name": "it_sm74_509_00_0 (Level 3 Keycard)",
         "Value": 119214400
       },
       {
-        "Name": "it_sm74_511_00_0 (水晶球)",
+        "Name": "it_sm74_511_00_0 (Crystal Marble)",
         "Value": 119217600
       },
       {
-        "Name": "it_sm74_512_00_0 (扳手)",
+        "Name": "it_sm74_512_00_0 (Wrench)",
         "Value": 119219200
       },
       {
-        "Name": "it_sm74_513_00_0 (萨拉扎家族徽记)",
+        "Name": "it_sm74_513_00_0 (Salazar Family Insignia)",
         "Value": 119220800
       },
       {
-        "Name": "it_sm74_514_00_0 (狮头雕像)",
+        "Name": "it_sm74_514_00_0 (Lion Head)",
         "Value": 119222400
       },
       {
-        "Name": "it_sm74_515_00_0 (羊头雕像)",
+        "Name": "it_sm74_515_00_0 (Goat Head)",
         "Value": 119224000
       },
       {
-        "Name": "it_sm74_516_00_0 (蛇头雕像)",
+        "Name": "it_sm74_516_00_0 (Serpent Head)",
         "Value": 119225600
       },
       {
-        "Name": "it_sm74_519_00_0 (亵渎者头雕)",
+        "Name": "it_sm74_519_00_0 (Blasphemer's Head)",
         "Value": 119230400
       },
       {
-        "Name": "it_sm74_520_00_0 (叛教者头雕)",
+        "Name": "it_sm74_520_00_0 (Apostate's Head)",
         "Value": 119232000
       },
       {
-        "Name": "it_sm74_522_00_0 (木质齿轮)",
+        "Name": "it_sm74_522_00_0 (Wooden Cog)",
         "Value": 119235200
       },
       {
-        "Name": "it_sm74_523_00_0 (开矿炸药)",
+        "Name": "it_sm74_523_00_0 (Dynamite)",
         "Value": 119236800
       },
       {
-        "Name": "it_sm74_524_00_0 (路易斯的钥匙)",
+        "Name": "it_sm74_524_00_0 (Luis's Key)",
         "Value": 119238400
       },
       {
-        "Name": "it_sm74_528_00_0 (小钥匙)",
+        "Name": "it_sm74_528_00_0 (Small Key)",
         "Value": 119244800
       },
       {
-        "Name": "it_sm74_529_00_0 (关隘大门摇柄)",
+        "Name": "it_sm74_529_00_0 (Checkpoint Crank)",
         "Value": 119246400
       },
       {
-        "Name": "it_sm74_530_00_0 (六边形拼图A)",
+        "Name": "it_sm74_530_00_0 (Hexagon Piece A)",
         "Value": 119248000
       },
       {
-        "Name": "it_sm74_531_00_0 (六边形拼图B)",
+        "Name": "it_sm74_531_00_0 (Hexagon Piece B)",
         "Value": 119249600
       },
       {
-        "Name": "it_sm74_532_00_0 (六边形拼图C)",
+        "Name": "it_sm74_532_00_0 (Hexagon Piece C)",
         "Value": 119251200
       },
       {
-        "Name": "it_sm74_534_00_0 (地牢钥匙)",
+        "Name": "it_sm74_534_00_0 (Dungeon Key)",
         "Value": 119254400
       },
       {
-        "Name": "it_sm74_535_00_0 (老旧的神龛钥匙)",
+        "Name": "it_sm74_535_00_0 (Old Wayshrine Key)",
         "Value": 119256000
       },
       {
-        "Name": "it_sm74_536_00_0 (教堂徽记)",
+        "Name": "it_sm74_536_00_0 (Church Insignia)",
         "Value": 119257600
       },
       {
-        "Name": "it_sm74_537_00_0 (摩托艇钥匙)",
+        "Name": "it_sm74_537_00_0 (Water Scooter Key)",
         "Value": 119259200
       },
       {
-        "Name": "it_sm74_538_00_0 (金剑)",
+        "Name": "it_sm74_538_00_0 (Golden Sword)",
         "Value": 119260800
       },
       {
-        "Name": "it_sm74_539_00_0 (铁剑)",
+        "Name": "it_sm74_539_00_0 (Iron Sword)",
         "Value": 119262400
       },
       {
-        "Name": "it_sm74_541_00_0 (版画石板A)",
+        "Name": "it_sm74_541_00_0 (Lithographic Stone A)",
         "Value": 119265600
       },
       {
-        "Name": "it_sm74_542_00_0 (版画石板B)",
+        "Name": "it_sm74_542_00_0 (Lithographic Stone B)",
         "Value": 119267200
       },
       {
-        "Name": "it_sm74_543_00_0 (版画石板C)",
+        "Name": "it_sm74_543_00_0 (Lithographic Stone C)",
         "Value": 119268800
       },
       {
-        "Name": "it_sm74_544_00_0 (版画石板D)",
+        "Name": "it_sm74_544_00_0 (Lithographic Stone D)",
         "Value": 119270400
       },
       {
-        "Name": "it_sm74_546_00_0 (小艇燃料)",
+        "Name": "it_sm74_546_00_0 (Boat Fuel)",
         "Value": 119273600
       },
       {
-        "Name": "it_sm74_547_00_0 (钥匙串)",
+        "Name": "it_sm74_547_00_0 (Bunch of Keys)",
         "Value": 119275200
       },
       {
-        "Name": "it_sm74_548_00_0 (立方雕)",
+        "Name": "it_sm74_548_00_0 (Cubic Device)",
         "Value": 119276800
       },
       {
-        "Name": "it_sm74_549_00_0 (血剑)",
+        "Name": "it_sm74_549_00_0 (Bloodied Sword)",
         "Value": 119278400
       },
       {
-        "Name": "it_sm74_550_00_0 (锈剑)",
+        "Name": "it_sm74_550_00_0 (Rusted Sword)",
         "Value": 119280000
       },
       {
-        "Name": "it_sm74_551_00_0 (猎人小屋的钥匙)",
+        "Name": "it_sm74_551_00_0 (Hunter's Lodge Key)",
         "Value": 119281600
       },
       {
-        "Name": "it_sm74_552_00_0 (独角兽之角)",
+        "Name": "it_sm74_552_00_0 (Unicorn Horn)",
         "Value": 119283200
       },
       {
-        "Name": "it_sm74_553_00_0 (蓝色转盘)",
+        "Name": "it_sm74_553_00_0 (Blue Dial)",
         "Value": 119284800
       },
       {
-        "Name": "it_sm74_554_00_0 (银质代币)",
+        "Name": "it_sm74_554_00_0 (Silver Token)",
         "Value": 119286400
       },
       {
-        "Name": "it_sm74_555_00_0 (金质代币)",
+        "Name": "it_sm74_555_00_0 (Gold Token)",
         "Value": 119288000
       },
       {
-        "Name": "it_sm74_556_00_0 (木板)",
+        "Name": "it_sm74_556_00_0 (Wooden Planks)",
         "Value": 119289600
       },
       {
@@ -35962,15 +35962,15 @@
         "Value": 118886400
       },
       {
-        "Name": "it_sm74_305_00_0 (艾达篇 红色油墨)",
+        "Name": "it_sm74_305_00_0 (SW - Red Ink)",
         "Value": 118888000
       },
       {
-        "Name": "it_sm74_306_00_0 (艾达篇 黄金酒瓶)",
+        "Name": "it_sm74_306_00_0 (SW - Gold Bottle)",
         "Value": 118889600
       },
       {
-        "Name": "it_sm74_307_00_0 (艾达篇 蓝色蝴蝶)",
+        "Name": "it_sm74_307_00_0 (SW - Blue Butterfly)",
         "Value": 118891200
       },
       {
@@ -36002,15 +36002,15 @@
         "Value": 118902400
       },
       {
-        "Name": "it_sm74_315_00_0 (艾达篇 火箭发射器（特殊）)",
+        "Name": "it_sm74_315_00_0 (SW - Rocket Launcher Special)",
         "Value": 118904000
       },
       {
-        "Name": "it_sm74_316_00_0 (艾达篇 快艇钥匙)",
+        "Name": "it_sm74_316_00_0 (SW - Boat Key)",
         "Value": 118905600
       },
       {
-        "Name": "it_sm74_317_00_0 (艾达篇 白银酒瓶)",
+        "Name": "it_sm74_317_00_0 (SW - Silver Bottle)",
         "Value": 118907200
       },
       {
@@ -36022,19 +36022,19 @@
         "Value": 118910400
       },
       {
-        "Name": "it_sm74_320_00_0 (艾达篇 版画石板A)",
+        "Name": "it_sm74_320_00_0 (SW - Lithographic Stone A)",
         "Value": 118912000
       },
       {
-        "Name": "it_sm74_321_00_0 (艾达篇 版画石板B)",
+        "Name": "it_sm74_321_00_0 (SW - Lithographic Stone B)",
         "Value": 118913600
       },
       {
-        "Name": "it_sm74_322_00_0 (艾达篇 版画石板C)",
+        "Name": "it_sm74_322_00_0 (SW - Lithographic Stone C)",
         "Value": 118915200
       },
       {
-        "Name": "it_sm74_323_00_0 (艾达篇 版画石板D)",
+        "Name": "it_sm74_323_00_0 (SW - Lithographic Stone D)",
         "Value": 118916800
       },
       {
@@ -36042,19 +36042,19 @@
         "Value": 118918400
       },
       {
-        "Name": "it_sm74_325_00_0 (艾达篇 隐藏钥匙)",
+        "Name": "it_sm74_325_00_0 (SW - Hidden Key)",
         "Value": 118920000
       },
       {
-        "Name": "it_sm74_326_00_0 (艾达篇 青月石雕)",
+        "Name": "it_sm74_326_00_0 (SW - Blue Moonstone)",
         "Value": 118921600
       },
       {
-        "Name": "it_sm74_327_00_0 (艾达篇 供电单元)",
+        "Name": "it_sm74_327_00_0 (SW - Power Unit)",
         "Value": 118923200
       },
       {
-        "Name": "it_sm75_300_00_0 (艾达篇 夹克)",
+        "Name": "it_sm75_300_00_0 (SW - Jacket)",
         "Value": 120480000
       },
       {
@@ -36062,159 +36062,159 @@
         "Value": 120481600
       },
       {
-        "Name": "it_sm75_302_00_0 (艾达篇 贝雷帽)",
+        "Name": "it_sm75_302_00_0 (SW - Beret)",
         "Value": 120483200
       },
       {
-        "Name": "it_sm75_303_00_0 (艾达篇 管家的发夹)",
+        "Name": "it_sm75_303_00_0 (SW - Housekeeper's Barrette)",
         "Value": 120484800
       },
       {
-        "Name": "it_sm75_304_00_0 (艾达篇 眼镜)",
+        "Name": "it_sm75_304_00_0 (SW - Glasses)",
         "Value": 120486400
       },
       {
-        "Name": "it_sm75_500_00_0 (尖晶石)",
+        "Name": "it_sm75_500_00_0 (Spinel)",
         "Value": 120800000
       },
       {
-        "Name": "it_sm75_501_00_0 (珍珠吊坠)",
+        "Name": "it_sm75_501_00_0 (Pearl Pendant)",
         "Value": 120801600
       },
       {
-        "Name": "it_sm75_502_00_0 (脏臭的珍珠吊坠)",
+        "Name": "it_sm75_502_00_0 (Dirty Pearl Pendant)",
         "Value": 120803200
       },
       {
-        "Name": "it_sm75_506_00_0 (黄铜怀表)",
+        "Name": "it_sm75_506_00_0 (Brass Pocket Watch)",
         "Value": 120809600
       },
       {
-        "Name": "it_sm75_508_00_0 (萤石发饰)",
+        "Name": "it_sm75_508_00_0 (Elegant Headdress)",
         "Value": 120812800
       },
       {
-        "Name": "it_sm75_509_00_0 (老式烟斗)",
+        "Name": "it_sm75_509_00_0 (Antique Pipe)",
         "Value": 120814400
       },
       {
-        "Name": "it_sm75_510_00_0 (珍珠手镯)",
+        "Name": "it_sm75_510_00_0 (Pearl Bangle)",
         "Value": 120816000
       },
       {
-        "Name": "it_sm75_511_00_0 (红宝石戒指)",
+        "Name": "it_sm75_511_00_0 (Red Gemstone Ring)",
         "Value": 120817600
       },
       {
-        "Name": "it_sm75_512_00_0 (金手镯)",
+        "Name": "it_sm75_512_00_0 (Gold Bangle)",
         "Value": 120819200
       },
       {
-        "Name": "it_sm75_513_00_0 (光明吊坠)",
+        "Name": "it_sm75_513_00_0 (Iluminados Pendant)",
         "Value": 120820800
       },
       {
-        "Name": "it_sm75_514_00_0 (珍珠红宝石镜)",
+        "Name": "it_sm75_514_00_0 (Mirror with Pearls & Rubies)",
         "Value": 120822400
       },
       {
-        "Name": "it_sm75_515_00_0 (金沙漏)",
+        "Name": "it_sm75_515_00_0 (Golden Hourglass)",
         "Value": 120824000
       },
       {
-        "Name": "it_sm75_516_00_0 (优雅的香水瓶)",
+        "Name": "it_sm75_516_00_0 (Elegant Perfume Bottle)",
         "Value": 120825600
       },
       {
-        "Name": "it_sm75_517_00_0 (华美的棋盘)",
+        "Name": "it_sm75_517_00_0 (Elegant Chessboard)",
         "Value": 120827200
       },
       {
-        "Name": "it_sm75_518_00_0 (皇家权杖)",
+        "Name": "it_sm75_518_00_0 (Staff of Royalty)",
         "Value": 120828800
       },
       {
-        "Name": "it_sm75_519_00_0 (红宝石)",
+        "Name": "it_sm75_519_00_0 (Ruby)",
         "Value": 120830400
       },
       {
-        "Name": "it_sm75_520_00_0 (祖母绿)",
+        "Name": "it_sm75_520_00_0 (Emerald)",
         "Value": 120832000
       },
       {
-        "Name": "it_sm75_521_00_0 (蓝宝石)",
+        "Name": "it_sm75_521_00_0 (Sapphire)",
         "Value": 120833600
       },
       {
-        "Name": "it_sm75_522_00_0 (黄钻石)",
+        "Name": "it_sm75_522_00_0 (Yellow Diamond)",
         "Value": 120835200
       },
       {
-        "Name": "it_sm75_524_00_0 (亚历山大石)",
+        "Name": "it_sm75_524_00_0 (Alexandrite)",
         "Value": 120838400
       },
       {
-        "Name": "it_sm75_525_00_0 (金条)",
+        "Name": "it_sm75_525_00_0 (Gold Bar)",
         "Value": 120840000
       },
       {
-        "Name": "it_sm75_526_00_0 (金条（大）)",
+        "Name": "it_sm75_526_00_0 (Gold Bar (L))",
         "Value": 120841600
       },
       {
-        "Name": "it_sm75_527_00_0 (金砖)",
+        "Name": "it_sm75_527_00_0 (Gold Ingot)",
         "Value": 120843200
       },
       {
-        "Name": "it_sm75_528_00_0 (堕落神像)",
+        "Name": "it_sm75_528_00_0 (Depraved Idol)",
         "Value": 120844800
       },
       {
-        "Name": "it_sm75_529_00_0 (老式指南针)",
+        "Name": "it_sm75_529_00_0 (Vintage Compass)",
         "Value": 120846400
       },
       {
-        "Name": "it_sm75_530_00_0 (正义女神像)",
+        "Name": "it_sm75_530_00_0 (Justitia Statue)",
         "Value": 120848000
       },
       {
-        "Name": "it_sm75_531_00_0 (水晶矿石)",
+        "Name": "it_sm75_531_00_0 (Crystal Ore)",
         "Value": 120849600
       },
       {
-        "Name": "it_sm75_532_00_0 (华丽的甲虫)",
+        "Name": "it_sm75_532_00_0 (Ornate Beetle)",
         "Value": 120851200
       },
       {
-        "Name": "it_sm75_533_00_0 (门德斯的义眼)",
+        "Name": "it_sm75_533_00_0 (Méndez's False Eye)",
         "Value": 120852800
       },
       {
-        "Name": "it_sm75_534_00_0 (金丝单眼镜)",
+        "Name": "it_sm75_534_00_0 (Gold Monocle)",
         "Value": 120854400
       },
       {
-        "Name": "it_sm75_535_00_0 (胭脂口红)",
+        "Name": "it_sm75_535_00_0 (Lip Rouge)",
         "Value": 120856000
       },
       {
-        "Name": "it_sm75_536_00_0 (红色线柱石)",
+        "Name": "it_sm75_536_00_0 (Red Beryl)",
         "Value": 120857600
       },
       {
-        "Name": "it_sm75_538_00_0 (老式相机)",
+        "Name": "it_sm75_538_00_0 (Antique Camera)",
         "Value": 120860800
       },
       {
-        "Name": "it_sm75_540_00_0 (紫馨石)",
+        "Name": "it_sm75_540_00_0 (Velvet Blue)",
         "Value": 120864000
       },
       {
-        "Name": "it_sm75_541_00_0 (刮花的祖母绿)",
+        "Name": "it_sm75_541_00_0 (Scratched Emerald)",
         "Value": 120865600
       },
       {
-        "Name": "it_sm75_542_00_0 (高级改造券)",
+        "Name": "it_sm75_542_00_0 (Exclusive Upgrade Ticket)",
         "Value": 120867200
       },
       {
@@ -36222,63 +36222,63 @@
         "Value": 120960000
       },
       {
-        "Name": "it_sm76_500_00_0 (奢华的面具)",
+        "Name": "it_sm76_500_00_0 (Elegant Mask)",
         "Value": 122400000
       },
       {
-        "Name": "it_sm76_501_00_0 (酒壶)",
+        "Name": "it_sm76_501_00_0 (Flagon)",
         "Value": 122401600
       },
       {
-        "Name": "it_sm76_502_00_0 (妖光蝶提灯)",
+        "Name": "it_sm76_502_00_0 (Butterfly Lamp)",
         "Value": 122403200
       },
       {
-        "Name": "it_sm76_503_00_0 (高贵的王冠)",
+        "Name": "it_sm76_503_00_0 (Elegant Crown)",
         "Value": 122404800
       },
       {
-        "Name": "it_sm76_504_00_0 (金山猫像)",
+        "Name": "it_sm76_504_00_0 (Golden Lynx)",
         "Value": 122406400
       },
       {
-        "Name": "it_sm76_505_00_0 (豪华的时钟)",
+        "Name": "it_sm76_505_00_0 (Extravagant Clock)",
         "Value": 122408000
       },
       {
-        "Name": "it_sm76_506_00_0 (华贵的手镯)",
+        "Name": "it_sm76_506_00_0 (Splendid Bangle)",
         "Value": 122409600
       },
       {
-        "Name": "it_sm76_507_00_0 (救赎圣杯)",
+        "Name": "it_sm76_507_00_0 (Chalice of Atonement)",
         "Value": 122411200
       },
       {
-        "Name": "it_sm76_508_00_0 (华贵的项链)",
+        "Name": "it_sm76_508_00_0 (Ornate Necklace)",
         "Value": 122412800
       },
       {
-        "Name": "it_sm76_510_00_0 (精致的手镯)",
+        "Name": "it_sm76_510_00_0 (Elegant Bangle)",
         "Value": 122416000
       },
       {
-        "Name": "it_sm77_500_00_0 (比塞塔币)",
+        "Name": "it_sm77_500_00_0 (Pesetas)",
         "Value": 124000000
       },
       {
-        "Name": "it_sm77_501_00_0 (护甲背心)",
+        "Name": "it_sm77_501_00_0 (Body Armor)",
         "Value": 124001600
       },
       {
-        "Name": "it_sm77_502_00_0 (村庄藏宝图)",
+        "Name": "it_sm77_502_00_0 (Treasure Map: Village)",
         "Value": 124003200
       },
       {
-        "Name": "it_sm77_503_00_0 (城堡藏宝图)",
+        "Name": "it_sm77_503_00_0 (Treasure Map: Castle)",
         "Value": 124004800
       },
       {
-        "Name": "it_sm77_504_00_0 (孤岛藏宝图)",
+        "Name": "it_sm77_504_00_0 (Treasure Map: Island)",
         "Value": 124006400
       },
       {
@@ -36286,71 +36286,71 @@
         "Value": 124008000
       },
       {
-        "Name": "it_sm77_600_00_0 (手提箱扩容（7x10）)",
+        "Name": "it_sm77_600_00_0 (Case Upgrade (7x10))",
         "Value": 124160000
       },
       {
-        "Name": "it_sm77_601_00_0 (手提箱扩容（7x12）)",
+        "Name": "it_sm77_601_00_0 (Case Upgrade (7x12))",
         "Value": 124161600
       },
       {
-        "Name": "it_sm77_602_00_0 (手提箱扩容（8x12）)",
+        "Name": "it_sm77_602_00_0 (Case Upgrade (8x12))",
         "Value": 124163200
       },
       {
-        "Name": "it_sm77_603_00_0 (手提箱扩容（8x13）)",
+        "Name": "it_sm77_603_00_0 (Case Upgrade (8x13))",
         "Value": 124164800
       },
       {
-        "Name": "it_sm77_604_00_0 (手提箱扩容（9x13）)",
+        "Name": "it_sm77_604_00_0 (Case Upgrade (9x13))",
         "Value": 124166400
       },
       {
-        "Name": "it_sm77_610_00_0 (银色手提箱)",
+        "Name": "it_sm77_610_00_0 (Attaché Case: Silver)",
         "Value": 124176000
       },
       {
-        "Name": "it_sm77_611_00_0 (黑色手提箱)",
+        "Name": "it_sm77_611_00_0 (Attaché Case: Black)",
         "Value": 124177600
       },
       {
-        "Name": "it_sm77_612_00_0 (皮革手提箱)",
+        "Name": "it_sm77_612_00_0 (Attaché Case: Leather)",
         "Value": 124179200
       },
       {
-        "Name": "it_sm77_620_00_0 (金色手提箱)",
+        "Name": "it_sm77_620_00_0 (Attaché Case: Gold)",
         "Value": 124192000
       },
       {
-        "Name": "it_sm77_621_00_0",
+        "Name": "it_sm77_621_00_0 (Attaché Case: Classic)",
         "Value": 124193600
       },
       {
-        "Name": "it_sm77_701_00_0 (配方：手枪弹药)",
+        "Name": "it_sm77_701_00_0 (Recipe: Handgun Ammo)",
         "Value": 124321600
       },
       {
-        "Name": "it_sm77_702_00_0 (配方：霰弹枪弹药)",
+        "Name": "it_sm77_702_00_0 (Recipe: Shotgun Shells)",
         "Value": 124323200
       },
       {
-        "Name": "it_sm77_703_00_0 (配方：冲锋枪弹药)",
+        "Name": "it_sm77_703_00_0 (Recipe: Submachine Gun Ammo)",
         "Value": 124324800
       },
       {
-        "Name": "it_sm77_704_00_0 (配方：步枪弹药)",
+        "Name": "it_sm77_704_00_0 (Recipe: Rifle Ammo)",
         "Value": 124326400
       },
       {
-        "Name": "it_sm77_705_00_0 (配方：马格南弹药)",
+        "Name": "it_sm77_705_00_0 (Recipe: Magnum Ammo)",
         "Value": 124328000
       },
       {
-        "Name": "it_sm77_706_00_0 (配方：弩箭)",
+        "Name": "it_sm77_706_00_0 (Recipe: Bolts)",
         "Value": 124329600
       },
       {
-        "Name": "it_sm77_707_00_0 (配方：弩箭)",
+        "Name": "it_sm77_707_00_0 (Recipe: Bolts)",
         "Value": 124331200
       },
       {
@@ -36358,71 +36358,71 @@
         "Value": 124332800
       },
       {
-        "Name": "it_sm77_709_00_0 (配方：弩箭雷)",
+        "Name": "it_sm77_709_00_0 (Recipe: Attachable Mines)",
         "Value": 124334400
       },
       {
-        "Name": "it_sm77_710_00_0 (配方：高爆手榴弹)",
+        "Name": "it_sm77_710_00_0 (Recipe: Heavy Grenade)",
         "Value": 124336000
       },
       {
-        "Name": "it_sm77_711_00_0 (配方：闪光手榴弹)",
+        "Name": "it_sm77_711_00_0 (Recipe: Flash Grenade)",
         "Value": 124337600
       },
       {
-        "Name": "it_sm77_721_00_0 (配方：混合草药（绿+绿）)",
+        "Name": "it_sm77_721_00_0 (Recipe: Mixed Herb (G+G))",
         "Value": 124353600
       },
       {
-        "Name": "it_sm77_722_00_0 (配方：混合草药（绿+红）)",
+        "Name": "it_sm77_722_00_0 (Recipe: Mixed Herb (G+R))",
         "Value": 124355200
       },
       {
-        "Name": "it_sm77_723_00_0 (配方：混合草药（绿+黄）)",
+        "Name": "it_sm77_723_00_0 (Recipe: Mixed Herb (G+Y))",
         "Value": 124356800
       },
       {
-        "Name": "it_sm77_724_00_0 (配方：混合草药（红+黄）)",
+        "Name": "it_sm77_724_00_0 (Recipe: Mixed Herb (R+Y))",
         "Value": 124358400
       },
       {
-        "Name": "it_sm77_725_00_0 (配方：混合草药（绿+绿+绿）)",
+        "Name": "it_sm77_725_00_0 (Recipe: Mixed Herb (G+G+G))",
         "Value": 124360000
       },
       {
-        "Name": "it_sm77_726_00_0 (配方：混合草药（绿+绿+黄）)",
+        "Name": "it_sm77_726_00_0 (Recipe: Mixed Herb (G+G+Y))",
         "Value": 124361600
       },
       {
-        "Name": "it_sm77_727_00_0 (配方：混合草药（绿+绿+黄）)",
+        "Name": "it_sm77_727_00_0 (Recipe: Mixed Herb (G+G+Y))",
         "Value": 124363200
       },
       {
-        "Name": "it_sm77_728_00_0 (配方：混合草药（绿+红+黄）)",
+        "Name": "it_sm77_728_00_0 (Recipe: Mixed Herb (G+R+Y))",
         "Value": 124364800
       },
       {
-        "Name": "it_sm77_729_00_0 (配方：混合草药（绿+红+黄）)",
+        "Name": "it_sm77_729_00_0 (Recipe: Mixed Herb (G+R+Y))",
         "Value": 124366400
       },
       {
-        "Name": "it_sm77_730_00_0 (配方：混合草药（绿+红+黄）)",
+        "Name": "it_sm77_730_00_0 (Recipe: Mixed Herb (G+R+Y))",
         "Value": 124368000
       },
       {
-        "Name": "it_sm77_302_00_0 (艾达篇 配方：炸药箭)",
+        "Name": "it_sm77_302_00_0 (SW - Recipe: Blast Arrows)",
         "Value": 123683200
       },
       {
-        "Name": "it_sm77_303_00_0 (艾达篇 碳纤维手提箱)",
+        "Name": "it_sm77_303_00_0 (SW - Attaché Case: Carbon)",
         "Value": 123684800
       },
       {
-        "Name": "it_sm77_304_00_0 (艾达篇 古典手提箱)",
+        "Name": "it_sm77_304_00_0 (SW - Attaché Case: Vintage)",
         "Value": 123686400
       },
       {
-        "Name": "it_sm77_305_00_0 (艾达篇 全域藏宝图)",
+        "Name": "it_sm77_305_00_0 (SW - Treasure Maps: All)",
         "Value": 123688000
       },
       {
@@ -36438,15 +36438,15 @@
         "Value": 123692800
       },
       {
-        "Name": "it_sm77_900_00_0",
+        "Name": "it_sm77_900_00_0 (Accessory: Hair Color (Red))",
         "Value": 124640000
       },
       {
-        "Name": "it_sm77_901_00_0",
+        "Name": "it_sm77_901_00_0 (Accessory: Hair Color (Blue))",
         "Value": 124641600
       },
       {
-        "Name": "it_sm77_902_00_0",
+        "Name": "it_sm77_902_00_0 (Accessory: Glasses (Wellington))",
         "Value": 124643200
       },
       {
@@ -36454,7 +36454,7 @@
         "Value": 124644800
       },
       {
-        "Name": "it_sm77_904_00_0",
+        "Name": "it_sm77_904_00_0 (Accessory: Stylish Mask)",
         "Value": 124646400
       },
       {
@@ -36462,135 +36462,135 @@
         "Value": 124648000
       },
       {
-        "Name": "it_sm79_300_00_0 (艾达篇 艾达 · 王（特殊）)",
+        "Name": "it_sm79_300_00_0 (Charm: Ada Wong (Special))",
         "Value": 126880000
       },
       {
-        "Name": "it_sm79_500_00_0 (荷塞先生)",
+        "Name": "it_sm79_500_00_0 (Charm: Don Jose)",
         "Value": 127200000
       },
       {
-        "Name": "it_sm79_501_00_0 (迭戈先生)",
+        "Name": "it_sm79_501_00_0 (Charm: Don Diego)",
         "Value": 127201600
       },
       {
-        "Name": "it_sm79_502_00_0 (埃斯特万先生)",
+        "Name": "it_sm79_502_00_0 (Charm: Don Esteban)",
         "Value": 127203200
       },
       {
-        "Name": "it_sm79_503_00_0 (曼努埃尔先生)",
+        "Name": "it_sm79_503_00_0 (Charm: Don Manuel)",
         "Value": 127204800
       },
       {
-        "Name": "it_sm79_504_00_0 (伊莎贝尔女士)",
+        "Name": "it_sm79_504_00_0 (Charm: Isabel)",
         "Value": 127206400
       },
       {
-        "Name": "it_sm79_505_00_0 (玛丽亚女士)",
+        "Name": "it_sm79_505_00_0 (Charm: Maria)",
         "Value": 127208000
       },
       {
-        "Name": "it_sm79_506_00_0 (萨尔瓦多医生)",
+        "Name": "it_sm79_506_00_0 (Charm: Dr. Salvador)",
         "Value": 127209600
       },
       {
-        "Name": "it_sm79_507_00_0 (贝拉姐妹)",
+        "Name": "it_sm79_507_00_0 (Charm: Bella Sisters)",
         "Value": 127211200
       },
       {
-        "Name": "it_sm79_508_00_0 (佩德罗先生)",
+        "Name": "it_sm79_508_00_0 (Charm: Don Pedro)",
         "Value": 127212800
       },
       {
-        "Name": "it_sm79_509_00_0 (邪教徒（巨镰）)",
+        "Name": "it_sm79_509_00_0 (Charm: Zealot w/ scythe)",
         "Value": 127214400
       },
       {
-        "Name": "it_sm79_510_00_0 (邪教徒（盾牌）)",
+        "Name": "it_sm79_510_00_0 (Charm: Zealot w/ shield)",
         "Value": 127216000
       },
       {
-        "Name": "it_sm79_511_00_0 (邪教徒（十字弩）)",
+        "Name": "it_sm79_511_00_0 (Charm: Zealot w/ bowgun)",
         "Value": 127217600
       },
       {
-        "Name": "it_sm79_512_00_0 (邪教徒（引导者）)",
+        "Name": "it_sm79_512_00_0 (Charm: Leader zealot)",
         "Value": 127219200
       },
       {
-        "Name": "it_sm79_513_00_0 (士兵（炸药）)",
+        "Name": "it_sm79_513_00_0 (Charm: Soldier w/ dynamite)",
         "Value": 127220800
       },
       {
-        "Name": "it_sm79_514_00_0 (士兵（电棍）)",
+        "Name": "it_sm79_514_00_0 (Charm: Soldier w/ stun-rod)",
         "Value": 127222400
       },
       {
-        "Name": "it_sm79_515_00_0 (士兵（铁锤）)",
+        "Name": "it_sm79_515_00_0 (Charm: Soldier w/ hammer)",
         "Value": 127224000
       },
       {
-        "Name": "it_sm79_516_00_0 (J.J.)",
+        "Name": "it_sm79_516_00_0 (Charm: J.J.)",
         "Value": 127225600
       },
       {
-        "Name": "it_sm79_517_00_0 (里昂（手枪）)",
+        "Name": "it_sm79_517_00_0 (Charm: Leon w/ handgun)",
         "Value": 127227200
       },
       {
-        "Name": "it_sm79_518_00_0 (里昂（霰弹枪）)",
+        "Name": "it_sm79_518_00_0 (Charm: Leon w/ shotgun)",
         "Value": 127228800
       },
       {
-        "Name": "it_sm79_519_00_0 (里昂（火箭发射器）)",
+        "Name": "it_sm79_519_00_0 (Charm: Leon w/ rocket launcher)",
         "Value": 127230400
       },
       {
-        "Name": "it_sm79_520_00_0 (商人)",
+        "Name": "it_sm79_520_00_0 (Charm: Merchant)",
         "Value": 127232000
       },
       {
-        "Name": "it_sm79_521_00_0 (阿什莉 · 格拉汉姆)",
+        "Name": "it_sm79_521_00_0 (Charm: Ashley Graham)",
         "Value": 127233600
       },
       {
-        "Name": "it_sm79_522_00_0 (路易斯 · 塞拉)",
+        "Name": "it_sm79_522_00_0 (Charm: Luis Sera)",
         "Value": 127235200
       },
       {
-        "Name": "it_sm79_523_00_0 (艾达 · 王)",
+        "Name": "it_sm79_523_00_0 (Charm: Ada Wong)",
         "Value": 127236800
       },
       {
-        "Name": "it_sm79_524_00_0 (鸡)",
+        "Name": "it_sm79_524_00_0 (Charm: Chicken)",
         "Value": 127238400
       },
       {
-        "Name": "it_sm79_525_00_0 (黑鲈鱼)",
+        "Name": "it_sm79_525_00_0 (Charm: Black Bass)",
         "Value": 127240000
       },
       {
-        "Name": "it_sm79_526_00_0 (独角仙)",
+        "Name": "it_sm79_526_00_0 (Charm: Rhinoceros Beetle)",
         "Value": 127241600
       },
       {
-        "Name": "it_sm79_527_00_0 (光明教徽)",
+        "Name": "it_sm79_527_00_0 (Charm: Iluminados Emblem)",
         "Value": 127243200
       },
       {
-        "Name": "it_sm79_528_00_0 (打击者)",
+        "Name": "it_sm79_528_00_0 (Charm: Striker)",
         "Value": 127244800
       },
       {
-        "Name": "it_sm79_529_00_0 (可爱熊)",
+        "Name": "it_sm79_529_00_0 (Charm: Cute Bear)",
         "Value": 127246400
       },
       {
-        "Name": "it_sm79_600_00_0",
+        "Name": "it_sm79_600_00_0 (Charm: Green Herb)",
         "Value": 127360000
       },
       {
-        "Name": "it_sm79_601_00_0 (手枪弹药)",
+        "Name": "it_sm79_601_00_0 (Charm: Handgun Ammo)",
         "Value": 127361600
       },
       {
@@ -36598,7 +36598,7 @@
         "Value": 274835456
       },
       {
-        "Name": "it_wp4001_00_0 (惩罚者)",
+        "Name": "it_wp4001_00_0 (Punisher)",
         "Value": 274837056
       },
       {
@@ -36606,15 +36606,15 @@
         "Value": 274838656
       },
       {
-        "Name": "it_wp4003_00_0 (黑尾)",
+        "Name": "it_wp4003_00_0 (Blacktail)",
         "Value": 274840256
       },
       {
-        "Name": "it_wp4004_00_0 (玛蒂尔达)",
+        "Name": "it_wp4004_00_0 (Matilda)",
         "Value": 274841856
       },
       {
-        "Name": "it_wp4005_00_0 (矿车手枪)",
+        "Name": "it_wp4005_00_0 (Minecart Handgun)",
         "Value": 274843456
       },
       {
@@ -36622,11 +36622,11 @@
         "Value": 274995456
       },
       {
-        "Name": "it_wp4101_00_0 (镇暴枪)",
+        "Name": "it_wp4101_00_0 (Riot Gun)",
         "Value": 274997056
       },
       {
-        "Name": "it_wp4102_00_0 (打击者)",
+        "Name": "it_wp4102_00_0 (Striker)",
         "Value": 274998656
       },
       {
@@ -36634,7 +36634,7 @@
         "Value": 275155456
       },
       {
-        "Name": "it_wp4201_00_0 (芝加哥清道夫)",
+        "Name": "it_wp4201_00_0 (Chicago Sweeper)",
         "Value": 275157056
       },
       {
@@ -36646,15 +36646,15 @@
         "Value": 275475456
       },
       {
-        "Name": "it_wp4401_00_0 (刺鳐战术步枪)",
+        "Name": "it_wp4401_00_0 (Stingray)",
         "Value": 275477056
       },
       {
-        "Name": "it_wp4402_00_0 (CQBR突击步枪)",
+        "Name": "it_wp4402_00_0 (CQBR Assault Rifle)",
         "Value": 275478656
       },
       {
-        "Name": "it_wp4500_00_0 (折翼蝴蝶)",
+        "Name": "it_wp4500_00_0 (Broken Butterfly)",
         "Value": 275635456
       },
       {
@@ -36662,11 +36662,11 @@
         "Value": 275637056
       },
       {
-        "Name": "it_wp4502_00_0 (手炮)",
+        "Name": "it_wp4502_00_0 (Handcannon)",
         "Value": 275638656
       },
       {
-        "Name": "it_wp4600_00_0 (弓弩枪)",
+        "Name": "it_wp4600_00_0 (Bolt Thrower)",
         "Value": 275795456
       },
       {
@@ -36674,7 +36674,7 @@
         "Value": 275795616
       },
       {
-        "Name": "it_wp4701_00_0 (火焰喷射器)",
+        "Name": "it_wp4701_00_0",
         "Value": 275957056
       },
       {
@@ -36690,31 +36690,31 @@
         "Value": 276117056
       },
       {
-        "Name": "it_wp4900_00_0 (火箭发射器)",
+        "Name": "it_wp4900_00_0 (Rocket Launcher)",
         "Value": 276275456
       },
       {
-        "Name": "it_wp4901_00_0 (火箭发射器（特殊）)",
+        "Name": "it_wp4901_00_0 (Rocket Launcher (Special))",
         "Value": 276277056
       },
       {
-        "Name": "it_wp4902_00_0 (无限火箭发射器)",
+        "Name": "it_wp4902_00_0 (Infinite Rocket Launcher)",
         "Value": 276278656
       },
       {
-        "Name": "it_wp5000_00_0 (格斗匕首)",
+        "Name": "it_wp5000_00_0 (Combat Knife)",
         "Value": 276435456
       },
       {
-        "Name": "it_wp5001_00_0 (战斗匕首)",
+        "Name": "it_wp5001_00_0 (Fighting Knife)",
         "Value": 276437056
       },
       {
-        "Name": "it_wp5002_00_0 (菜刀)",
+        "Name": "it_wp5002_00_0 (Kitchen Knife)",
         "Value": 276438656
       },
       {
-        "Name": "it_wp5003_00_0 (靴刀)",
+        "Name": "it_wp5003_00_0 (Boot Knife)",
         "Value": 276440256
       },
       {
@@ -36726,7 +36726,7 @@
         "Value": 276443456
       },
       {
-        "Name": "it_wp5006_00_0 (原始之刃)",
+        "Name": "it_wp5006_00_0 (Primal Knife)",
         "Value": 276445056
       },
       {
@@ -36742,27 +36742,27 @@
         "Value": 276918656
       },
       {
-        "Name": "it_wp5400_00_0 (破片手榴弹)",
+        "Name": "it_wp5400_00_0 (Hand Grenade)",
         "Value": 277075456
       },
       {
-        "Name": "it_wp5401_00_0 (高爆手榴弹)",
+        "Name": "it_wp5401_00_0 (Heavy Grenade)",
         "Value": 277077056
       },
       {
-        "Name": "it_wp5402_00_0 (闪光手榴弹)",
+        "Name": "it_wp5402_00_0 (Flash Grenade)",
         "Value": 277078656
       },
       {
-        "Name": "it_wp5403_00_0 (白壳鸡蛋)",
+        "Name": "it_wp5403_00_0 (Chicken Egg)",
         "Value": 277080256
       },
       {
-        "Name": "it_wp5404_00_0 (红壳鸡蛋)",
+        "Name": "it_wp5404_00_0 (Brown Chicken Egg)",
         "Value": 277081856
       },
       {
-        "Name": "it_wp5405_00_0 (金壳鸡蛋)",
+        "Name": "it_wp5405_00_0 (Gold Chicken Egg)",
         "Value": 277083456
       },
       {
@@ -36790,23 +36790,23 @@
         "Value": 277238656
       },
       {
-        "Name": "it_wp6000_00_0",
+        "Name": "it_wp6000_00_0 (Sentinel Nine)",
         "Value": 278035456
       },
       {
-        "Name": "it_wp6001_00_0",
+        "Name": "it_wp6001_00_0 (Skull Shaker)",
         "Value": 278037056
       },
       {
-        "Name": "it_wp6100_00_0 (艾达篇 短管W-870)",
+        "Name": "it_wp6100_00_0 (SW - Sawed-off W-870)",
         "Value": 278195456
       },
       {
-        "Name": "it_wp6101_00_0 (艾达篇 芝加哥清道夫)",
+        "Name": "it_wp6101_00_0 (SW - Chicago Sweeper)",
         "Value": 278197056
       },
       {
-        "Name": "it_wp6102_00_0 (艾达篇 爆炸弩)",
+        "Name": "it_wp6102_00_0 (SW - Blast Crossbow)",
         "Value": 278198656
       },
       {
@@ -36814,27 +36814,27 @@
         "Value": 278198816
       },
       {
-        "Name": "it_wp6103_00_0 (艾达篇 黑尾AC)",
+        "Name": "it_wp6103_00_0 (SW - Blacktail AC)",
         "Value": 278200256
       },
       {
-        "Name": "it_wp6104_00_0 (艾达篇 TMP)",
+        "Name": "it_wp6104_00_0 (SW - TMP)",
         "Value": 278201856
       },
       {
-        "Name": "it_wp6105_00_0 (艾达篇 刺鳐战术步枪)",
+        "Name": "it_wp6105_00_0 (SW - Stingray)",
         "Value": 278203456
       },
       {
-        "Name": "it_wp6106_00_0 (艾达篇 火箭发射器)",
+        "Name": "it_wp6106_00_0 (SW - Rocket Launcher)",
         "Value": 278205056
       },
       {
-        "Name": "it_wp6107_00_0 (艾达篇 战术匕首)",
+        "Name": "it_wp6107_00_0 (SW - Tactical Knife)",
         "Value": 278206656
       },
       {
-        "Name": "it_wp6108_00_0 (艾达篇 精英匕首)",
+        "Name": "it_wp6108_00_0 (SW - Elite Knife)",
         "Value": 278208256
       },
       {
@@ -36842,23 +36842,23 @@
         "Value": 278209856
       },
       {
-        "Name": "it_wp6111_00_0 (艾达篇 无限火箭发射器)",
+        "Name": "it_wp6111_00_0 (SW - Infinite Rocket Launcher)",
         "Value": 278213056
       },
       {
-        "Name": "it_wp6112_00_0 (艾达篇 惩罚者 MC)",
+        "Name": "it_wp6112_00_0 (SW - Punisher MC)",
         "Value": 278214656
       },
       {
-        "Name": "it_wp6113_00_0 (艾达篇 Red9)",
+        "Name": "it_wp6113_00_0 (SW - Red9)",
         "Value": 278216256
       },
       {
-        "Name": "it_wp6114_00_0 (艾达篇 SR M1903)",
+        "Name": "it_wp6114_00_0 (SW - SR M1903)",
         "Value": 278217856
       },
       {
-        "Name": "it_wp6300_00_0 (XM96E1)",
+        "Name": "it_wp6300_00_0",
         "Value": 278515456
       },
       {
@@ -36878,7 +36878,7 @@
         "Value": 278520416
       },
       {
-        "Name": "it_wp6304_00_0 (佣兵克劳瑟的弓)",
+        "Name": "it_wp6304_00_0 (Mercenaries Krauser's bow)",
         "Value": 278521856
       },
       {
@@ -55690,27 +55690,27 @@
         "Value": 0
       },
       {
-        "Name": "StatusEffectID_00_010_000_0 (手枪弹药合成奖励触发率 +{0}%)",
+        "Name": "+{0}% handgun ammo craft bonus frequency.",
         "Value": 100000
       },
       {
-        "Name": "StatusEffectID_00_010_010_0 (马格南弹药合成奖励触发率 +{0}%)",
+        "Name": "+{0}% magnum ammo craft bonus frequency.",
         "Value": 100100
       },
       {
-        "Name": "StatusEffectID_00_010_020_0 (霰弹枪弹药合成奖励触发率 +{0}%)",
+        "Name": "+{0}% shotgun shells craft bonus frequency.",
         "Value": 100200
       },
       {
-        "Name": "StatusEffectID_00_010_030_0 (步枪弹药合成奖励触发率 +{0}%)",
+        "Name": "+{0}% rifle ammo craft bonus frequency.",
         "Value": 100300
       },
       {
-        "Name": "StatusEffectID_00_010_040_0 (冲锋枪弹药合成奖励触发率 +{0}%)",
+        "Name": "+{0}% submachine gun ammo craft bonus frequency.",
         "Value": 100400
       },
       {
-        "Name": "StatusEffectID_00_010_050_0 (弩箭雷合成奖励触发率 +{0}%)",
+        "Name": "+{0}% attachable mines craft bonus frequency.",
         "Value": 100500
       },
       {
@@ -55718,7 +55718,7 @@
         "Value": 100600
       },
       {
-        "Name": "StatusEffectID_00_010_070_0 (弩箭合成奖励触发率 +{0}%)",
+        "Name": "+{0}% bolts craft bonus frequency.",
         "Value": 100700
       },
       {
@@ -55726,83 +55726,83 @@
         "Value": 150000
       },
       {
-        "Name": "StatusEffectID_00_020_000_0 (合成所需火药 {0}盒)",
+        "Name": "{0} gunpowder used when crafting.",
         "Value": 200000
       },
       {
-        "Name": "StatusEffectID_00_030_000_0 (绿色草药的生命恢复效果 +{0}%)",
+        "Name": "+{0}% health recovery for green herbs.",
         "Value": 300000
       },
       {
-        "Name": "StatusEffectID_00_030_010_0 (各类鸡蛋的生命恢复效果 +{0}%)",
+        "Name": "+{0}% health recovery for all egg types.",
         "Value": 300100
       },
       {
-        "Name": "StatusEffectID_00_030_020_0 (黑鲈鱼的生命恢复效果 +{0}%)",
+        "Name": "+{0}% health recovery for black bass.",
         "Value": 300200
       },
       {
-        "Name": "StatusEffectID_00_030_030_0 (蝰蛇的生命恢复效果 +{0}%)",
+        "Name": "+{0}% health recovery for vipers.",
         "Value": 300300
       },
       {
-        "Name": "StatusEffectID_00_040_000_0 (奔跑速度 +{0}%)",
+        "Name": "+{0}% running speed.",
         "Value": 400000
       },
       {
-        "Name": "StatusEffectID_00_050_000_0 (红色草药掉落几率提高)",
+        "Name": "Increased drop rate for red herbs.",
         "Value": 500000
       },
       {
-        "Name": "StatusEffectID_00_050_010_0 (手枪弹药掉落几率提高)",
+        "Name": "Increased drop rate for handgun ammo.",
         "Value": 500100
       },
       {
-        "Name": "StatusEffectID_00_050_020_0 (物资（大）掉落几率提高)",
+        "Name": "Increased drop rate for resources (L).",
         "Value": 500200
       },
       {
-        "Name": "StatusEffectID_00_050_030_0 (比塞塔币掉落几率提高)",
+        "Name": "Increased drop rate for Pesetas.",
         "Value": 500300
       },
       {
-        "Name": "StatusEffectID_00_050_040_0 (火药掉落几率提高)",
+        "Name": "Increased drop rate for gunpowder.",
         "Value": 500400
       },
       {
-        "Name": "StatusEffectID_00_050_050_0 (物资（小）掉落几率提高)",
+        "Name": "StatusEffectID_00_050_050_0",
         "Value": 500500
       },
       {
-        "Name": "StatusEffectID_00_050_060_0 (绿色草药掉落几率提高)",
+        "Name": "StatusEffectID_00_050_060_0",
         "Value": 500600
       },
       {
-        "Name": "StatusEffectID_00_060_000_0 (火箭发射器购买价格 优惠{0}%)",
+        "Name": "{0}% off the rocket launcher.",
         "Value": 600000
       },
       {
-        "Name": "StatusEffectID_00_060_010_0 (物资购买价格 优惠{0}%)",
+        "Name": "{0}% off resources.",
         "Value": 600100
       },
       {
-        "Name": "StatusEffectID_00_070_000_0 (弹药出售价格 +{0}%)",
+        "Name": "+{0}% ammo resale value.",
         "Value": 700000
       },
       {
-        "Name": "StatusEffectID_00_070_010_0 (恢复类物品出售价格 +{0}%)",
+        "Name": "+{0}% recovery item resale value.",
         "Value": 700100
       },
       {
-        "Name": "StatusEffectID_00_070_020_0 (武器出售价格 +{0}%)",
+        "Name": "+{0}% weapon resale value.",
         "Value": 700200
       },
       {
-        "Name": "StatusEffectID_00_080_000_0 (匕首修理费用 优惠{0}％)",
+        "Name": "{0}% off knife repairs.",
         "Value": 800000
       },
       {
-        "Name": "StatusEffectID_00_080_010_0 (护甲背心修理费用 优惠{0}％)",
+        "Name": "{0}% off body armor repairs.",
         "Value": 800100
       },
       {
@@ -55810,35 +55810,35 @@
         "Value": 800200
       },
       {
-        "Name": "StatusEffectID_00_090_030_0 (武器改造费用 优惠{0}％)",
+        "Name": "{0}% off weapon upgrades.",
         "Value": 900300
       },
       {
-        "Name": "StatusEffectID_00_100_000_0 (大幅减轻所受伤害)",
+        "Name": "Greatly decreases the amount of damage you receive.",
         "Value": 1000000
       },
       {
-        "Name": "StatusEffectID_00_100_010_0 (大幅提升体术威力)",
+        "Name": "Greatly increases the power of melee attacks.",
         "Value": 1000100
       },
       {
-        "Name": "StatusEffectID_00_100_020_0 (大幅提升小刀威力)",
+        "Name": "Greatly increases the power of knife attacks.",
         "Value": 1000200
       },
       {
-        "Name": "StatusEffectID_00_105_000_0 (体术攻击暴击率 +{0}%)",
+        "Name": "+{0}% melee critical hit rate.",
         "Value": 1050000
       },
       {
-        "Name": "StatusEffectID_00_110_000_0 (所有枪支均可无限装填且不消耗所持弹药)",
+        "Name": "All weapons can be reloaded indefinitely without\r\nusing the ammo items in your possession.",
         "Value": 1100000
       },
       {
-        "Name": "StatusEffectID_00_120_000_0 (所有难度模式下均可使用瞄准辅助。)",
+        "Name": "Aim assist can be used regardless of game mode (difficulty).",
         "Value": 1200000
       },
       {
-        "Name": "StatusEffectID_00_130_000_0 (可使用抓钩枪卸下敌人的盾牌)",
+        "Name": "StatusEffectID_00_130_000_0",
         "Value": 1300000
       }
     ]
@@ -60954,7 +60954,7 @@
         "Value": 4000
       },
       {
-        "Name": "wp4001 (惩罚者)",
+        "Name": "wp4001 (Punisher)",
         "Value": 4001
       },
       {
@@ -60962,15 +60962,15 @@
         "Value": 4002
       },
       {
-        "Name": "wp4003 (黑尾)",
+        "Name": "wp4003 (Blacktail)",
         "Value": 4003
       },
       {
-        "Name": "wp4004 (玛蒂尔达)",
+        "Name": "wp4004 (Matilda)",
         "Value": 4004
       },
       {
-        "Name": "wp4005 (矿车手枪)",
+        "Name": "wp4005 (Minecart Handgun)",
         "Value": 4005
       },
       {
@@ -60978,11 +60978,11 @@
         "Value": 4100
       },
       {
-        "Name": "wp4101 (镇暴枪)",
+        "Name": "wp4101 (Riot Gun)",
         "Value": 4101
       },
       {
-        "Name": "wp4102 (打击者)",
+        "Name": "wp4102 (Striker)",
         "Value": 4102
       },
       {
@@ -60990,7 +60990,7 @@
         "Value": 4200
       },
       {
-        "Name": "wp4201 (芝加哥清道夫)",
+        "Name": "wp4201 (Chicago Sweeper)",
         "Value": 4201
       },
       {
@@ -61002,15 +61002,15 @@
         "Value": 4400
       },
       {
-        "Name": "wp4401 (刺鳐战术步枪)",
+        "Name": "wp4401 (Stingray)",
         "Value": 4401
       },
       {
-        "Name": "wp4402 (CQBR突击步枪)",
+        "Name": "wp4402 (CQBR Assault Rifle)",
         "Value": 4402
       },
       {
-        "Name": "wp4500 (折翼蝴蝶)",
+        "Name": "wp4500 (Broken Butterfly)",
         "Value": 4500
       },
       {
@@ -61018,23 +61018,23 @@
         "Value": 4501
       },
       {
-        "Name": "wp4502 (手炮)",
+        "Name": "wp4502 (Handcannon)",
         "Value": 4502
       },
       {
-        "Name": "wp4600 (弓弩枪)",
+        "Name": "wp4600 (Bolt Thrower)",
         "Value": 4600
       },
       {
-        "Name": "wp4701 (火焰喷射器)",
+        "Name": "wp4701",
         "Value": 4701
       },
       {
-        "Name": "wp4702 (火焰喷射器)",
+        "Name": "wp4702",
         "Value": 4702
       },
       {
-        "Name": "wp4800 (弩)",
+        "Name": "wp4800",
         "Value": 4800
       },
       {
@@ -61042,51 +61042,51 @@
         "Value": 4801
       },
       {
-        "Name": "wp4900 (火箭发射器)",
+        "Name": "wp4900 (Rocket Launcher)",
         "Value": 4900
       },
       {
-        "Name": "wp4901 (火箭发射器（特殊）)",
+        "Name": "wp4901 (Rocket Launcher Special)",
         "Value": 4901
       },
       {
-        "Name": "wp4902 (无限火箭发射器)",
+        "Name": "wp4902 (Infinite Rocket Launcher)",
         "Value": 4902
       },
       {
-        "Name": "wp5000 (格斗匕首)",
+        "Name": "wp5000 (Combat Knife)",
         "Value": 5000
       },
       {
-        "Name": "wp5001 (战斗匕首)",
+        "Name": "wp5001 (Fighting Knife)",
         "Value": 5001
       },
       {
-        "Name": "wp5002 (菜刀)",
+        "Name": "wp5002 (Kitchen Knife)",
         "Value": 5002
       },
       {
-        "Name": "wp5003 (靴刀)",
+        "Name": "wp5003 (Boot Knife)",
         "Value": 5003
       },
       {
-        "Name": "wp5004 (水管)",
+        "Name": "wp5004",
         "Value": 5004
       },
       {
-        "Name": "wp5005 (石头)",
+        "Name": "wp5005",
         "Value": 5005
       },
       {
-        "Name": "wp5006 (原始之刃)",
+        "Name": "wp5006 (Primal Knife)",
         "Value": 5006
       },
       {
-        "Name": "wp5300 (电锯)",
+        "Name": "wp5300",
         "Value": 5300
       },
       {
-        "Name": "wp5301 (红色电锯)",
+        "Name": "wp5301",
         "Value": 5301
       },
       {
@@ -61094,31 +61094,31 @@
         "Value": 5302
       },
       {
-        "Name": "wp5400 (破片手榴弹)",
+        "Name": "wp5400 (Hand Grenade)",
         "Value": 5400
       },
       {
-        "Name": "wp5401 (高爆手榴弹)",
+        "Name": "wp5401 (Heavy Grenade)",
         "Value": 5401
       },
       {
-        "Name": "wp5402 (闪光手榴弹)",
+        "Name": "wp5402 (Flash Grenade)",
         "Value": 5402
       },
       {
-        "Name": "wp5403 (白壳鸡蛋)",
+        "Name": "wp5403 (Chicken Egg)",
         "Value": 5403
       },
       {
-        "Name": "wp5404 (红壳鸡蛋)",
+        "Name": "wp5404 (Brown Chicken Egg)",
         "Value": 5404
       },
       {
-        "Name": "wp5405 (金壳鸡蛋)",
+        "Name": "wp5405 (Gold Chicken Egg)",
         "Value": 5405
       },
       {
-        "Name": "wp5406 (鱼叉)",
+        "Name": "wp5406",
         "Value": 5406
       },
       {
@@ -61126,7 +61126,7 @@
         "Value": 5407
       },
       {
-        "Name": "wp5408 (像闪关弹)",
+        "Name": "wp5408",
         "Value": 5408
       },
       {
@@ -61154,71 +61154,71 @@
         "Value": 5600
       },
       {
-        "Name": "wp5801 (斧头)",
+        "Name": "wp5801 (Small Hand Axe)",
         "Value": 5801
       },
       {
-        "Name": "wp5802 (厨房刀)",
+        "Name": "wp5802 (Large Kitchen Knife)",
         "Value": 5802
       },
       {
-        "Name": "wp5803 (小镰刀)",
+        "Name": "wp5803 (Small Sickle/hatchet)",
         "Value": 5803
       },
       {
-        "Name": "wp5804 (草叉)",
+        "Name": "wp5804 (Pitchfork)",
         "Value": 5804
       },
       {
-        "Name": "wp5805 (火把)",
+        "Name": "wp5805 (Torch)",
         "Value": 5805
       },
       {
-        "Name": "wp5806 (雷管)",
+        "Name": "wp5806 (Dynamite)",
         "Value": 5806
       },
       {
-        "Name": "wp5807 (连枷)",
+        "Name": "wp5807 (Flail)",
         "Value": 5807
       },
       {
-        "Name": "wp5808 (木盾)",
+        "Name": "wp5808 (Wooden shield)",
         "Value": 5808
       },
       {
-        "Name": "wp5809 (长镰刀)",
+        "Name": "wp5809 (Scythe)",
         "Value": 5809
       },
       {
-        "Name": "wp5810 (铁锤)",
+        "Name": "wp5810 (Big industrial hammer)",
         "Value": 5810
       },
       {
-        "Name": "wp5811 (电棍)",
+        "Name": "wp5811 (Stun rod)",
         "Value": 5811
       },
       {
-        "Name": "wp5812 (弩枪)",
+        "Name": "wp5812 (Crossbow)",
         "Value": 5812
       },
       {
-        "Name": "wp5813 (铁盾)",
+        "Name": "wp5813 (Metal shield)",
         "Value": 5813
       },
       {
-        "Name": "wp5814 (点燃的燃烧瓶)",
+        "Name": "wp5814 (Molotov cocktail)",
         "Value": 5814
       },
       {
-        "Name": "wp5815 (火弩枪)",
+        "Name": "wp5815 (Fire crossbow)",
         "Value": 5815
       },
       {
-        "Name": "wp5816 (弯刀)",
+        "Name": "wp5816 (Machette)",
         "Value": 5816
       },
       {
-        "Name": "wp5818 (长剑)",
+        "Name": "wp5818 (Sword)",
         "Value": 5818
       },
       {
@@ -61230,27 +61230,27 @@
         "Value": 5820
       },
       {
-        "Name": "wp5821 (洛阳铲)",
+        "Name": "wp5821 (Shovel)",
         "Value": 5821
       },
       {
-        "Name": "wp5822 (撬棍)",
+        "Name": "wp5822 (Crowbar)",
         "Value": 5822
       },
       {
-        "Name": "wp5823 (狼牙棒)",
+        "Name": "wp5823 (Mace)",
         "Value": 5823
       },
       {
-        "Name": "wp5824 (敌人的火箭筒)",
+        "Name": "wp5824 (Enemy Rocket launcher)",
         "Value": 5824
       },
       {
-        "Name": "wp5825 (克劳瑟的弓)",
+        "Name": "wp5825 (Krauser's bow)",
         "Value": 5825
       },
       {
-        "Name": "wp5826 (绯红提灯杖)",
+        "Name": "wp5826 (Red cultist's staff)",
         "Value": 5826
       },
       {
@@ -61258,11 +61258,11 @@
         "Value": 5827
       },
       {
-        "Name": "wp5830 (猪哥的弩)",
+        "Name": "wp5830 (Machine crossbow)",
         "Value": 5830
       },
       {
-        "Name": "wp5831 (燃烧瓶)",
+        "Name": "wp5831 (Molotov cocktail)",
         "Value": 5831
       },
       {
@@ -61274,47 +61274,47 @@
         "Value": 5837
       },
       {
-        "Name": "wp6000 (Sentinel Nine)",
+        "Name": "wp6000",
         "Value": 6000
       },
       {
-        "Name": "wp6001 (碎颅者)",
+        "Name": "wp6001",
         "Value": 6001
       },
       {
-        "Name": "wp6100 (艾达篇 短管W-870)",
+        "Name": "wp6100 (SW - Sawed-off W-870)",
         "Value": 6100
       },
       {
-        "Name": "wp6101 (艾达篇 芝加哥清道夫)",
+        "Name": "wp6101 (SW - Chicago Sweeper)",
         "Value": 6101
       },
       {
-        "Name": "wp6102 (艾达篇 爆炸弩)",
+        "Name": "wp6102 (SW - Blast Crossbow)",
         "Value": 6102
       },
       {
-        "Name": "wp6103 (艾达篇 黑尾AC)",
+        "Name": "wp6103 (SW - Blacktail AC)",
         "Value": 6103
       },
       {
-        "Name": "wp6104 (艾达篇 TMP)",
+        "Name": "wp6104 (SW - TMP)",
         "Value": 6104
       },
       {
-        "Name": "wp6105 (艾达篇 刺鳐战术步枪)",
+        "Name": "wp6105 (SW - Stingray)",
         "Value": 6105
       },
       {
-        "Name": "wp6106 (艾达篇 火箭发射器)",
+        "Name": "wp6106 (SW - Rocket Launcher)",
         "Value": 6106
       },
       {
-        "Name": "wp6107 (艾达篇 战术匕首)",
+        "Name": "wp6107 (SW - Tactical Knife)",
         "Value": 6107
       },
       {
-        "Name": "wp6108 (艾达篇 精英匕首)",
+        "Name": "wp6108 (SW - Elite Knife)",
         "Value": 6108
       },
       {
@@ -61326,19 +61326,19 @@
         "Value": 6110
       },
       {
-        "Name": "wp6111 (艾达篇 无限火箭发射器)",
+        "Name": "wp6111 (SW - Infinite Rocket Launcher)",
         "Value": 6111
       },
       {
-        "Name": "wp6112 (艾达篇 惩罚者 MC)",
+        "Name": "wp6112 (SW - Punisher MC)",
         "Value": 6112
       },
       {
-        "Name": "wp6113 (艾达篇 Red9)",
+        "Name": "wp6113 (SW - Red9)",
         "Value": 6113
       },
       {
-        "Name": "wp6114 (艾达篇 SR M1903)",
+        "Name": "wp6114 (SW - SR M1903)",
         "Value": 6114
       },
       {

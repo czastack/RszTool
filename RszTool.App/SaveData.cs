@@ -10,7 +10,7 @@ namespace RszTool.App
         public const string JsonPath = "RszTool.App.SaveData.json";
 
         [JsonConverter(typeof(EnumJsonConverter<GameName>))]
-        public GameName GameName { get; set; }
+        public GameName GameName { get; set; } = GameName.re4;
         public ObservableCollection<string> RecentFiles { get; set; } = new();
         public ContextIDData LastContextID { get; set; } = new();
     }

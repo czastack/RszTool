@@ -32,6 +32,21 @@ namespace RszTool
             {
                 EnumDict = new([]);
             }
+
+            // read in culture specific json
+            string cultureJsonPath = Path.ChangeExtension(jsonPath, $".{Thread.CurrentThread.CurrentCulture}.json");
+            if (File.Exists(cultureJsonPath))
+            {
+                using FileStream fileStream = File.OpenRead(cultureJsonPath);
+                EnumDict cultureDict = new(JsonSerializer.Deserialize<Dictionary<string, EnumData>>(fileStream) ?? []);
+                if (cultureDict.Dict.Count > 0)
+                {
+                    foreach (var item in cultureDict.Dict)
+                    {
+                        EnumDict.Dict[item.Key] = item.Value;
+                    }
+                }
+            }
         }
     }
 
