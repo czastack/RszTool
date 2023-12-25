@@ -13,6 +13,7 @@ namespace RszTool
         public long Offset { get; set; }
         public bool IsMemory => Stream is MemoryStream;
         private StringTable? StringTable;
+        private OffsetContentTable? OffsetContentTable;
         private Sunday? searcher = new();
 
         public long Position => Stream.Position;
@@ -702,7 +703,7 @@ namespace RszTool
 
         /// <summary>
         /// 获取start..end之间的数据，长度在2-128
-        /// 涉及unsafe操作，注意内存范围
+        /// 涉及unsafe操作，注意内存范围和对齐
         /// </summary>
         public static Span<byte> GetRangeSpan<TS, TE>(ref TS start, ref TE end) where TS : struct where TE : struct
         {
@@ -721,7 +722,7 @@ namespace RszTool
 
         /// <summary>
         /// 读取数据到start..end，长度在2-128
-        /// 涉及unsafe操作，注意内存范围
+        /// 涉及unsafe操作，注意内存范围和对齐
         /// </summary>
         public int ReadRange<TS, TE>(ref TS start, ref TE end) where TS : struct where TE : struct
         {
@@ -730,7 +731,7 @@ namespace RszTool
 
         /// <summary>
         /// 写入start..end范围内的数据，长度在2-128
-        /// 涉及unsafe操作，注意内存范围
+        /// 涉及unsafe操作，注意内存范围和对齐
         /// </summary>
         public bool WriteRange<TS, TE>(ref TS start, ref TE end) where TS : struct where TE : struct
         {
@@ -888,6 +889,33 @@ namespace RszTool
             stream.Position = currentPosition;
         }
 
+        public string ReadOffsetAsciiString()
+        {
+            return ReadAsciiString(ReadInt64());
+        }
+
+        public void ReadOffsetAsciiString(out string text)
+        {
+            text = ReadAsciiString(ReadInt64());
+        }
+
+        public string ReadOffsetWString()
+        {
+            return ReadWString(ReadInt64());
+        }
+
+        public void ReadOffsetWString(out string text)
+        {
+            long offset = ReadInt64();
+            text = ReadWString(offset);
+        }
+
+        public void WriteOffsetWString(string text)
+        {
+            StringTableAdd(text);
+            WriteInt64(0);
+        }
+
         public void StringTableAdd(string? text)
         {
             if (text != null)
@@ -902,18 +930,7 @@ namespace RszTool
         /// </summary>
         public void StringTableFlush()
         {
-            if (StringTable == null || StringTable.Count == 0) return;
-            foreach (var item in StringTable)
-            {
-                item.TextStart = Tell();
-                foreach (var offsetStart in item.OffsetStart)
-                {
-                    WriteInt64(offsetStart, item.TextStart);
-                }
-                Seek(item.TextStart);
-                WriteWString(item.Text);
-            }
-            StringTable.Clear();
+            StringTable?.Flush(this);
         }
 
         /// <summary>
@@ -921,12 +938,7 @@ namespace RszTool
         /// </summary>
         public void StringTableWriteStrings()
         {
-            if (StringTable == null || StringTable.Count == 0) return;
-            foreach (var item in StringTable)
-            {
-                item.TextStart = Tell();
-                WriteWString(item.Text);
-            }
+            StringTable?.WriteStrings(this);
         }
 
         /// <summary>
@@ -934,19 +946,37 @@ namespace RszTool
         /// </summary>
         public void StringTableFlushOffsets()
         {
-            if (StringTable == null || StringTable.Count == 0) return;
-            foreach (var item in StringTable)
-            {
-                if (item.TextStart == -1)
-                {
-                    throw new Exception($"StringStart of {item.Text} not set");
-                }
-                foreach (var offsetStart in item.OffsetStart)
-                {
-                    WriteInt64(offsetStart, item.TextStart);
-                }
-            }
-            StringTable.Clear();
+            StringTable?.FlushOffsets(this);
+        }
+
+        public void OffsetContentTableAdd(Action<FileHandler> write)
+        {
+            OffsetContentTable ??= new();
+            OffsetContentTable.Add(write, Tell());
+        }
+
+        /// <summary>
+        /// 写入字符串表字符串和偏移
+        /// </summary>
+        public void OffsetContentTableFlush()
+        {
+            OffsetContentTable?.Flush(this);
+        }
+
+        /// <summary>
+        /// 写入字符串表的字符串
+        /// </summary>
+        public void OffsetContentTableWriteContents()
+        {
+            OffsetContentTable?.WriteContents(this);
+        }
+
+        /// <summary>
+        /// 写入字符串表的偏移，并清空数据
+        /// </summary>
+        public void OffsetContentTableFlushOffsets()
+        {
+            OffsetContentTable?.FlushOffsets(this);
         }
     }
 
@@ -957,10 +987,23 @@ namespace RszTool
         // 引用改字符串的偏移集合
         public HashSet<long> OffsetStart { get; } = new();
         public long TextStart { get; set; } = -1;
+        public bool IsAscii { get; set; }
 
         public StringTableItem(string text)
         {
             Text = text;
+        }
+
+        public void Write(FileHandler handler)
+        {
+            if (IsAscii)
+            {
+                handler.WriteAsciiString(Text);
+            }
+            else
+            {
+                handler.WriteWString(Text);
+            }
         }
     }
 
@@ -991,7 +1034,124 @@ namespace RszTool
             item.OffsetStart.Add(offset);
         }
 
+        public void Flush(FileHandler handler)
+        {
+            if (Count == 0) return;
+            foreach (var item in Items)
+            {
+                item.TextStart = handler.Tell();
+                foreach (var offsetStart in item.OffsetStart)
+                {
+                    handler.WriteInt64(offsetStart, item.TextStart);
+                }
+                handler.Seek(item.TextStart);
+                item.Write(handler);
+            }
+            Clear();
+        }
+
+        public void WriteStrings(FileHandler handler)
+        {
+            if (Count == 0) return;
+            foreach (var item in Items)
+            {
+                item.TextStart = handler.Tell();
+                item.Write(handler);
+            }
+        }
+
+        public void FlushOffsets(FileHandler handler)
+        {
+            if (Count == 0) return;
+            foreach (var item in Items)
+            {
+                if (item.TextStart == -1)
+                {
+                    throw new Exception($"StringStart of {item.Text} not set");
+                }
+                foreach (var offsetStart in item.OffsetStart)
+                {
+                    handler.WriteInt64(offsetStart, item.TextStart);
+                }
+            }
+            Clear();
+        }
+
         public IEnumerator<StringTableItem> GetEnumerator() => Items.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => Items.GetEnumerator();
+    }
+
+
+    public class OffsetContent
+    {
+        public long OffsetStart { get; set; }
+        public long Offset { get; set; }
+        public Action<FileHandler> Write { get; set; }
+
+        public OffsetContent(Action<FileHandler> write)
+        {
+            Write = write;
+        }
+    }
+
+
+    public class OffsetContentTable : IEnumerable<OffsetContent>
+    {
+        public List<OffsetContent> Items { get; } = new();
+        public int Count => Items.Count;
+
+        public void Clear()
+        {
+            Items.Clear();
+        }
+
+        public void Add(Action<FileHandler> write, long offset)
+        {
+            var item = new OffsetContent(write)
+            {
+                OffsetStart = offset
+            };
+            Items.Add(item);
+        }
+
+        public void Flush(FileHandler handler)
+        {
+            if (Count == 0) return;
+            foreach (var item in Items)
+            {
+                item.Offset = handler.Tell();
+                handler.WriteInt64(item.OffsetStart, item.Offset);
+                item.Write(handler);
+            }
+            Clear();
+        }
+
+        public void WriteContents(FileHandler handler)
+        {
+            if (Count == 0) return;
+            foreach (var item in Items)
+            {
+                item.Offset = handler.Tell();
+                item.Write(handler);
+            }
+        }
+
+        public void FlushOffsets(FileHandler handler)
+        {
+            if (Count == 0) return;
+            foreach (var item in Items)
+            {
+                if (item.Offset == -1)
+                {
+                    throw new Exception($"Offset of {item} not set");
+                }
+                handler.WriteInt64(item.OffsetStart, item.Offset);
+            }
+            Clear();
+        }
+
+        public IEnumerator<OffsetContent> GetEnumerator() => Items.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => Items.GetEnumerator();
     }
@@ -1000,12 +1160,21 @@ namespace RszTool
     public interface IFileHandlerAction
     {
         bool Success { get; }
-        public IFileHandlerAction? Then<T>(ref T value) where T : struct;
+        public bool Handle<T>(ref T value) where T : struct;
     }
 
 
     public static class IFileHandlerActionExtension
     {
+        public static IFileHandlerAction? Then<T>(this IFileHandlerAction action, ref T value) where T : struct
+        {
+            if (action.Handle(ref value))
+            {
+                return action;
+            }
+            return null;
+        }
+
         public static IFileHandlerAction? Then<T>(this IFileHandlerAction action, bool condition, ref T value) where T : struct
         {
             return condition ? action.Then(ref value) : action;
@@ -1019,14 +1188,10 @@ namespace RszTool
         public int LastResult { get; set; } = -1;
         public readonly bool Success => LastResult != 0;
 
-        public IFileHandlerAction? Then<T>(ref T value) where T : struct
+        public bool Handle<T>(ref T value) where T : struct
         {
-            if (Success)
-            {
-                LastResult = Handler.Read(ref value);
-                return this;
-            }
-            return null;
+            LastResult = Handler.Read(ref value);
+            return Success;
         }
     }
 
@@ -1036,14 +1201,10 @@ namespace RszTool
         public FileHandler Handler { get; set; } = handler;
         public bool Success { get; set; }
 
-        public IFileHandlerAction? Then<T>(ref T value) where T : struct
+        public bool Handle<T>(ref T value) where T : struct
         {
-            if (Success)
-            {
-                Success = Handler.Write(ref value);
-                return this;
-            }
-            return null;
+            Success = Handler.Write(ref value);
+            return Success;
         }
     }
 }

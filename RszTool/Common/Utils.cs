@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace RszTool.Common
@@ -84,6 +85,11 @@ namespace RszTool.Common
             }
             floatValue = 0;
             return false;
+        }
+
+        public static void Debug(object value, [CallerArgumentExpression(nameof(value))] string? name = null)
+        {
+            Console.WriteLine($"{name} = {value}");
         }
     }
 
