@@ -46,20 +46,20 @@ namespace RszTool
             UserdataInfoList.Clear();
 
             var handler = FileHandler;
+            ref var header = ref Header.Data;
             if (!Header.Read(handler)) return false;
-            if (Header.Data.magic != Magic)
+            if (header.magic != Magic)
             {
                 throw new InvalidDataException($"{handler.FilePath} Not a SCN file");
             }
 
-            handler.Seek(Header.Data.resourceInfoOffset);
-            ResourceInfoList.Read(handler, Header.Data.resourceCount);
+            handler.Seek(header.resourceInfoOffset);
+            ResourceInfoList.Read(handler, header.resourceCount);
 
-            handler.Seek(Header.Data.userdataInfoOffset);
-            UserdataInfoList.Read(handler, Header.Data.userdataCount);
+            handler.Seek(header.userdataInfoOffset);
+            UserdataInfoList.Read(handler, header.userdataCount);
 
-            RSZ = new RSZFile(Option, FileHandler.WithOffset(Header.Data.dataOffset));
-            RSZ.Read(0, false);
+            RSZ = ReadRsz(header.dataOffset);
             return true;
         }
 
@@ -84,8 +84,7 @@ namespace RszTool
             handler.StringTableFlush();
 
             header.dataOffset = handler.Tell();
-            // 内部偏移是从0开始算的
-            RSZ!.WriteTo(FileHandler.WithOffset(header.dataOffset));
+            WriteRsz(RSZ!, header.dataOffset);
 
             header.magic = Magic;
             header.resourceCount = ResourceInfoList.Count;

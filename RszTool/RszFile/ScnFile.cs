@@ -318,8 +318,7 @@ namespace RszTool
             handler.Seek(header.userdataInfoOffset);
             UserdataInfoList.Read(handler, header.userdataCount);
 
-            RSZ = new RSZFile(Option, FileHandler.WithOffset(header.dataOffset));
-            RSZ.Read(0, false);
+            RSZ = ReadRsz(header.dataOffset);
 
             return true;
         }
@@ -363,7 +362,7 @@ namespace RszTool
 
             handler.Align(16);
             header.dataOffset = handler.Tell();
-            RSZ!.WriteTo(FileHandler.WithOffset(header.dataOffset));
+            WriteRsz(RSZ!, header.dataOffset);
 
             header.magic = Magic;
             header.infoCount = GameObjectInfoList.Count;

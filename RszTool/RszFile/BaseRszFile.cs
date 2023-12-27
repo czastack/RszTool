@@ -138,5 +138,18 @@ namespace RszTool
             FileHandler.SaveAs(path);
             return result;
         }
+
+        protected RSZFile ReadRsz(long offset)
+        {
+            RSZFile rsz = new(Option, FileHandler.WithOffset(offset));
+            rsz.Read(0, false);
+            return rsz;
+        }
+
+        protected bool WriteRsz(RSZFile rsz, long offset)
+        {
+            // 内部偏移是从0开始算的
+            return rsz.WriteTo(FileHandler.WithOffset(offset));
+        }
     }
 }
