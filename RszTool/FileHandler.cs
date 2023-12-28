@@ -1159,8 +1159,10 @@ namespace RszTool
 
     public interface IFileHandlerAction
     {
+        FileHandler Handler { get; }
         bool Success { get; }
-        public bool Handle<T>(ref T value) where T : struct;
+        bool Handle<T>(ref T value) where T : struct;
+        IFileHandlerAction HandleOffsetWString(ref string value);
     }
 
 
@@ -1179,6 +1181,12 @@ namespace RszTool
         {
             return condition ? action.Then(ref value) : action;
         }
+
+        public static IFileHandlerAction? Skip(this IFileHandlerAction action, long skip)
+        {
+            action.Handler.Skip(skip);
+            return action;
+        }
     }
 
 
@@ -1193,6 +1201,12 @@ namespace RszTool
             LastResult = Handler.Read(ref value);
             return Success;
         }
+
+        public readonly IFileHandlerAction HandleOffsetWString(ref string value)
+        {
+            Handler.ReadOffsetWString(out value);
+            return this;
+        }
     }
 
 
@@ -1205,6 +1219,12 @@ namespace RszTool
         {
             Success = Handler.Write(ref value);
             return Success;
+        }
+
+        public readonly IFileHandlerAction HandleOffsetWString(ref string value)
+        {
+            Handler.WriteOffsetWString(value);
+            return this;
         }
     }
 }

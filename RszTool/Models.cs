@@ -168,4 +168,20 @@ namespace RszTool
             return MemberwiseClone();
         }
     }
+
+
+    public abstract class ReadWriteModel : BaseModel
+    {
+        protected abstract bool ReadWrite(IFileHandlerAction action);
+
+        protected override bool DoRead(FileHandler handler)
+        {
+            return ReadWrite(new FileHandlerRead(handler));
+        }
+
+        protected override bool DoWrite(FileHandler handler)
+        {
+            return ReadWrite(new FileHandlerWrite(handler));
+        }
+    }
 }
