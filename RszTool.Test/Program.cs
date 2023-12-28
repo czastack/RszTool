@@ -42,7 +42,7 @@ namespace RszTool.Test
             userFile.WriteTo(newFileHandler);
 
             UserFile newUserFile = new(option, newFileHandler);
-            newUserFile.Read(0);
+            newUserFile.Read();
             if (newUserFile.RSZ != null)
             {
                 foreach (var item in newUserFile.RSZ.InstanceList)
@@ -75,7 +75,7 @@ namespace RszTool.Test
             pfbFile.WriteTo(newFileHandler);
 
             PfbFile newPfbFile = new(option, newFileHandler);
-            newPfbFile.Read(0);
+            newPfbFile.Read();
 
             if (newPfbFile.RSZ != null)
             {
@@ -97,7 +97,7 @@ namespace RszTool.Test
             pfbFile.WriteTo(newFileHandler);
 
             PfbFile newPfbFile = new(option, newFileHandler);
-            newPfbFile.Read(0);
+            newPfbFile.Read();
 
             if (newPfbFile.RSZ != null)
             {
@@ -147,7 +147,7 @@ namespace RszTool.Test
             scnFile.WriteTo(newFileHandler);
 
             ScnFile newScnFile = new(option, newFileHandler);
-            newScnFile.Read(0);
+            newScnFile.Read();
 
             if (newScnFile.RSZ != null)
             {
@@ -253,7 +253,7 @@ namespace RszTool.Test
             mdfFile.WriteTo(newFileHandler);
 
             // MdfFile newMdfFile = new(option, newFileHandler);
-            // newMdfFile.Read(0);
+            // newMdfFile.Read();
         }
 
         static void TestMurMur3Hash()

@@ -3,7 +3,6 @@ namespace RszTool
     public abstract class BaseRszFile : IDisposable
     {
         public RszFileOption Option { get; set; }
-        public long Start { get; set; }
         public long Size { get; protected set; }
 
         public FileHandler FileHandler { get; set; }
@@ -37,53 +36,26 @@ namespace RszTool
             }
         }
 
+        /// <summary>
+        /// Read data from file start from 0
+        /// </summary>
+        /// <returns></returns>
         public bool Read()
         {
-            Start = FileHandler.Tell();
+            FileHandler.Seek(0);
             bool result = DoRead();
-            Size = FileHandler.Tell() - Start;
+            Size = FileHandler.Tell();
             // Console.WriteLine($"{this} Start: {Start}, Read size: {Size}");
-            return result;
-        }
-
-        public bool Read(long start, bool jumpBack = true)
-        {
-            var handler = FileHandler;
-            long pos = handler.Tell();
-            if (start != -1)
-            {
-                handler.Seek(start);
-            }
-            bool result = Read();
-            if (jumpBack) handler.Seek(pos);
             return result;
         }
 
         public bool Write()
         {
-            Start = FileHandler.Tell();
+            FileHandler.Seek(0);
             bool result = DoWrite();
-            Size = FileHandler.Tell() - Start;
+            Size = FileHandler.Tell();
             // Console.WriteLine($"{this} Start: {Start}, Write size: {Size}");
             return result;
-        }
-
-        public bool Write(long start, bool jumpBack = true)
-        {
-            var handler = FileHandler;
-            long pos = handler.Tell();
-            if (start != -1)
-            {
-                handler.Seek(start);
-            }
-            bool result = Write();
-            if (jumpBack) handler.Seek(pos);
-            return result;
-        }
-
-        public bool Rewrite(bool jumpBack = true)
-        {
-            return Write(Start, jumpBack);
         }
 
         protected abstract bool DoRead();
@@ -142,7 +114,7 @@ namespace RszTool
         protected RSZFile ReadRsz(long offset)
         {
             RSZFile rsz = new(Option, FileHandler.WithOffset(offset));
-            rsz.Read(0, false);
+            rsz.Read();
             return rsz;
         }
 

@@ -95,7 +95,7 @@ namespace RszTool
 
                         long pos = handler.Tell();
                         RSZFile embeddedRSZFile = new(Option, handler.WithOffset(rszUserDataInfo.RSZOffset));
-                        embeddedRSZFile.Read(0, false);
+                        embeddedRSZFile.Read();
                         EmbeddedRSZFileList.Add(embeddedRSZFile);
                         handler.Seek(pos);
                     }
