@@ -1,10 +1,9 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace RszTool
+namespace RszTool.Common
 {
-    public class PakHash
+    public class MurMur3HashUtils
     {
         private static uint MurMur3Hash(ReadOnlySpan<byte> bytes)
         {

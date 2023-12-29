@@ -346,10 +346,18 @@ namespace RszTool
             return Stream.Read(buffer, 0, length == -1 ? buffer.Length : length);
         }
 
-        public int ReadBytes(byte[] buffer, long tell, int length = -1, bool jumpBack = true)
+        public int ReadBytes(long tell, byte[] buffer, int length = -1, bool jumpBack = true)
         {
             using var defer = SeekJumpBack(tell, jumpBack);
             return Stream.Read(buffer, 0, length == -1 ? buffer.Length : length);
+        }
+
+        public byte[] ReadBytes(long tell, int length, bool jumpBack = true)
+        {
+            using var defer = SeekJumpBack(tell, jumpBack);
+            var buffer = new byte[length];
+            Stream.Read(buffer);
+            return buffer;
         }
 
         public void WriteByte(byte value)
@@ -834,7 +842,7 @@ namespace RszTool
 
             while (addr < end)
             {
-                int readCount = ReadBytes(buffer, addr, PAGE_SIZE);
+                int readCount = ReadBytes(addr, buffer, PAGE_SIZE);
                 if (readCount != 0)
                 {
                     int result = searcher.Search(buffer, 0, readCount, param.ordinal);

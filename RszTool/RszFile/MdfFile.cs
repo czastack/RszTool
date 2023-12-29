@@ -1,4 +1,5 @@
 using System.Numerics;
+using RszTool.Common;
 
 namespace RszTool
 {
@@ -81,7 +82,7 @@ namespace RszTool
                 if (matName != null)
                 {
                     handler.StringTableAdd(matName);
-                    matNameHash = PakHash.GetHash(matName);
+                    matNameHash = MurMur3HashUtils.GetHash(matName);
                 }
                 handler.Write(ref matNameOffset);
                 handler.Write(ref matNameHash);
@@ -143,8 +144,8 @@ namespace RszTool
                 if (texType != null)
                 {
                     handler.StringTableAdd(texType);
-                    hash = PakHash.GetHash(texType);
-                    asciiHash = PakHash.GetAsciiHash(texType);
+                    hash = MurMur3HashUtils.GetHash(texType);
+                    asciiHash = MurMur3HashUtils.GetAsciiHash(texType);
                 }
                 handler.Write(ref texTypeOffset);
                 handler.Write(ref hash);
@@ -203,8 +204,8 @@ namespace RszTool
                 if (paramName != null)
                 {
                     handler.StringTableAdd(paramName);
-                    hash = PakHash.GetHash(paramName);
-                    asciiHash = PakHash.GetAsciiHash(paramName);
+                    hash = MurMur3HashUtils.GetHash(paramName);
+                    asciiHash = MurMur3HashUtils.GetAsciiHash(paramName);
                 }
                 handler.Write(ref paramNameOffset);
                 handler.Write(ref hash);

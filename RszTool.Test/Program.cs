@@ -270,7 +270,7 @@ namespace RszTool.Test
             };
             for (int i = 0; i < strings.Length; i++)
             {
-                uint hash = PakHash.GetHash(strings[i]);
+                uint hash = MurMur3HashUtils.GetHash(strings[i]);
                 string result = hash == hashes[i] ? "" : $", expacted {hashes[i]:X}";
                 Console.WriteLine($"hash of {strings[i]} is {hash:X}{result}");
             }
