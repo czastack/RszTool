@@ -524,6 +524,12 @@ namespace RszTool
             return Values[index];
         }
 
+        public void SetFieldValue(int index, object value)
+        {
+            Values[index] = value;
+            // TODO ValueChangedEvent
+        }
+
         /// <summary>
         /// 设置字段值
         /// </summary>

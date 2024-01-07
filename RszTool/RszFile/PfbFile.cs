@@ -152,6 +152,7 @@ namespace RszTool
         public List<UserdataInfo> UserdataInfoList { get; } = new();
         public RSZFile? RSZ { get; private set; }
         public ObservableCollection<GameObjectData>? GameObjectDatas { get; set; }
+        public bool ResourceChanged { get; set; } = false;
 
         public PfbFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
@@ -231,6 +232,10 @@ namespace RszTool
             if (StructChanged)
             {
                 RebuildInfoTable();
+            }
+            if (ResourceChanged)
+            {
+                RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ!);
             }
             FileHandler handler = FileHandler;
             handler.Clear();
@@ -417,6 +422,7 @@ namespace RszTool
             RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);
             RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ);
             StructChanged = false;
+            ResourceChanged = false;
         }
 
         private void AddGameObjectInfoRecursion(GameObjectData gameObject)

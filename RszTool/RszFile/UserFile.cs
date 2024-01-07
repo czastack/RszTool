@@ -16,6 +16,7 @@ namespace RszTool
         public List<ResourceInfo> ResourceInfoList { get; } = new();
         public List<UserdataInfo> UserdataInfoList { get; } = new();
         public RSZFile? RSZ { get; private set; }
+        public bool ResourceChanged { get; set; } = false;
 
 
         public UserFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
@@ -69,6 +70,10 @@ namespace RszTool
             {
                 RebuildInfoTable();
             }
+            if (ResourceChanged)
+            {
+                RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ!);
+            }
             FileHandler handler = FileHandler;
             handler.Clear();
             ref var header = ref Header.Data;
@@ -99,6 +104,7 @@ namespace RszTool
             RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);
             RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ);
             StructChanged = false;
+            ResourceChanged = false;
         }
     }
 }

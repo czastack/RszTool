@@ -253,6 +253,7 @@ namespace RszTool
 
         public ObservableCollection<FolderData>? FolderDatas { get; set; }
         public ObservableCollection<GameObjectData>? GameObjectDatas { get; set; }
+        public bool ResourceChanged { get; set; } = false;
 
         public ScnFile(RszFileOption option, FileHandler fileHandler) : base(option, fileHandler)
         {
@@ -328,6 +329,10 @@ namespace RszTool
             if (StructChanged)
             {
                 RebuildInfoTable();
+            }
+            if (ResourceChanged)
+            {
+                RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ!);
             }
 
             FileHandler handler = FileHandler;
@@ -594,6 +599,7 @@ namespace RszTool
             RszUtils.SyncUserDataFromRsz(UserdataInfoList, RSZ);
             RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ);
             StructChanged = false;
+            ResourceChanged = false;
         }
 
         /// <summary>

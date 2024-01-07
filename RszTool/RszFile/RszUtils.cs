@@ -2,6 +2,11 @@ namespace RszTool
 {
     public static class RszUtils
     {
+        public static bool IsResourcePath(string path)
+        {
+            return path.Contains('/') && Path.GetExtension(path) != "";
+        }
+
         /// <summary>
         /// 添加RSZ中用到的UserData
         /// </summary>
@@ -53,7 +58,7 @@ namespace RszTool
             }
             void CheckResouce(string path)
             {
-                if (path.Contains('/') && Path.GetExtension(path) != "" && !addedPath.Contains(path))
+                if (IsResourcePath(path) && !addedPath.Contains(path))
                 {
                     addedPath.Add(path);
                     resourcesInfos.Add(new ResourceInfo { Path = path });
