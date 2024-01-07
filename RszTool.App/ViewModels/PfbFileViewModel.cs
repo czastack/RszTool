@@ -153,11 +153,8 @@ namespace RszTool.App.ViewModels
         {
             var item = (GameObejctComponentViewModel)arg;
             var gameObject = item.GameObject;
-            if (CopiedInstance != null && File.GetRSZ() is RSZFile rsz)
-            {
-                PfbFile.RemoveComponent(gameObject, item.Instance);
-                Changed = true;
-            }
+            PfbFile.RemoveComponent(gameObject, item.Instance);
+            Changed = true;
         }
     }
 }
