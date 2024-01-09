@@ -13,14 +13,14 @@
     <UserControl.Resources>
         <ResourceDictionary Source="Icons.xaml" />
     </UserControl.Resources>
-    <Grid>
+    <Grid PreviewKeyDown="OnTextBoxPreviewKeyDown">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock Text="{res:Text FindInstances}" Grid.Row="0" Grid.Column="0" />
-        <Button Command="{Binding SearchInstances}" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Background="Transparent" BorderBrush="Transparent">
+        <Button x:Name="SearchButton" Command="{Binding SearchInstances}" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Background="Transparent" BorderBrush="Transparent">
             <Image Source="{StaticResource searchDrawingImage}" Width="16" />
         </Button>
 

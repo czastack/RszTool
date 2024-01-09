@@ -13,7 +13,7 @@
     <UserControl.Resources>
         <ResourceDictionary Source="Icons.xaml" />
     </UserControl.Resources>
-    <Grid>
+    <Grid PreviewKeyDown="OnTextBoxPreviewKeyDown">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
@@ -30,7 +30,7 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
             <CheckBox Content="{res:Text IncludeChildren}" IsChecked="{Binding GameObjectSearchViewModel.IncludeChildren}" />
         </StackPanel>
-        <Button Command="{Binding SearchGameObjects}" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Background="Transparent" BorderBrush="Transparent">
+        <Button x:Name="SearchButton" Command="{Binding SearchGameObjects}" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Background="Transparent" BorderBrush="Transparent">
             <Image Source="{StaticResource searchDrawingImage}" Width="16" />
         </Button>
 

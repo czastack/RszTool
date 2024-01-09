@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using RszTool.App.ViewModels;
 
 namespace RszTool.App.Views
@@ -12,6 +13,15 @@ namespace RszTool.App.Views
         public SearchInstanceView()
         {
             InitializeComponent();
+        }
+
+        private void OnTextBoxPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && e.OriginalSource is TextBox textBox)
+            {
+                textBox.GetBindingExpression(TextBox.TextProperty).UpdateSource();
+                SearchButton.Command.Execute(null);
+            }
         }
 
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
