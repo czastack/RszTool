@@ -243,7 +243,7 @@ namespace RszTool
             return sb.ToString();
         }
 
-        private void FixInstanceObjectIndex(RszInstance instance)
+        private void FixObjectTableInstanceId(RszInstance instance)
         {
             if (instance.ObjectTableIndex >= 0 && instance.ObjectTableIndex < ObjectTableList.Count)
             {
@@ -270,7 +270,7 @@ namespace RszTool
                     instance.Index = list.Count;
                     list.Add(instance);
                 }
-                FixInstanceObjectIndex(instance);
+                FixObjectTableInstanceId(instance);
             }
         }
 
@@ -318,7 +318,7 @@ namespace RszTool
                     {
                         item.Index = list.Count;
                         list.Add(item);
-                        FixInstanceObjectIndex(item);
+                        FixObjectTableInstanceId(item);
                     }
                 }
             }

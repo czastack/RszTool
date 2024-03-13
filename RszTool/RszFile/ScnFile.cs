@@ -448,7 +448,9 @@ namespace RszTool
             {
                 if (folderIdxMap.TryGetValue(info.Data.parentId, out var folder))
                 {
-                    folder.Children.Add(folderIdxMap[info.Data.objectId]);
+                    var childFolder = folderIdxMap[info.Data.objectId];
+                    folder.Children.Add(childFolder);
+                    childFolder.Parent = folder;
                 }
             }
 
