@@ -132,6 +132,7 @@ namespace RszTool
         dmc5,
         mhrise,
         sf6,
+        dd2,
     }
 
 
@@ -148,6 +149,7 @@ namespace RszTool
         re3rt = re2rt,
         re7rt = re2rt,
         re4 = 7,
+        dd2 = re4,
         sf6 = 8,
     }
 
