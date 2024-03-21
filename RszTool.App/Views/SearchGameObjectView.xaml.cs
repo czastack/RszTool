@@ -30,6 +30,7 @@ namespace RszTool.App.Views
             if (DataContext is BaseRszFileViewModel viewModel)
             {
                 viewModel.SelectedItem = e.NewValue;
+                viewModel.SelectedSearchResult = e.NewValue;
             }
         }
     }

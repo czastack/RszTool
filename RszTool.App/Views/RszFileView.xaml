@@ -23,6 +23,6 @@
         </Grid.RowDefinitions>
         <TextBox Text="{Binding FilePath, Mode=OneWay}" IsReadOnly="True" Margin="0 0 0 5" Grid.Row="0" />
         <TextBox Text="{Binding SelectedItem, Mode=OneWay}" IsReadOnly="True" Margin="0 0 0 5" Grid.Row="1" />
-        <TreeView Grid.Row="2" SelectedItemChanged="TreeView_SelectedItemChanged" ItemsSource="{Binding TreeViewItems}" />
+        <TreeView Grid.Row="2" x:Name="TreeView" SelectedItemChanged="TreeView_SelectedItemChanged" ItemsSource="{Binding TreeViewItems}" />
     </Grid>
 </UserControl>

@@ -12,6 +12,27 @@ namespace RszTool.App.Views
         public RszFileView()
         {
             InitializeComponent();
+            DataContextChanged += OnDataContextChanged;
+        }
+
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue is BaseRszFileViewModel viewModel)
+            {
+                viewModel.SelectedSearchResultChanged += OnSelectedSearchResultChanged;
+            }
+        }
+
+        private void OnSelectedSearchResultChanged(object? obj)
+        {
+            if (obj != null)
+            {
+                var item = TreeViewUtils.GetTreeViewItem(TreeView, obj);
+                if (item != null)
+                {
+                    item.IsSelected = true;
+                }
+            }
         }
 
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

@@ -24,6 +24,7 @@ namespace RszTool.App.ViewModels
             }
         }
         private bool changed;
+
         public bool Changed
         {
             get => changed;
@@ -33,7 +34,18 @@ namespace RszTool.App.ViewModels
                 HeaderChanged?.Invoke();
             }
         }
+        public event Action<object?>? SelectedSearchResultChanged;
         public object? SelectedItem { get; set; }
+        private object? selectedSearchResult;
+        public object? SelectedSearchResult
+        {
+            get => selectedSearchResult;
+            set
+            {
+                selectedSearchResult = value;
+                SelectedSearchResultChanged?.Invoke(value);
+            }
+        }
         public InstanceSearchViewModel InstanceSearchViewModel { get; } = new();
         public ObservableCollection<RszInstance>? SearchInstanceList { get; set; }
         public RszFileOption? RszFileOption => File.GetRSZ()?.Option;
