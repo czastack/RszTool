@@ -9,8 +9,15 @@ namespace RszTool.App.Views
         /// </summary>
         public void BringIntoView(int index)
         {
-
             BringIndexIntoView(index);
+        }
+
+        protected override void OnClearChildren()
+        {
+            try
+            {
+                base.OnClearChildren();
+            } catch {}
         }
     }
 }

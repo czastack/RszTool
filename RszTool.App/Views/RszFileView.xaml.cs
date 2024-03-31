@@ -27,11 +27,11 @@ namespace RszTool.App.Views
         {
             if (obj != null)
             {
-                var item = TreeViewUtils.GetTreeViewItem(TreeView, obj);
-                if (item != null)
-                {
-                    item.IsSelected = true;
-                }
+                // var item = TreeViewUtils.GetTreeViewItem(TreeView, obj);
+                // if (item != null)
+                // {
+                //     item.IsSelected = true;
+                // }
             }
         }
 
