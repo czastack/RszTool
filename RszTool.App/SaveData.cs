@@ -13,6 +13,20 @@ namespace RszTool.App
         public GameName GameName { get; set; } = GameName.re4;
         public ObservableCollection<string> RecentFiles { get; set; } = new();
         public ContextIDData LastContextID { get; set; } = new();
+
+
+        public void AddRecentFile(string path)
+        {
+            int recentIndex = RecentFiles.IndexOf(path);
+            if (recentIndex >= 0)
+            {
+                RecentFiles.Move(recentIndex, 0);
+            }
+            else
+            {
+                RecentFiles.Insert(0, path);
+            }
+        }
     }
 
 

@@ -114,15 +114,7 @@ namespace RszTool.App.ViewModels
                 Items.Add(header);
                 SelectedTabItem = header;
 
-                int recentIndex = SaveData.RecentFiles.IndexOf(path);
-                if (recentIndex >= 0)
-                {
-                    SaveData.RecentFiles.Move(recentIndex, 0);
-                }
-                else
-                {
-                    SaveData.RecentFiles.Insert(0, path);
-                }
+                SaveData.AddRecentFile(path);
             }
             else
             {
@@ -195,10 +187,16 @@ namespace RszTool.App.ViewModels
             if (dialog.ShowDialog() == true)
             {
                 // Open document
-                string? fileName = dialog.FileName;
-                if (fileName != null)
+                string? path = dialog.FileName;
+                if (path != null)
                 {
-                    AppUtils.TryAction(() => currentFile.SaveAs(fileName));
+                    AppUtils.TryAction(() =>
+                    {
+                        if(currentFile.SaveAs(path))
+                        {
+                            SaveData.AddRecentFile(path);
+                        }
+                    });
                 }
             }
         }
