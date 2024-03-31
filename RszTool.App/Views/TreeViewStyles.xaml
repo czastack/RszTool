@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:RszTool.App.Views"
                     xmlns:common="clr-namespace:RszTool.App.Common"
@@ -141,7 +141,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Margin="1,1,1,1"
-                        Fill="#333"
+                            Fill="{DynamicResource PrimaryForeground}"
                         Data="M 4 0 L 8 4 L 4 8 Z"/>
                     </Grid>
                     <ControlTemplate.Triggers>

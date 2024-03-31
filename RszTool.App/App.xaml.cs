@@ -30,7 +30,7 @@ namespace RszTool.App
         {
             base.OnStartup(e);
 
-            // SwitchTheme(true);
+            SwitchTheme(true);
 
             // 添加全局异常处理程序
             SetupUnhandledExceptionHandling();
@@ -44,7 +44,7 @@ namespace RszTool.App
 
         private void SwitchTheme(bool isDarkTheme)
         {
-            var mergedDictionaries = Application.Current.Resources.MergedDictionaries;
+            var mergedDictionaries = Resources.MergedDictionaries;
             mergedDictionaries.Clear();
             mergedDictionaries.Add(new ResourceDictionary() { Source = new Uri(
                 isDarkTheme ? "Themes/DarkTheme.xaml" : "Themes/LightTheme.xaml", UriKind.Relative) });

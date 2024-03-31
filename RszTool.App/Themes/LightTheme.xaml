@@ -1,6 +1,9 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush x:Key="PrimaryBackground" Color="LightGray"/>
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="CommonTheme.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <SolidColorBrush x:Key="PrimaryBackground" Color="White"/>
     <SolidColorBrush x:Key="PrimaryForeground" Color="Black"/>
     <SolidColorBrush x:Key="TextForeground" Color="Black"/>
 </ResourceDictionary>
