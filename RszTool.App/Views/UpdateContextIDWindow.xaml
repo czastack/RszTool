@@ -13,7 +13,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="TreeViewStyles.xaml" />
+                <ResourceDictionary Source="TreeViewTemplate.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <HierarchicalDataTemplate DataType="{x:Type viewmodels:GameObjectContextID}" ItemsSource="{Binding Items}">

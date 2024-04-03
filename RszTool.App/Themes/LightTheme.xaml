@@ -6,4 +6,9 @@
     <SolidColorBrush x:Key="PrimaryBackground" Color="White"/>
     <SolidColorBrush x:Key="PrimaryForeground" Color="Black"/>
     <SolidColorBrush x:Key="TextForeground" Color="Black"/>
+
+    <Style x:Key="ImageButton" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
 </ResourceDictionary>

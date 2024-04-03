@@ -1,0 +1,108 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:RszTool.App.Views"
+                    xmlns:common="clr-namespace:RszTool.App.Common"
+                    xmlns:converters="clr-namespace:RszTool.App.Converters"
+                    xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
+                    xmlns:res="clr-namespace:RszTool.App.Resources"
+                    xmlns:rsztool="clr-namespace:RszTool;assembly=RszTool">
+
+    <converters:RszInstanceFieldsConverter x:Key="RszInstanceFieldsConverter"/>
+    <common:BindingProxy x:Key="ParentData" Data="{Binding}" />
+
+    <HierarchicalDataTemplate DataType="{x:Type rsztool:RszInstance}" ItemsSource="{Binding ., Converter={StaticResource RszInstanceFieldsConverter}}">
+        <TextBlock Text="{Binding Name}">
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.CopyInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Paste}" Command="{Binding Data.PasteInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+        </TextBlock>
+    </HierarchicalDataTemplate>
+
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:GameObejctComponentViewModel}" ItemsSource="{Binding Items}">
+        <TextBlock Text="{Binding Name}">
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.CopyInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Paste}" Command="{Binding Data.PasteInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Remove}" Command="{Binding Data.RemoveComponent, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+        </TextBlock>
+    </HierarchicalDataTemplate>
+
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:RszFieldInstanceViewModel}" ItemsSource="{Binding Items}">
+        <TextBlock Text="{Binding Name}">
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.CopyInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Paste}" Command="{Binding Data.PasteInstance, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+        </TextBlock>
+    </HierarchicalDataTemplate>
+
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:RszFieldArrayViewModel}" ItemsSource="{Binding Items}">
+        <TextBlock Text="{Binding Name}">
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{res:Text NewItem}" Command="{Binding Data.ArrayItemNew, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Paste}" Command="{Binding Data.ArrayItemPaste, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+        </TextBlock>
+    </HierarchicalDataTemplate>
+
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:RszFieldArrayInstanceItemViewModel}" ItemsSource="{Binding Items}">
+        <TextBlock Text="{Binding Name}">
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.ArrayItemCopy, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Remove}" Command="{Binding Data.ArrayItemRemove, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Duplicate}" Command="{Binding Data.ArrayItemDuplicate, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text DuplicateMulti}" Command="{Binding Data.ArrayItemDuplicateMulti, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text PasteAfter}" Command="{Binding Data.ArrayItemPasteAfter, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Paste}" Command="{Binding Data.ArrayItemPasteToSelf, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+        </TextBlock>
+    </HierarchicalDataTemplate>
+
+    <HierarchicalDataTemplate DataType="{x:Type viewmodels:BaseTreeItemViewModel}" ItemsSource="{Binding Items}">
+        <TextBlock Text="{Binding Name}"/>
+    </HierarchicalDataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodels:RszFieldNormalViewModel}">
+        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding Data.Changed, Source={StaticResource ParentData}}"
+                              EnumDict="{Binding Data.EnumDict, Source={StaticResource ParentData}}">
+            <local:FieldValueEdit.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.CopyNormalField, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Paste}" Command="{Binding Data.PasteNormalField, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </local:FieldValueEdit.ContextMenu>
+        </local:FieldValueEdit>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodels:RszFieldArrayNormalItemViewModel}">
+        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding Data.Changed, Source={StaticResource ParentData}}"
+                              EnumDict="{Binding Data.EnumDict, Source={StaticResource ParentData}}">
+            <local:FieldValueEdit.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{res:Text Copy}" Command="{Binding Data.ArrayItemCopy, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Remove}" Command="{Binding Data.ArrayItemRemove, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Duplicate}" Command="{Binding Data.ArrayItemDuplicate, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text DuplicateMulti}" Command="{Binding Data.ArrayItemDuplicateMulti, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text PasteAfter}" Command="{Binding Data.ArrayItemPasteAfter, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{res:Text Paste}" Command="{Binding Data.ArrayItemPasteToSelf, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                </ContextMenu>
+            </local:FieldValueEdit.ContextMenu>
+        </local:FieldValueEdit>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodels:ClassPropertyViewModel}">
+        <local:ClassPropertyEdit DataContext="{Binding}" />
+    </DataTemplate>
+</ResourceDictionary>

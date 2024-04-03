@@ -108,6 +108,11 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="ImageButton" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+
     <!-- ToggleButton -->
     <Style TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="{StaticResource PrimaryBackground}" />

@@ -20,6 +20,7 @@ namespace RszTool.App.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
         public ObservableCollection<HeaderedItemViewModel> Items { get; } = new();
         public HeaderedItemViewModel? SelectedTabItem { get; set; }
+        public FileExplorerViewModel FileExplorerViewModel { get; } = new();
 
         private BaseRszFileViewModel? CurrentFile =>
             SelectedTabItem is FileTabItemViewModel fileTabItemViewModel ?
@@ -39,6 +40,11 @@ namespace RszTool.App.ViewModels
         public RelayCommand OpenAbout => new(OnOpenAbout);
 
         public ItemActionCallback ClosingTabItemHandler => ClosingTabItemHandlerImpl;
+
+        public MainWindowModel()
+        {
+            FileExplorerViewModel.Folders.Add(new(Directory.GetCurrentDirectory()));
+        }
 
         /// <summary>
         /// 打开文件

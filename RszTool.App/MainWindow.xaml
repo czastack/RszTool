@@ -18,6 +18,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/Generic.xaml" />
+                <ResourceDictionary Source="Views/TreeViewStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type dragablz:HeaderedItemViewModel}">
                 <ContentControl Content="{Binding Content}" Margin="4 4 4 4" FontSize="14" />
@@ -153,12 +154,21 @@
                 </TabItem>
             </dragablz:TabablzControl>
         </dockablz:Layout> -->
-        <dragablz:TabablzControl Grid.Row="2" Margin="8" Style="{StaticResource TabablzControlStyle}">
-            <dragablz:TabablzControl.InterTabController>
-                <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
-            </dragablz:TabablzControl.InterTabController>
-        </dragablz:TabablzControl>
-        <TextBlock Text="{res:Text UsageHint}" TextAlignment="Center"
-                   Style="{StaticResource UsageHint}" FontSize="18" VerticalAlignment="Center" Grid.Row="2" />
+        <Grid Grid.Row="2" Cursor="">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" MinWidth="200" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <views:FileExplorerTree DataContext="{Binding FileExplorerViewModel}" Margin="6" HorizontalAlignment="Stretch" />
+            <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="Transparent" Cursor="SizeWE" />
+            <dragablz:TabablzControl Grid.Column="2" Margin="0 5 5 5" Style="{StaticResource TabablzControlStyle}">
+                <dragablz:TabablzControl.InterTabController>
+                    <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
+                </dragablz:TabablzControl.InterTabController>
+            </dragablz:TabablzControl>
+            <TextBlock Text="{res:Text UsageHint}" TextAlignment="Center"
+                    Style="{StaticResource UsageHint}" FontSize="18" VerticalAlignment="Center" Grid.Column="2" />
+        </Grid>
     </Grid>
 </Window>
