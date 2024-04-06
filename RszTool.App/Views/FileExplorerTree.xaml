@@ -22,21 +22,21 @@
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type viewmodels:DirectoryItem}" ItemsSource="{Binding Children}">
                     <TextBlock Text="{Binding Name}">
-                        <TextBlock.ContextMenu>
+                        <!-- <TextBlock.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="{res:Text Copy}" />
                             </ContextMenu>
-                        </TextBlock.ContextMenu>
+                        </TextBlock.ContextMenu> -->
                     </TextBlock>
                 </HierarchicalDataTemplate>
 
                 <DataTemplate DataType="{x:Type viewmodels:FileItem}">
                     <TextBlock Text="{Binding Name}">
-                        <TextBlock.ContextMenu>
+                        <!-- <TextBlock.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="{res:Text Copy}" />
                             </ContextMenu>
-                        </TextBlock.ContextMenu>
+                        </TextBlock.ContextMenu> -->
                     </TextBlock>
                 </DataTemplate>
             </TreeView.Resources>

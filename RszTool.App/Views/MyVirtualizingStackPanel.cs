@@ -1,4 +1,5 @@
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace RszTool.App.Views
 {
@@ -17,6 +18,14 @@ namespace RszTool.App.Views
             try
             {
                 base.OnClearChildren();
+            } catch {}
+        }
+
+        protected override void OnItemsChanged(object sender, ItemsChangedEventArgs args)
+        {
+            try
+            {
+                base.OnItemsChanged(sender, args);
             } catch {}
         }
     }

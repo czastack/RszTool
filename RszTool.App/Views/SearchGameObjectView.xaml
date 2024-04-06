@@ -41,6 +41,16 @@
         <TextBlock Text="{res:Text Component}" Grid.Row="2" Grid.Column="0" Margin="0 0 5 0" VerticalAlignment="Center" />
         <local:SearchInstanceInput Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" DataContext="{Binding GameObjectSearchViewModel.ComponentSearch}" />
 
-        <TreeView Grid.Row="4" Grid.ColumnSpan="3" SelectedItemChanged="TreeView_SelectedItemChanged" ItemsSource="{Binding SearchGameObjectList}" Margin="0 5 0 0" />
+        <TreeView Grid.Row="4" Grid.ColumnSpan="3" SelectedItemChanged="TreeView_SelectedItemChanged" ItemsSource="{Binding SearchGameObjectList}" Margin="0 5 0 0">
+            <TreeView.Resources>
+                <Style TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
+                    <Style.Triggers>
+                        <Trigger Property="ItemsSource" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.Resources>
+        </TreeView>
     </Grid>
 </UserControl>

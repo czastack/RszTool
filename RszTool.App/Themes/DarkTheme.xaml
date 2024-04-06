@@ -135,6 +135,7 @@
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource SelectedBackground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SelectedBackground}" />
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="Background" Value="{StaticResource PressedBackground}" />
