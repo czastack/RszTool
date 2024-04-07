@@ -37,6 +37,10 @@ namespace RszTool.App.ViewModels
 
     public class DirectoryItem(string path) : BaseFileItem(path)
     {
+        private static readonly IComparer<BaseFileItem> comparer =
+            Comparer<BaseFileItem>.Create((x, y) => x.Name.CompareTo(y.Name));
+        private static readonly HashSet<string> Filter = new() { ".pfb", ".scn", ".user" };
+
         private ObservableCollection<BaseFileItem>? children;
 
         public ObservableCollection<BaseFileItem> Children
@@ -54,18 +58,51 @@ namespace RszTool.App.ViewModels
 
         public void Refresh()
         {
-            children ??= new();
-            children.Clear();
-            foreach (var item in Directory.GetFiles(Path))
+            if (children == null) return;
+            Console.WriteLine($"Refresh {Path}");
+            List<BaseFileItem> items = new();
+            Dictionary<string, BaseFileItem> childDict = new();
+            foreach (BaseFileItem item in children)
             {
-                if (Directory.Exists(item))
+                childDict[item.Path] = item;
+            }
+            children.Clear();
+            int directoryCount = 0;
+            foreach (var childPath in Directory.EnumerateDirectories(Path))
+            {
+                if (childDict.TryGetValue(childPath, out var fileItem) && fileItem is DirectoryItem directoryItem)
                 {
-                    children.Add(new DirectoryItem(item));
+                    items.Add(fileItem);
+                    directoryItem.Refresh();
                 }
                 else
                 {
-                    children.Add(new FileItem(item));
+                    items.Add(new DirectoryItem(childPath));
                 }
+                directoryCount++;
+            }
+            foreach (var childPath in Directory.EnumerateFiles(Path))
+            {
+                RszUtils.GetFileExtension(childPath, out string extension, out _);
+                if (!Filter.Contains(extension)) continue;
+                if (childDict.TryGetValue(childPath, out var fileItem) && fileItem is FileItem)
+                {
+                    items.Add(fileItem);
+                }
+                else
+                {
+                    items.Add(new FileItem(childPath));
+                }
+            }
+            items.Sort(0, directoryCount, comparer);
+            items.Sort(directoryCount, items.Count - directoryCount, comparer);
+            foreach (var item in items)
+            {
+                if (item is DirectoryItem directoryItem)
+                {
+                    directoryItem.Refresh();
+                }
+                Children.Add(item);
             }
         }
     }
