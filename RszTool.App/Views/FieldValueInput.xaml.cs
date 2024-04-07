@@ -67,7 +67,7 @@ namespace RszTool.App.Views
             if (d is FieldValueInput control)
             {
 #if !NET5_0_OR_GREATER
-                if (e.NewValue is Vector2 or Vector3 or Vector4)
+                if (e.NewValue is Vector2 or Vector3 or Vector4 or Quaternion)
                 {
                     control.Content = new VectorBindingWrapper(e.NewValue);
                 }
