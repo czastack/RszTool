@@ -12,8 +12,9 @@ namespace RszTool.App
         [JsonConverter(typeof(EnumJsonConverter<GameName>))]
         public GameName GameName { get; set; } = GameName.re4;
         public ObservableCollection<string> RecentFiles { get; set; } = new();
+        public List<string> OpenedFolders { get; set; } = new();
         public ContextIDData LastContextID { get; set; } = new();
-
+        public bool IsDarkTheme { get; set; }
 
         public void AddRecentFile(string path)
         {

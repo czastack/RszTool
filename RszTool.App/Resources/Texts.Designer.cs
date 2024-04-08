@@ -501,5 +501,14 @@ namespace RszTool.App.Resources {
                 return ResourceManager.GetString("UseRegex", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   查找类似 Dark 的本地化字符串。
+        /// </summary>
+        internal static string Dark {
+            get {
+                return ResourceManager.GetString("Dark", resourceCulture);
+            }
+        }
     }
 }

@@ -26,6 +26,16 @@ namespace RszTool.App.ViewModels
             SelectedTabItem is FileTabItemViewModel fileTabItemViewModel ?
             fileTabItemViewModel.FileViewModel : null;
 
+        public bool IsDarkTheme
+        {
+            get => ThemeManager.Instance.IsDarkTheme;
+            set
+            {
+                SaveData.IsDarkTheme = value;
+                ThemeManager.Instance.IsDarkTheme = value;
+            }
+        }
+
         public CustomInterTabClient InterTabClient { get; } = new();
         public static SaveData SaveData => App.Instance.SaveData;
 
@@ -44,7 +54,14 @@ namespace RszTool.App.ViewModels
 
         public MainWindowModel()
         {
-            FileExplorerViewModel.Folders.Add(new(Directory.GetCurrentDirectory()));
+            foreach (var path in SaveData.OpenedFolders)
+            {
+                FileExplorerViewModel.Folders.Add(new(path));
+            }
+            if (FileExplorerViewModel.Folders.Count == 0)
+            {
+                FileExplorerViewModel.Folders.Add(new(Directory.GetCurrentDirectory()));
+            }
             FileExplorerViewModel.OnFileSelected += f => OpenFile(f.Path);
         }
 
@@ -264,11 +281,7 @@ namespace RszTool.App.ViewModels
             var dialog = new OpenFolderDialog();
             if (dialog.ShowDialog() == true)
             {
-                string folderName = dialog.FolderName;
-                if (!FileExplorerViewModel.Folders.Any(item => item.Name == folderName))
-                {
-                    FileExplorerViewModel.Folders.Add(new(folderName));
-                }
+                FileExplorerViewModel.AddFolder(dialog.FolderName);
             }
         }
 

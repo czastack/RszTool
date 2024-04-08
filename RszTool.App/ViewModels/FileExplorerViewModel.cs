@@ -20,6 +20,15 @@ namespace RszTool.App.ViewModels
             }
         }
 
+        public void AddFolder(string path)
+        {
+            if (!Folders.Any(item => item.Name == path))
+            {
+                Folders.Add(new(path));
+                App.Instance.SaveData.OpenedFolders.Add(path);
+            }
+        }
+
         public void SelectFile(FileItem fileItem)
         {
             OnFileSelected?.Invoke(fileItem);
@@ -30,6 +39,7 @@ namespace RszTool.App.ViewModels
             if (arg is RootDirectoryItem rootDirectory)
             {
                 Folders.Remove(rootDirectory);
+                App.Instance.SaveData.OpenedFolders.Remove(rootDirectory.Path);
             }
         }
     }

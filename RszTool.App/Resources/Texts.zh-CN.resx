@@ -265,4 +265,7 @@
   <data name="UpdateContextID" xml:space="preserve">
     <value>更新ContextID</value>
   </data>
+  <data name="Dark" xml:space="preserve">
+    <value>深色</value>
+  </data>
 </root>

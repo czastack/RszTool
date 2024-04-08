@@ -265,4 +265,7 @@ Currently, user, scn, pfb files are supported</value>
   <data name="UpdateContextID" xml:space="preserve">
     <value>Update ContextID</value>
   </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
 </root>

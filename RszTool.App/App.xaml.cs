@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using RszTool.App.Common;
+using RszTool.App.ViewModels;
 
 namespace RszTool.App
 {
@@ -30,8 +31,7 @@ namespace RszTool.App
         {
             base.OnStartup(e);
 
-            SwitchTheme(true);
-
+            ThemeManager.Init(SaveData.IsDarkTheme);
             // 添加全局异常处理程序
             SetupUnhandledExceptionHandling();
         }
@@ -40,14 +40,6 @@ namespace RszTool.App
         {
             base.OnExit(e);
             JsonUtils.DumpJson(SaveData.JsonPath, SaveData);
-        }
-
-        private void SwitchTheme(bool isDarkTheme)
-        {
-            var mergedDictionaries = Resources.MergedDictionaries;
-            mergedDictionaries.Clear();
-            mergedDictionaries.Add(new ResourceDictionary() { Source = new Uri(
-                isDarkTheme ? "Themes/DarkTheme.xaml" : "Themes/LightTheme.xaml", UriKind.Relative) });
         }
 
         private void SetupUnhandledExceptionHandling()

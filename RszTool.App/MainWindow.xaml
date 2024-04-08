@@ -140,10 +140,17 @@
                 <MenuItem Header="{res:Text About}" Command="{Binding OpenAbout}" />
             </MenuItem>
         </Menu>
-        <DockPanel Grid.Row="1" Margin="5">
-            <TextBlock Text="Game version" DockPanel.Dock="Left" Margin="0 0 5 0" VerticalAlignment="Center" />
-            <ComboBox ItemsSource="{x:Static rsztool:RszDefines.GameNames}" SelectedValue="{Binding SaveData.GameName}" />
-        </DockPanel>
+        <Grid Grid.Row="1" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Game version" Margin="0 0 5 0" VerticalAlignment="Center" />
+            <ComboBox ItemsSource="{x:Static rsztool:RszDefines.GameNames}" Grid.Column="1" SelectedValue="{Binding SaveData.GameName}" />
+            <ToggleButton Content="{res:Text Dark}" Grid.Column="3" IsChecked="{Binding IsDarkTheme}" />
+        </Grid>
         <!-- <dockablz:Layout Grid.Row="2" Margin="8">
             <dockablz:Layout.BranchTemplate>
                 <DataTemplate>
