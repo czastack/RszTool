@@ -199,4 +199,38 @@ namespace RszTool.App.Converters
             }
         }
     }
+
+
+    [ValueConversion(typeof(object), typeof(Type))]
+    public class TypeOfConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return value.GetType();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    [ValueConversion(typeof(object), typeof(bool))]
+    public class TypeIsAssignableFromConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (parameter is not Type baseType)
+            {
+                throw new ArgumentException("Parameter must be a Type", nameof(parameter));
+            }
+            return baseType.IsAssignableFrom(value.GetType());
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

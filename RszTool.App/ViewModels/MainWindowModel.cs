@@ -33,6 +33,7 @@ namespace RszTool.App.ViewModels
         public RelayCommand SaveCommand => new(OnSave);
         public RelayCommand SaveAsCommand => new(OnSaveAs);
         public RelayCommand ReopenCommand => new(OnReopen);
+        public RelayCommand AddFolderCommand => new(OnAddFolder);
         public RelayCommand CloseCommand => new(OnClose);
         public RelayCommand QuitCommand => new(OnQuit);
         public RelayCommand ClearRecentFilesHistory => new(OnClearRecentFilesHistory);
@@ -44,6 +45,7 @@ namespace RszTool.App.ViewModels
         public MainWindowModel()
         {
             FileExplorerViewModel.Folders.Add(new(Directory.GetCurrentDirectory()));
+            FileExplorerViewModel.OnFileSelected += f => OpenFile(f.Path);
         }
 
         /// <summary>
@@ -93,7 +95,7 @@ namespace RszTool.App.ViewModels
             if (fileViewModel != null && content != null)
             {
                 bool readSuccess = false;
-                for (int tryCount = 0; tryCount < 3; tryCount++)
+                for (int tryCount = 0; tryCount < 5; tryCount++)
                 {
                     try
                     {
@@ -254,6 +256,19 @@ namespace RszTool.App.ViewModels
             if (arg is string path)
             {
                 TryOpenFile(path);
+            }
+        }
+
+        private void OnAddFolder(object arg)
+        {
+            var dialog = new OpenFolderDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                string folderName = dialog.FolderName;
+                if (!FileExplorerViewModel.Folders.Any(item => item.Name == folderName))
+                {
+                    FileExplorerViewModel.Folders.Add(new(folderName));
+                }
             }
         }
 

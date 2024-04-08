@@ -62,8 +62,9 @@
     <Window.InputBindings>
         <KeyBinding Command="{Binding OpenCommand}" Modifiers="Control" Key="O" />
         <KeyBinding Command="{Binding SaveCommand}" Modifiers="Control" Key="S" />
-        <KeyBinding Command="{Binding SaveAsCommand}" Modifiers="Ctrl+Shift" Key="S" />
+        <KeyBinding Command="{Binding SaveAsCommand}" Modifiers="Control+Shift" Key="S" />
         <KeyBinding Command="{Binding ReopenCommand}" Modifiers="Control" Key="R" />
+        <KeyBinding Command="{Binding AddFolderCommand}" Modifiers="Control+Shift" Key="O" />
         <KeyBinding Command="{Binding CloseCommand}" Modifiers="Control" Key="W" />
         <KeyBinding Command="{Binding QuitCommand}" Modifiers="Control" Key="Q" />
     </Window.InputBindings>
@@ -107,6 +108,7 @@
                 <MenuItem Header="{res:Text Save}" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
                 <MenuItem Header="{res:Text SaveAs}" Command="{Binding SaveAsCommand}" InputGestureText="Ctrl+Shift+S" />
                 <MenuItem Header="{res:Text Reopen}" Command="{Binding ReopenCommand}" InputGestureText="Ctrl+R" />
+                <MenuItem Header="{res:Text AddFolder}" Command="{Binding AddFolderCommand}" InputGestureText="Ctrl+Shift+O" />
                 <MenuItem Header="{res:Text Close}" Command="{Binding CloseCommand}" InputGestureText="Ctrl+W" />
                 <Separator />
                 <MenuItem Header="{res:Text Quit}" Command="{Binding QuitCommand}" InputGestureText="Ctrl+Q" />

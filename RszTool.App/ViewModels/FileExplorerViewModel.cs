@@ -1,11 +1,16 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using RszTool.App.Common;
 
 namespace RszTool.App.ViewModels
 {
     public class FileExplorerViewModel
     {
-        public ObservableCollection<DirectoryItem> Folders { get; } = new();
+        public ObservableCollection<RootDirectoryItem> Folders { get; } = new();
+        public event Action<FileItem>? OnFileSelected;
+
+        public RelayCommand RemoveRootDirectory => new(OnRemoveRootDirectory);
 
         public void Refresh()
         {
@@ -14,19 +19,35 @@ namespace RszTool.App.ViewModels
                 folder.Refresh();
             }
         }
+
+        public void SelectFile(FileItem fileItem)
+        {
+            OnFileSelected?.Invoke(fileItem);
+        }
+
+        private void OnRemoveRootDirectory(object arg)
+        {
+            if (arg is RootDirectoryItem rootDirectory)
+            {
+                Folders.Remove(rootDirectory);
+            }
+        }
     }
 
 
-    public class BaseFileItem
+    public class BaseFileItem : INotifyPropertyChanged
     {
         public string Path { get; set; }
         public string Name { get; set; }
+        public bool IsExpanded { get; set; }
 
         protected BaseFileItem(string path)
         {
             Path = path;
             Name = System.IO.Path.GetFileName(path);
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 
 
@@ -59,7 +80,7 @@ namespace RszTool.App.ViewModels
         public void Refresh()
         {
             if (children == null) return;
-            Console.WriteLine($"Refresh {Path}");
+            // Console.WriteLine($"Refresh {Path}");
             List<BaseFileItem> items = new();
             Dictionary<string, BaseFileItem> childDict = new();
             foreach (BaseFileItem item in children)
@@ -96,6 +117,11 @@ namespace RszTool.App.ViewModels
             }
             items.Sort(0, directoryCount, comparer);
             items.Sort(directoryCount, items.Count - directoryCount, comparer);
+            if (directoryCount == 1)
+            {
+                items[0].IsExpanded = true;
+                ((DirectoryItem)items[0]).Refresh();
+            }
             foreach (var item in items)
             {
                 if (item is DirectoryItem directoryItem)
@@ -105,5 +131,10 @@ namespace RszTool.App.ViewModels
                 Children.Add(item);
             }
         }
+    }
+
+
+    public class RootDirectoryItem(string path) : DirectoryItem(path)
+    {
     }
 }

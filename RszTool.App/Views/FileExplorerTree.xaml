@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:common="clr-namespace:RszTool.App.Common"
+             xmlns:converters="clr-namespace:RszTool.App.Converters"
              xmlns:local="clr-namespace:RszTool.App.Views"
              xmlns:viewmodels="clr-namespace:RszTool.App.ViewModels"
              xmlns:res="clr-namespace:RszTool.App.Resources"
@@ -10,7 +12,134 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:FileExplorerViewModel}"
              d:DesignHeight="450" d:DesignWidth="200" d:Background="White">
     <UserControl.Resources>
-        <ResourceDictionary Source="Icons.xaml" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Icons.xaml" />
+                <ResourceDictionary Source="TreeViewStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <common:BindingProxy x:Key="ParentData" Data="{Binding}" />
+
+            <HierarchicalDataTemplate DataType="{x:Type viewmodels:RootDirectoryItem}" ItemsSource="{Binding Children}">
+                <TextBlock Text="{Binding Name}">
+                    <TextBlock.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{res:Text Remove}" Command="{Binding Data.RemoveRootDirectory, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                        </ContextMenu>
+                    </TextBlock.ContextMenu>
+                </TextBlock>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate DataType="{x:Type viewmodels:DirectoryItem}" ItemsSource="{Binding Children}">
+                <TextBlock Text="{Binding Name}">
+                    <!-- <TextBlock.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{res:Text Copy}" />
+                        </ContextMenu>
+                    </TextBlock.ContextMenu> -->
+                </TextBlock>
+            </HierarchicalDataTemplate>
+
+            <DataTemplate DataType="{x:Type viewmodels:FileItem}">
+                <ContentControl MouseDoubleClick="FileItem_MouseDoubleClick">
+                    <TextBlock Text="{Binding Name}">
+                        <!-- <TextBlock.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="{res:Text Copy}" />
+                            </ContextMenu>
+                        </TextBlock.ContextMenu> -->
+                    </TextBlock>
+                </ContentControl>
+            </DataTemplate>
+
+            <converters:TypeIsAssignableFromConverter x:Key="TypeIsAssignableFromConverter" />
+
+            <Style TargetType="TreeViewItem">
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TreeViewItem">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <ToggleButton x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}"
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                            ClickMode="Press"/>
+
+                                <Border x:Name="Bd"
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Padding="0,2,0,2">
+                                    <ContentPresenter x:Name="PART_Header" ContentSource="Header" HorizontalAlignment="Stretch" />
+                                </Border>
+                                <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Grid.Column="1"/>
+                            </Grid>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsExpanded" Value="false">
+                                    <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+                                </Trigger>
+                                <Trigger Property="HasItems" Value="false">
+                                    <Setter TargetName="Expander" Property="Visibility" Value="Hidden" />
+                                    <Setter TargetName="Expander" Property="Opacity" Value="0.5" />
+                                </Trigger>
+                                <DataTrigger Binding="{Binding ., Converter={StaticResource TypeIsAssignableFromConverter}, ConverterParameter={x:Type viewmodels:DirectoryItem}}"
+                                             Value="True">
+                                    <Setter TargetName="Expander" Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="HasHeader" Value="false"/>
+                                        <Condition Property="Width" Value="Auto"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="PART_Header" Property="MinWidth" Value="75"/>
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="HasHeader" Value="false"/>
+                                        <Condition Property="Height" Value="Auto"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="PART_Header" Property="MinHeight" Value="19"/>
+                                </MultiTrigger>
+                                <Trigger Property="IsSelected" Value="true">
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="IsSelectionActive" Value="false"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                                </MultiTrigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <local:MyVirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -18,28 +147,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TreeView Grid.Row="1" SelectedItemChanged="TreeView_SelectedItemChanged" ItemsSource="{Binding Folders}">
-            <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type viewmodels:DirectoryItem}" ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding Name}">
-                        <!-- <TextBlock.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="{res:Text Copy}" />
-                            </ContextMenu>
-                        </TextBlock.ContextMenu> -->
-                    </TextBlock>
-                </HierarchicalDataTemplate>
-
-                <DataTemplate DataType="{x:Type viewmodels:FileItem}">
-                    <TextBlock Text="{Binding Name}">
-                        <!-- <TextBlock.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="{res:Text Copy}" />
-                            </ContextMenu>
-                        </TextBlock.ContextMenu> -->
-                    </TextBlock>
-                </DataTemplate>
-            </TreeView.Resources>
-        </TreeView>
+        <TreeView x:Name="TreeView" Grid.Row="1" ItemsSource="{Binding Folders}"
+                  SelectedItemChanged="TreeView_SelectedItemChanged" />
     </Grid>
 </UserControl>

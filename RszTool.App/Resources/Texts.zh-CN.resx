@@ -250,6 +250,9 @@
   <data name="AddComponent" xml:space="preserve">
     <value>添加组件</value>
   </data>
+  <data name="AddFolder" xml:space="preserve">
+    <value>添加文件夹</value>
+  </data>
   <data name="PasteInstanceAsComponent" xml:space="preserve">
     <value>粘贴实例作为组件</value>
   </data>

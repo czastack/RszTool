@@ -15,9 +15,25 @@ namespace RszTool.App.Views
             InitializeComponent();
         }
 
+        private void HandleTreeViewFileSelected()
+        {
+            if (DataContext is FileExplorerViewModel viewModel)
+            {
+                if (TreeView.SelectedItem is FileItem fileItem)
+                {
+                    viewModel.SelectFile(fileItem);
+                }
+            }
+        }
+
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
+            HandleTreeViewFileSelected();
+        }
 
+        private void FileItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            HandleTreeViewFileSelected();
         }
     }
 }
