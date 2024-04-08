@@ -136,7 +136,17 @@ namespace RszTool
             }
 
             public int? ObjectId => Info?.Data.objectId;
-            public string? Name => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;
+
+            public string? Name
+            {
+                get => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;
+                set
+                {
+                    if (value == null) return;
+                    if (Instance?.SetFieldValue("v0", value) == true) return;
+                    Instance?.SetFieldValue("Name", value);
+                }
+            }
 
             public override string ToString()
             {
@@ -167,7 +177,16 @@ namespace RszTool
                 set => parentRef = value != null ? new(value) : null;
             }
 
-            public string? Name => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;
+            public string? Name
+            {
+                get => (Instance?.GetFieldValue("v0") ?? Instance?.GetFieldValue("Name")) as string;
+                set
+                {
+                    if (value == null) return;
+                    if (Instance?.SetFieldValue("v0", value) == true) return;
+                    Instance?.SetFieldValue("Name", value);
+                }
+            }
 
             public int? ObjectId => Info?.Data.objectId;
 
@@ -386,9 +405,10 @@ namespace RszTool
         public void SetupGameObjects()
         {
             Dictionary<int, FolderData> folderIdxMap = new();
+            FolderDatas ??= new();
+            FolderDatas.Clear();
             if (FolderInfoList.Count > 0)
             {
-                FolderDatas ??= new();
                 foreach (var info in FolderInfoList)
                 {
                     FolderData folderData = new()
@@ -406,6 +426,7 @@ namespace RszTool
 
             Dictionary<int, GameObjectData> gameObjectMap = new();
             GameObjectDatas ??= new();
+            GameObjectDatas.Clear();
             foreach (var info in GameObjectInfoList)
             {
                 GameObjectData gameObjectData = new()
@@ -1001,6 +1022,27 @@ namespace RszTool
         public GameObjectData DuplicateGameObject(GameObjectData gameObject)
         {
             return ImportGameObject(gameObject, gameObject.Folder, gameObject.Parent, true);
+        }
+
+        public void AddFolder(string name, FolderData? parent = null)
+        {
+            var folder = new FolderData
+            {
+                Instance = RSZ!.CreateInstance("via.Folder"),
+                Info = new FolderInfoModel(),
+                Name = name
+            };
+            if (parent != null)
+            {
+                parent.Children.Add(folder);
+                folder.Parent = parent;
+            }
+            else
+            {
+                FolderDatas?.Add(folder);
+            }
+            AddFolderInfoRecursion(folder);
+            StructChanged = true;
         }
 
         /// <summary>

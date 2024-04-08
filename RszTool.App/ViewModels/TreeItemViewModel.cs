@@ -29,4 +29,5 @@ namespace RszTool.App.ViewModels
 
 
     public class GameObjectsHeader(string name, IEnumerable<object>? items) : TreeItemViewModel(name, items);
+    public class FoldersHeader(string name, IEnumerable<object>? items) : TreeItemViewModel(name, items);
 }

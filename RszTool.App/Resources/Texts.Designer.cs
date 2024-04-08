@@ -97,6 +97,15 @@ namespace RszTool.App.Resources {
         }
 
         /// <summary>
+        ///   查找类似 Input folder name 的本地化字符串。
+        /// </summary>
+        internal static string InputFolderName {
+            get {
+                return ResourceManager.GetString("InputFolderName", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   查找类似 Clear recent files history 的本地化字符串。
         /// </summary>
         internal static string ClearRecentFilesHistory {

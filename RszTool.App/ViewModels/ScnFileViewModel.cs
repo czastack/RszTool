@@ -24,7 +24,7 @@ namespace RszTool.App.ViewModels
         {
             get
             {
-                yield return new TreeItemViewModel("Folders", Folders);
+                yield return new FoldersHeader("Folders", Folders);
                 yield return new GameObjectsHeader("GameObjects", GameObjects);
             }
         }
@@ -34,6 +34,7 @@ namespace RszTool.App.ViewModels
         public RelayCommand DuplicateGameObject => new(OnDuplicateGameObject);
         public RelayCommand PasteGameObject => new(OnPasteGameObject);
         public RelayCommand PasteGameObjectToFolder => new(OnPasteGameObjectToFolder);
+        public RelayCommand AddFolder => new(OnAddFolder);
         public RelayCommand PasteGameobjectAsChild => new(OnPasteGameobjectAsChild);
         public RelayCommand SearchGameObjects => new(OnSearchGameObjects);
         public RelayCommand AddComponent => new(OnAddComponent);
@@ -125,6 +126,27 @@ namespace RszTool.App.ViewModels
                 UpdateContextID(newGameObject);
                 Changed = true;
             }
+        }
+
+        /// <summary>
+        /// 添加文件夹
+        /// </summary>
+        /// <param name="arg"></param>
+        private void OnAddFolder(object arg)
+        {
+            Views.InputDialog dialog = new()
+            {
+                Title = Texts.AddFolder,
+                Message = Texts.InputFolderName,
+                Owner = Application.Current.MainWindow,
+            };
+            if (dialog.ShowDialog() != true) return;
+            if (string.IsNullOrWhiteSpace(dialog.InputText))
+            {
+                MessageBoxUtils.Error("FolderName is empty");
+            }
+            lastInputClassName = dialog.InputText;
+            ScnFile.AddFolder(dialog.InputText, arg as ScnFile.FolderData);
         }
 
         private void OnSearchGameObjects(object arg)

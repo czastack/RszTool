@@ -542,11 +542,12 @@ namespace RszTool
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        public void SetFieldValue(string name, object value)
+        public bool SetFieldValue(string name, object value)
         {
             int index = RszClass.IndexOfField(name);
-            if (index == -1) return;
+            if (index == -1) return false;
             Values[index] = value;
+            return true;
         }
 
         /// <summary>

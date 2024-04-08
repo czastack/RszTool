@@ -253,6 +253,9 @@ Currently, user, scn, pfb files are supported</value>
   <data name="AddFolder" xml:space="preserve">
     <value>Add folder</value>
   </data>
+  <data name="InputFolderName" xml:space="preserve">
+    <value>Input folder name</value>
+  </data>
   <data name="PasteInstanceAsComponent" xml:space="preserve">
     <value>Paste instance as component</value>
   </data>
