@@ -571,8 +571,7 @@ namespace RszTool
                 }
             }
 
-            RSZ.ClearInstances();
-            RSZ.FixInstanceListIndex(rszInstances);
+            RSZ.RebuildInstanceList(rszInstances);
             RSZ.RebuildInstanceInfo(false, false);
             foreach (var instance in rszInstances)
             {
@@ -842,45 +841,6 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 提取某个游戏对象，构造新的RSZ
-        /// </summary>
-        /// <param name="name"></param>
-        public bool ExtractGameObjectRSZ(GameObjectData gameObject, RSZFile newRSZ)
-        {
-            if (RSZ == null)
-            {
-                Console.Error.WriteLine($"RSZ is null");
-                return false;
-            }
-            List<RszInstance> rszInstances = new();
-
-            // 下面的操作没有拷贝instance，需要更多测试
-            CollectGameObjectInstances(gameObject, rszInstances);
-            newRSZ.FixInstanceListIndex(rszInstances);
-            newRSZ.RebuildInstanceInfo(false);
-            // foreach (var item in newRSZ.InstanceList)
-            // {
-            //     Console.WriteLine(newRSZ.InstanceStringify(item));
-            // }
-            // write
-            newRSZ.Write();
-            RSZ.FixInstanceListIndex(rszInstances);
-            return true;
-        }
-
-        /// <summary>
-        /// 提取某个游戏对象，构造新的RSZ
-        /// 暂时只支持没有Parent的GameObject
-        /// </summary>
-        /// <param name="name"></param>
-        public bool ExtractGameObjectRSZ(string name, RSZFile newRSZ)
-        {
-            GameObjectData? gameObject = FindGameObject(name);
-            if (gameObject == null) return false;
-            return ExtractGameObjectRSZ(gameObject, newRSZ);
-        }
-
-        /// <summary>
         /// 提取某个游戏对象，生成Pfb
         /// </summary>
         /// <param name="name"></param>
@@ -895,8 +855,6 @@ namespace RszTool
             // 这里有拷贝instance
             pfbFile.PfbFromScnGameObject(gameObject);
             pfbFile.RSZ!.Header.Data.version = RSZ!.Header.Data.version;
-
-            RSZ.FixInstanceListIndex(rszInstances);
             return true;
         }
 

@@ -111,7 +111,7 @@ namespace RszTool.App.ViewModels
         public static IEnumerable<GameObjectContextID> IterInstanceContextID(RszInstance instance)
         {
             List<RszInstanceFieldRecord> paths = new();
-            foreach (var item in instance.Flatten(paths))
+            foreach (var item in instance.Flatten(new(){ Paths = paths }))
             {
                 if (item.RSZUserData != null) continue;
                 var fields = item.Fields;

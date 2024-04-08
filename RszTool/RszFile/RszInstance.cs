@@ -665,7 +665,7 @@ namespace RszTool
         /// </summary>
         /// <param name="paths">记录当前instance父实例路径</param>
         /// <returns></returns>
-        public IEnumerable<RszInstance> Flatten(List<RszInstanceFieldRecord>? paths = null)
+        public IEnumerable<RszInstance> Flatten(RszInstanceFlattenArgs? args = null)
         {
             if (RSZUserData == null)
             {
@@ -675,7 +675,10 @@ namespace RszTool
                     var field = fields[i];
                     if (field.IsReference)
                     {
-                        paths?.Add(new(this, field));
+                        if (args?.Paths != null)
+                        {
+                            args.Paths.Add(new(this, field));
+                        }
                         if (field.array)
                         {
                             var items = (List<object>)Values[i];
@@ -683,7 +686,11 @@ namespace RszTool
                             {
                                 if (items[j] is RszInstance instanceValue)
                                 {
-                                    foreach (var item in instanceValue.Flatten(paths))
+                                    if (args?.Predicate != null && !args.Predicate(instanceValue))
+                                    {
+                                        continue;
+                                    }
+                                    foreach (var item in instanceValue.Flatten(args))
                                     {
                                         yield return item;
                                     }
@@ -696,7 +703,11 @@ namespace RszTool
                         }
                         else if (Values[i] is RszInstance instanceValue)
                         {
-                            foreach (var item in instanceValue.Flatten(paths))
+                            if (args?.Predicate != null && !args.Predicate(instanceValue))
+                            {
+                                continue;
+                            }
+                            foreach (var item in instanceValue.Flatten(args))
                             {
                                 yield return item;
                             }
@@ -705,7 +716,10 @@ namespace RszTool
                         {
                             throw new InvalidOperationException("Instance should unflatten first");
                         }
-                        paths?.RemoveAt(paths.Count - 1);
+                        if (args?.Paths != null)
+                        {
+                            args.Paths.RemoveAt(args.Paths.Count - 1);
+                        }
                     }
                 }
             }
@@ -905,5 +919,12 @@ namespace RszTool
         {
             return $"{Instance.Name}.{Field.name}";
         }
+    }
+
+
+    public class RszInstanceFlattenArgs
+    {
+        public List<RszInstanceFieldRecord>? Paths { get; set; }
+        public Predicate<RszInstance>? Predicate { get; set; }
     }
 }

@@ -298,18 +298,21 @@ namespace RszTool
         }
 
         /// <summary>
-        /// 根据ObjectList和依赖顺序重构InstanceList，被依赖的实例排在前面
+        /// 根据srcList和依赖顺序重构InstanceList，被依赖的实例排在前面
         /// 未被依赖的实例会被移除
         /// </summary>
-        public void RebuildInstanceList()
+        public void RebuildInstanceList(IList<RszInstance> srcList)
         {
             ClearInstances();
             var list = InstanceList;
-            foreach (var instance in ObjectList)
+            foreach (var instance in srcList)
             {
-                instance.Index = -1;
+                foreach (var item in instance.Flatten(new(){ Predicate = x => x.Index != -1 }))
+                {
+                    item.Index = -1;
+                }
             }
-            foreach (var instance in ObjectList)
+            foreach (var instance in srcList)
             {
                 if (instance.Index != -1) continue;
                 foreach (var item in instance.Flatten())
@@ -322,6 +325,15 @@ namespace RszTool
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 根据ObjectList和依赖顺序重构InstanceList，被依赖的实例排在前面
+        /// 未被依赖的实例会被移除
+        /// </summary>
+        public void RebuildInstanceList()
+        {
+            RebuildInstanceList(ObjectList);
         }
 
         /// <summary>

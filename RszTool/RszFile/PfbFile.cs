@@ -400,8 +400,7 @@ namespace RszTool
                 }
             }
 
-            RSZ.ClearInstances();
-            RSZ.FixInstanceListIndex(rszInstances);
+            RSZ.RebuildInstanceList(rszInstances);
             RSZ.RebuildInstanceInfo(false, false);
             foreach (var instance in rszInstances)
             {
