@@ -842,6 +842,20 @@ namespace RszTool
                 IterGameObjects(includeChildren: includeChildren));
         }
 
+        public void RemoveFolder(FolderData folder)
+        {
+            if (folder.Parent != null)
+            {
+                folder.Parent.Children.Remove(folder);
+                folder.Parent = null;
+            }
+            else
+            {
+                FolderDatas?.Remove(folder);
+            }
+            StructChanged = true;
+        }
+
         public void RemoveGameObject(GameObjectData gameObject)
         {
             if (gameObject.Parent != null)

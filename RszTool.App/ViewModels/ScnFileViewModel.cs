@@ -30,6 +30,7 @@ namespace RszTool.App.ViewModels
         }
 
         public RelayCommand CopyGameObject => new(OnCopyGameObject);
+        public RelayCommand RemoveFolder => new(OnRemoveFolder);
         public RelayCommand RemoveGameObject => new(OnRemoveGameObject);
         public RelayCommand DuplicateGameObject => new(OnDuplicateGameObject);
         public RelayCommand PasteGameObject => new(OnPasteGameObject);
@@ -57,6 +58,16 @@ namespace RszTool.App.ViewModels
         private static void OnCopyGameObject(object arg)
         {
             GameObjectCopyHelper.CopyGameObject((ScnFile.GameObjectData)arg);
+        }
+
+        /// <summary>
+        /// 删除目录
+        /// </summary>
+        /// <param name="arg"></param>
+        private void OnRemoveFolder(object arg)
+        {
+            ScnFile.RemoveFolder((ScnFile.FolderData)arg);
+            Changed = true;
         }
 
         /// <summary>
@@ -144,9 +155,11 @@ namespace RszTool.App.ViewModels
             if (string.IsNullOrWhiteSpace(dialog.InputText))
             {
                 MessageBoxUtils.Error("FolderName is empty");
+                return;
             }
             lastInputClassName = dialog.InputText;
             ScnFile.AddFolder(dialog.InputText, arg as ScnFile.FolderData);
+            Changed = true;
         }
 
         private void OnSearchGameObjects(object arg)

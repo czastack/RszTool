@@ -52,6 +52,7 @@
                         <ContextMenu>
                             <MenuItem Header="{res:Text AddFolder}" Command="{common:ParentBinding AddFolder}" CommandParameter="{Binding}" />
                             <MenuItem Header="{res:Text PasteGameobject}" Command="{common:ParentBinding PasteGameObjectToFolder}" CommandParameter="{Binding}" />
+                            <MenuItem Header="{res:Text Remove}" Command="{common:ParentBinding RemoveFolder}" CommandParameter="{Binding}" />
                         </ContextMenu>
                     </TextBlock.ContextMenu>
                 </TextBlock>
