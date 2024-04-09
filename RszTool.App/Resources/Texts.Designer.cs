@@ -519,5 +519,23 @@ namespace RszTool.App.Resources {
                 return ResourceManager.GetString("Dark", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   查找类似 Refresh file explorer 的本地化字符串。
+        /// </summary>
+        internal static string RefreshFileExplorer {
+            get {
+                return ResourceManager.GetString("RefreshFileExplorer", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   查找类似 Open in explorer 的本地化字符串。
+        /// </summary>
+        internal static string OpenInExplorer {
+            get {
+                return ResourceManager.GetString("OpenInExplorer", resourceCulture);
+            }
+        }
     }
 }

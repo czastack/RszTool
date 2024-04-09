@@ -21,33 +21,44 @@
             <common:BindingProxy x:Key="ParentData" Data="{Binding}" />
 
             <HierarchicalDataTemplate DataType="{x:Type viewmodels:RootDirectoryItem}" ItemsSource="{Binding Children}">
-                <TextBlock Text="{Binding Name}">
-                    <TextBlock.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="{res:Text Remove}" Command="{Binding Data.RemoveRootDirectory, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
-                        </ContextMenu>
-                    </TextBlock.ContextMenu>
-                </TextBlock>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center">
+                        <TextBlock.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="{res:Text Remove}" Command="{Binding Data.RemoveRootDirectory, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
+                            </ContextMenu>
+                        </TextBlock.ContextMenu>
+                    </TextBlock>
+                    <Button Grid.Column="1" Style="{StaticResource ImageButton}"
+                            ToolTip="{res:Text RefreshFileExplorer}"
+                            Command="{Binding Data.RefreshRootDirectory, Source={StaticResource ParentData}}" CommandParameter="{Binding}">
+                        <Image Source="{StaticResource refreshDrawingImage}" Width="16" />
+                    </Button>
+                </Grid>
             </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate DataType="{x:Type viewmodels:DirectoryItem}" ItemsSource="{Binding Children}">
                 <TextBlock Text="{Binding Name}">
-                    <!-- <TextBlock.ContextMenu>
+                    <TextBlock.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="{res:Text Copy}" />
+                            <MenuItem Header="{res:Text OpenInExplorer}" Command="{Binding Data.OpenInExplorer, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
                         </ContextMenu>
-                    </TextBlock.ContextMenu> -->
+                    </TextBlock.ContextMenu>
                 </TextBlock>
             </HierarchicalDataTemplate>
 
             <DataTemplate DataType="{x:Type viewmodels:FileItem}">
                 <ContentControl MouseDoubleClick="FileItem_MouseDoubleClick">
                     <TextBlock Text="{Binding Name}">
-                        <!-- <TextBlock.ContextMenu>
+                        <TextBlock.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="{res:Text Copy}" />
+                                <MenuItem Header="{res:Text OpenInExplorer}" Command="{Binding Data.OpenInExplorer, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
                             </ContextMenu>
-                        </TextBlock.ContextMenu> -->
+                        </TextBlock.ContextMenu>
                     </TextBlock>
                 </ContentControl>
             </DataTemplate>
@@ -129,13 +140,6 @@
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="ItemsPanel">
-                    <Setter.Value>
-                        <ItemsPanelTemplate>
-                            <local:MyVirtualizingStackPanel />
-                        </ItemsPanelTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>

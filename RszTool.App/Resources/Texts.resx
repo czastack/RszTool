@@ -271,4 +271,10 @@ Currently, user, scn, pfb files are supported</value>
   <data name="Dark" xml:space="preserve">
     <value>Dark</value>
   </data>
+  <data name="RefreshFileExplorer" xml:space="preserve">
+    <value>Refresh file explorer</value>
+  </data>
+  <data name="OpenInExplorer" xml:space="preserve">
+    <value>Open in explorer</value>
+  </data>
 </root>

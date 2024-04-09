@@ -271,4 +271,10 @@
   <data name="Dark" xml:space="preserve">
     <value>深色</value>
   </data>
+  <data name="RefreshFileExplorer" xml:space="preserve">
+    <value>刷新资源管理器</value>
+  </data>
+  <data name="OpenInExplorer" xml:space="preserve">
+    <value>在文件管理器中显示</value>
+  </data>
 </root>

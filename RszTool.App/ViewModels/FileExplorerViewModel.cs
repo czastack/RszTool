@@ -10,7 +10,9 @@ namespace RszTool.App.ViewModels
         public ObservableCollection<RootDirectoryItem> Folders { get; } = new();
         public event Action<FileItem>? OnFileSelected;
 
+        public RelayCommand RefreshRootDirectory => new(OnRefreshRootDirectory);
         public RelayCommand RemoveRootDirectory => new(OnRemoveRootDirectory);
+        public RelayCommand OpenInExplorer => new(OnOpenInExplorer);
 
         public void Refresh()
         {
@@ -34,12 +36,28 @@ namespace RszTool.App.ViewModels
             OnFileSelected?.Invoke(fileItem);
         }
 
+        private void OnRefreshRootDirectory(object arg)
+        {
+            if (arg is RootDirectoryItem rootDirectory)
+            {
+                rootDirectory.Refresh();
+            }
+        }
+
         private void OnRemoveRootDirectory(object arg)
         {
             if (arg is RootDirectoryItem rootDirectory)
             {
                 Folders.Remove(rootDirectory);
                 App.Instance.SaveData.OpenedFolders.Remove(rootDirectory.Path);
+            }
+        }
+
+        private void OnOpenInExplorer(object arg)
+        {
+            if (arg is BaseFileItem item)
+            {
+                System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{item.Path}\"");
             }
         }
     }

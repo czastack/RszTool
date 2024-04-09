@@ -31,4 +31,21 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+
+    <DrawingImage x:Key="closeDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                <GeometryDrawing Brush="{DynamicResource PrimaryForeground}" Geometry="F0 M16,16z M0,0z M8.00004,8.70711L11.6465,12.3536 12.3536,11.6465 8.70714,8.00001 12.3536,4.35356 11.6465,3.64645 8.00004,7.2929 4.35359,3.64645 3.64648,4.35356 7.29293,8.00001 3.64648,11.6465 4.35359,12.3536 8.00004,8.70711z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="refreshDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                <GeometryDrawing Brush="{DynamicResource PrimaryForeground}" Geometry="F0 M16,16z M0,0z M5.56253,2.51577C3.46348,3.4501 2,5.55414 2,7.99999 2,11.3137 4.68629,14 8,14 11.3137,14 14,11.3137 14,7.99999 14,5.32519 12.2497,3.05919 9.83199,2.28482L9.52968,3.23832C11.5429,3.88454 13,5.7721 13,7.99999 13,10.7614 10.7614,13 8,13 5.23858,13 3,10.7614 3,7.99999 3,6.31104 3.83742,4.81767 5.11969,3.91245L5.56253,2.51577z" />
+                <GeometryDrawing Brush="{DynamicResource PrimaryForeground}" Geometry="F0 M16,16z M0,0z M5,3L2,3 2,2 5.5,2 6,2.5 6,6 5,6 5,3z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 </ResourceDictionary>
