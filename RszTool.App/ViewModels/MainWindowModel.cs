@@ -279,7 +279,7 @@ namespace RszTool.App.ViewModels
         private void OnAddFolder(object arg)
         {
             var dialog = new OpenFolderDialog();
-            if (dialog.ShowDialog() == true)
+            if (dialog.ShowDialog() == true && dialog.FolderName != null)
             {
                 FileExplorerViewModel.AddFolder(dialog.FolderName);
             }

@@ -169,9 +169,9 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <views:FileExplorerTree DataContext="{Binding FileExplorerViewModel}" Margin="6" HorizontalAlignment="Stretch" />
+            <views:FileExplorerTree DataContext="{Binding FileExplorerViewModel}" Margin="6 6 3 6" HorizontalAlignment="Stretch" />
             <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="Transparent" Cursor="SizeWE" />
-            <dragablz:TabablzControl Grid.Column="2" Margin="0 5 5 5" Style="{StaticResource TabablzControlStyle}">
+            <dragablz:TabablzControl Grid.Column="2" Margin="3 5 5 5" Style="{StaticResource TabablzControlStyle}">
                 <dragablz:TabablzControl.InterTabController>
                     <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
                 </dragablz:TabablzControl.InterTabController>

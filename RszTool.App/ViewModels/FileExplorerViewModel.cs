@@ -22,7 +22,7 @@ namespace RszTool.App.ViewModels
 
         public void AddFolder(string path)
         {
-            if (!Folders.Any(item => item.Name == path))
+            if (!Folders.Any(item => item.Path == path))
             {
                 Folders.Add(new(path));
                 App.Instance.SaveData.OpenedFolders.Add(path);
