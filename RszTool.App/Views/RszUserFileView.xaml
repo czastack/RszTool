@@ -14,7 +14,8 @@
         <ResourceDictionary Source="TreeViewTemplate.xaml" />
     </UserControl.Resources>
 
-    <Grid>
+    <Grid local:FieldValueInput.ValueChanged="OnValueChanged"
+          local:FieldValueInput.ResourceChanged="OnResourceChanged">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
@@ -23,9 +24,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType=ContentPresenter}}" />
         </Grid.RowDefinitions>
-        <local:RszFileView Grid.Row="0"
-                           local:FieldValueInput.ValueChanged="OnValueChanged"
-                           local:FieldValueInput.ResourceChanged="OnResourceChanged" />
+        <local:RszFileView Grid.Row="0" />
         <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,5,0,0" />
         <local:SearchInstanceView Grid.Row="2" Margin="5" />
     </Grid>

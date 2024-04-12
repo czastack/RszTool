@@ -27,6 +27,7 @@ namespace RszTool.App.Views
             if (DataContext is ScnFileViewModel viewModel)
             {
                 viewModel.ResourceChanged = true;
+                Console.WriteLine("OnResourceChanged");
             }
         }
     }

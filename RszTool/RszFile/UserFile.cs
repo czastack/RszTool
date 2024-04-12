@@ -70,9 +70,10 @@ namespace RszTool
             {
                 RebuildInfoTable();
             }
-            if (ResourceChanged)
+            else if (ResourceChanged)
             {
                 RszUtils.SyncResourceFromRsz(ResourceInfoList, RSZ!);
+                ResourceChanged = false;
             }
             FileHandler handler = FileHandler;
             handler.Clear();
