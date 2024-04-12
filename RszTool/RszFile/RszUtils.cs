@@ -73,7 +73,7 @@ namespace RszTool
                 // avoid reference unused resource
                 if (instance.RszClass.name == "via.Folder")
                 {
-                    if (instance.GetFieldValue("v4") is false) continue;
+                    if (instance.GetFieldValue("v4") is (byte)0) continue;
                 }
                 for (int j = 0; j < fields.Length; j++)
                 {
