@@ -103,4 +103,17 @@
     <DataTemplate DataType="{x:Type viewmodels:ClassPropertyViewModel}">
         <local:ClassPropertyEdit DataContext="{Binding}" />
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type rsztool:ResourceInfo}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Path" Margin="0,0,10,0" VerticalAlignment="Center" Grid.Column="0" />
+            <TextBox Text="{Binding Path}" Grid.Column="1" />
+            <TextBlock Text="System.String" Margin="10,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Grid.Column="2" />
+        </Grid>
+    </DataTemplate>
 </ResourceDictionary>

@@ -40,6 +40,7 @@ namespace RszTool.App.ViewModels
         {
             get
             {
+                yield return new TreeItemViewModel("Resources", PfbFile.ResourceInfoList);
                 yield return new GameObjectsHeader("GameObjects", GameObjects);
             }
         }

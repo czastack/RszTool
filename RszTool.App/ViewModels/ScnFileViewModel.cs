@@ -30,6 +30,7 @@ namespace RszTool.App.ViewModels
         {
             get
             {
+                yield return new TreeItemViewModel("Resources", ScnFile.ResourceInfoList);
                 yield return new FoldersHeader("Folders", Folders);
                 yield return new GameObjectsHeader("GameObjects", GameObjects);
             }

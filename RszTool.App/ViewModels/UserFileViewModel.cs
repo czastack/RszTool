@@ -17,6 +17,7 @@ namespace RszTool.App.ViewModels
         {
             get
             {
+                yield return new TreeItemViewModel("Resources", UserFile.ResourceInfoList);
                 yield return new TreeItemViewModel("Instances", RszViewModel.Instances);
                 yield return new TreeItemViewModel("Objects", RszViewModel.Objects);
             }
