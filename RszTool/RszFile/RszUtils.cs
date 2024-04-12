@@ -70,6 +70,11 @@ namespace RszTool
                 var instance = rsz.InstanceList[i + instanceStart];
                 if (instance.RSZUserData != null) continue;
                 var fields = instance.RszClass.fields;
+                // avoid reference unused resource
+                if (instance.RszClass.name == "via.Folder")
+                {
+                    if (instance.GetFieldValue("v4") is false) continue;
+                }
                 for (int j = 0; j < fields.Length; j++)
                 {
                     var field = fields[j];

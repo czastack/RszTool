@@ -13,5 +13,21 @@ namespace RszTool.App.Views
         {
             InitializeComponent();
         }
+
+        private void OnValueChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is PfbFileViewModel viewModel)
+            {
+                viewModel.Changed = true;
+            }
+        }
+
+        private void OnResourceChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is PfbFileViewModel viewModel)
+            {
+                viewModel.ResourceChanged = true;
+            }
+        }
     }
 }

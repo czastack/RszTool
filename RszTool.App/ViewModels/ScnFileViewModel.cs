@@ -7,13 +7,19 @@ namespace RszTool.App.ViewModels
 {
     public class ScnFileViewModel(ScnFile file) : BaseRszFileViewModel
     {
-        public ScnFile ScnFile { get; } = file;
         public override BaseRszFile File => ScnFile;
+        public ScnFile ScnFile { get; } = file;
         public RszViewModel RszViewModel => new(ScnFile.RSZ!);
         public ObservableCollection<ScnFile.FolderData>? Folders => ScnFile.FolderDatas;
         public ObservableCollection<ScnFile.GameObjectData>? GameObjects => ScnFile.GameObjectDatas;
         public GameObjectSearchViewModel GameObjectSearchViewModel { get; } = new();
         public ObservableCollection<ScnFile.GameObjectData>? SearchGameObjectList { get; set; }
+
+        public bool ResourceChanged
+        {
+            get => ScnFile.ResourceChanged;
+            set => ScnFile.ResourceChanged = value;
+        }
 
         public override void PostRead()
         {

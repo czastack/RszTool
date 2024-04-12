@@ -390,8 +390,8 @@ namespace RszTool
 
             header.magic = Magic;
             header.infoCount = GameObjectInfoList.Count;
-            header.folderCount = FolderInfoList.Count;
             header.resourceCount = ResourceInfoList.Count;
+            header.folderCount = FolderInfoList.Count;
             header.prefabCount = PrefabInfoList.Count;
             header.userdataCount = UserdataInfoList.Count;
             header.Write(handler, 0);

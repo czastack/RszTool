@@ -75,8 +75,7 @@
     </HierarchicalDataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:RszFieldNormalViewModel}">
-        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding Data.Changed, Source={StaticResource ParentData}}"
-                              EnumDict="{Binding Data.EnumDict, Source={StaticResource ParentData}}">
+        <local:FieldValueEdit DataContext="{Binding}" EnumDict="{Binding Data.EnumDict, Source={StaticResource ParentData}}">
             <local:FieldValueEdit.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="{res:Text Copy}" Command="{Binding Data.CopyNormalField, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />
@@ -87,8 +86,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodels:RszFieldArrayNormalItemViewModel}">
-        <local:FieldValueEdit DataContext="{Binding}" ValueChanged="{Binding Data.Changed, Source={StaticResource ParentData}}"
-                              EnumDict="{Binding Data.EnumDict, Source={StaticResource ParentData}}">
+        <local:FieldValueEdit DataContext="{Binding}" EnumDict="{Binding Data.EnumDict, Source={StaticResource ParentData}}">
             <local:FieldValueEdit.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="{res:Text Copy}" Command="{Binding Data.ArrayItemCopy, Source={StaticResource ParentData}}" CommandParameter="{Binding}" />

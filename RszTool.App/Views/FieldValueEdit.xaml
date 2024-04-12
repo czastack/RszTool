@@ -19,7 +19,6 @@
             EnumDict="{Binding EnumDict, RelativeSource={RelativeSource AncestorType=UserControl}}"
             TypeName="{Binding Field.original_type}"
             Value="{Binding Value}"
-            ValueChanged="{Binding ValueChanged, RelativeSource={RelativeSource AncestorType=UserControl}}"
             ValueType="{Binding Field.type}"
             Grid.Column="1" />
         <TextBlock Text="{Binding Field.DisplayType}" Margin="10,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Grid.Column="2" />

@@ -4,12 +4,6 @@ using RszTool.Common;
 
 namespace RszTool
 {
-    public delegate void RszInstanceValueChangedEventHandler(RszInstance rszInstance, RszInstanceValueChangedEventArgs eventArgs);
-
-    public record RszInstanceValueChangedEventArgs(RszField Field, object OldValue, object NewValue)
-    {
-    }
-
     /// <summary>
     /// 存放RszClass的数据
     /// </summary>
@@ -39,7 +33,6 @@ namespace RszTool
         public RszField[] Fields => RszClass.fields;
         public bool HasValues => Values.Length > 0;
         public event Action<RszInstance>? ValuesChanged;
-        public event RszInstanceValueChangedEventHandler? RszInstanceValueChanged;
 
         public RszInstance(RszClass rszClass, int index = -1, IRSZUserDataInfo? userData = null, object[]? values = null)
         {

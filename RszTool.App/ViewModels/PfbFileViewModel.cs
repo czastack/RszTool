@@ -15,6 +15,12 @@ namespace RszTool.App.ViewModels
         public GameObjectSearchViewModel GameObjectSearchViewModel { get; } = new() { IncludeChildren = true };
         public ObservableCollection<PfbFile.GameObjectData>? SearchGameObjectList { get; set; }
 
+        public bool ResourceChanged
+        {
+            get => PfbFile.ResourceChanged;
+            set => PfbFile.ResourceChanged = value;
+        }
+
         public RelayCommand CopyGameObject => new(OnCopyGameObject);
         public RelayCommand RemoveGameObject => new(OnRemoveGameObject);
         public RelayCommand DuplicateGameObject => new(OnDuplicateGameObject);

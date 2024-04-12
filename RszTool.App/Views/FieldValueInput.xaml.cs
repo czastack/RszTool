@@ -15,10 +15,6 @@ namespace RszTool.App.Views
             DependencyProperty.Register("Value", typeof(object), typeof(FieldValueInput),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSetValue));
 
-        public static readonly DependencyProperty ValueChangedProperty =
-            DependencyProperty.Register("ValueChanged", typeof(bool), typeof(FieldValueInput),
-                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
         public static readonly DependencyProperty ValueTypeProperty =
             DependencyProperty.Register("ValueType", typeof(RszFieldType), typeof(FieldValueInput),
                 new PropertyMetadata(RszFieldType.not_init, OnSetValueType));
@@ -34,6 +30,19 @@ namespace RszTool.App.Views
         public static readonly DependencyProperty EnumDictProperty =
             DependencyProperty.Register("EnumDict", typeof(EnumDict), typeof(FieldValueInput),
                 new PropertyMetadata(null));
+
+        // Register a custom routed event using the Bubble routing strategy.
+        public static readonly RoutedEvent ValueChangedEvent = EventManager.RegisterRoutedEvent(
+            name: "ValueChanged",
+            routingStrategy: RoutingStrategy.Bubble,
+            handlerType: typeof(RoutedEventHandler),
+            ownerType: typeof(FieldValueInput));
+
+        public static readonly RoutedEvent ResourceChangedEvent = EventManager.RegisterRoutedEvent(
+            name: "ResourceChanged",
+            routingStrategy: RoutingStrategy.Bubble,
+            handlerType: typeof(RoutedEventHandler),
+            ownerType: typeof(FieldValueInput));
 
         private static DataTemplate SelectTemplate(RszFieldType fieldType, FrameworkElement element)
         {
@@ -106,12 +115,6 @@ namespace RszTool.App.Views
             set { SetValue(ValueProperty, value); }
         }
 
-        public bool ValueChanged
-        {
-            get { return (bool)GetValue(ValueChangedProperty); }
-            set { SetValue(ValueChangedProperty, value); }
-        }
-
         public bool UpdateSource
         {
             get { return (bool)GetValue(UpdateSourceProperty); }
@@ -130,11 +133,40 @@ namespace RszTool.App.Views
             set => SetValue(EnumDictProperty, value);
         }
 
+        // Provide CLR accessors for assigning an event handler.
+        public event RoutedEventHandler ValueChanged
+        {
+            add { AddHandler(ValueChangedEvent, value); }
+            remove { RemoveHandler(ValueChangedEvent, value); }
+        }
+
+        public event RoutedEventHandler ResourceChanged
+        {
+            add { AddHandler(ResourceChangedEvent, value); }
+            remove { RemoveHandler(ResourceChangedEvent, value); }
+        }
+
         public EnumItem[]? EnumItems => TypeName != null ? EnumDict?[TypeName]?.Items : null;
+
+        private void RaiseValueChanged()
+        {
+            RoutedEventArgs routedEventArgs = new(routedEvent: ValueChangedEvent);
+            RaiseEvent(routedEventArgs);
+        }
+
+        private void RaiseResourceChanged()
+        {
+            RoutedEventArgs routedEventArgs = new(routedEvent: ResourceChangedEvent);
+            RaiseEvent(routedEventArgs);
+        }
 
         private void OnBindingSourceUpdated(object sender, DataTransferEventArgs args)
         {
-            ValueChanged = true;
+            RaiseValueChanged();
+            if (Value is string path && RszUtils.IsResourcePath(path))
+            {
+                RaiseResourceChanged();
+            }
             // if bind ValueType, force update source value
             if (UpdateSource)
             {
@@ -145,7 +177,7 @@ namespace RszTool.App.Views
         private void OnGuidNew(object sender, RoutedEventArgs e)
         {
             Value = Guid.NewGuid();
-            ValueChanged = true;
+            RaiseValueChanged();
         }
     }
 

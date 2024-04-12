@@ -21,10 +21,6 @@ namespace RszTool.App.Views
     /// </summary>
     public partial class FieldValueEdit : UserControl
     {
-        public static readonly DependencyProperty ValueChangedProperty =
-            DependencyProperty.Register("ValueChanged", typeof(bool), typeof(FieldValueEdit),
-                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
         public static readonly DependencyProperty EnumDictProperty =
             DependencyProperty.Register("EnumDict", typeof(EnumDict), typeof(FieldValueEdit),
                 new PropertyMetadata(null));
@@ -32,12 +28,6 @@ namespace RszTool.App.Views
         public FieldValueEdit()
         {
             InitializeComponent();
-        }
-
-        public bool ValueChanged
-        {
-            get => (bool)GetValue(ValueChangedProperty);
-            set => SetValue(ValueChangedProperty, value);
         }
 
         public EnumDict? EnumDict
