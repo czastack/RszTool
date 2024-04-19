@@ -1,5 +1,4 @@
 using System.Text;
-using RszTool.Common;
 
 namespace RszTool
 {
@@ -31,7 +30,7 @@ namespace RszTool
         /// 基于InstanceInfoList生成的实例列表
         /// 一般第一个项是NULL，手动构建时需要注意
         /// </summary>
-        public List<RszInstance> InstanceList { get; } = new();
+        public RszInstanceList InstanceList { get; } = new();
         /// <summary>
         /// 基于ObjectTableList生成的实例列表，是对外公开的实例，
         /// InstanceList中包括里面依赖的成员实例或者实例数组的项
