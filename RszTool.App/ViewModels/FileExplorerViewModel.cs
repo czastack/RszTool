@@ -14,6 +14,9 @@ namespace RszTool.App.ViewModels
         public RelayCommand RemoveRootDirectory => new(OnRemoveRootDirectory);
         public RelayCommand OpenInExplorer => new(OnOpenInExplorer);
 
+        public void Hide() { 
+            
+        }
         public void Refresh()
         {
             foreach (var folder in Folders)

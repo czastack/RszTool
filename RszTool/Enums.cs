@@ -135,6 +135,12 @@ namespace RszTool
         dd2,
     }
 
+    public enum ThemeE { 
+        light,
+        dark,
+        Winui,
+        Makaro,
+    }
 
     public enum GameVersion
     {
@@ -157,5 +163,7 @@ namespace RszTool
     public static class RszDefines
     {
         public static GameName[] GameNames { get; } = (GameName[])Enum.GetValues(typeof(GameName));
+        public static ThemeE[] Themes { get; } = (ThemeE[])Enum.GetValues(typeof(ThemeE));
     }
+     
 }

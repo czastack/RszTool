@@ -12,7 +12,7 @@
         xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowModel}"
-        Title="RszTool" Height="960" Width="1280"
+        Title="RszTool" Height="960" Width="1280" MinWidth="500" MinHeight="250"
         AllowDrop="True" DragOver="OnDragOver" Drop="OnDrop">
     <Window.Resources>
         <ResourceDictionary>
@@ -115,41 +115,57 @@
             </MenuItem>
             <MenuItem Header="{res:Text Tag}" Click="Tag_Click">
                 <MenuItem>
-                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Black" /></MenuItem.Header>
+                    <MenuItem.Header>
+                        <Ellipse Width="10" Height="10" Fill="Black" />
+                    </MenuItem.Header>
                 </MenuItem>
                 <MenuItem>
-                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Red" /></MenuItem.Header>
+                    <MenuItem.Header>
+                        <Ellipse Width="10" Height="10" Fill="Red" />
+                    </MenuItem.Header>
                 </MenuItem>
                 <MenuItem>
-                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Green" /></MenuItem.Header>
+                    <MenuItem.Header>
+                        <Ellipse Width="10" Height="10" Fill="Green" />
+                    </MenuItem.Header>
                 </MenuItem>
                 <MenuItem>
-                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Blue" /></MenuItem.Header>
+                    <MenuItem.Header>
+                        <Ellipse Width="10" Height="10" Fill="Blue" />
+                    </MenuItem.Header>
                 </MenuItem>
                 <MenuItem>
-                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Yellow" /></MenuItem.Header>
+                    <MenuItem.Header>
+                        <Ellipse Width="10" Height="10" Fill="Yellow" />
+                    </MenuItem.Header>
                 </MenuItem>
                 <MenuItem>
-                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Orange" /></MenuItem.Header>
+                    <MenuItem.Header>
+                        <Ellipse Width="10" Height="10" Fill="Orange" />
+                    </MenuItem.Header>
                 </MenuItem>
                 <MenuItem>
-                    <MenuItem.Header><Ellipse Width="10" Height="10" Fill="Purple" /></MenuItem.Header>
+                    <MenuItem.Header>
+                        <Ellipse Width="10" Height="10" Fill="Purple" />
+                    </MenuItem.Header>
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="{res:Text Help}">
                 <MenuItem Header="{res:Text About}" Command="{Binding OpenAbout}" />
             </MenuItem>
         </Menu>
-        <Grid Grid.Row="1" Margin="5">
+        <Grid Grid.Row="1" Margin="5" Width="Auto" Height="27">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition  Width="100" />
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="Game version" Margin="0 0 5 0" VerticalAlignment="Center" />
-            <ComboBox ItemsSource="{x:Static rsztool:RszDefines.GameNames}" Grid.Column="1" SelectedValue="{Binding SaveData.GameName}" />
-            <ToggleButton Content="{res:Text Dark}" Grid.Column="3" IsChecked="{Binding IsDarkTheme}" />
+            <TextBlock Text="Game version:"   VerticalAlignment="Center" Grid.Column="0" Width="200"  />
+            <ComboBox ItemsSource="{x:Static rsztool:RszDefines.GameNames}" Grid.Column="1" SelectedValue="{Binding SaveData.GameName}"  Width="120" Margin="0,0,-100,0" />
+            <ToggleButton Content="{res:Text HSideBar}" Margin="129,0,0,0" Grid.Column="2" Click="SideColumn_Hide"  Width="120" />
+            <TextBlock Text="Theme:" Grid.Column="3" Width="155" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{x:Static rsztool:RszDefines.Themes}" Grid.Column="3"   SelectedValue="{Binding SaveData.CurTheme,Mode=TwoWay}"  Width="110"  HorizontalAlignment="Right"/>
         </Grid>
         <!-- <dockablz:Layout Grid.Row="2" Margin="8">
             <dockablz:Layout.BranchTemplate>
@@ -165,19 +181,22 @@
         </dockablz:Layout> -->
         <Grid Grid.Row="2" Cursor="">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" MinWidth="200" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="200" x:Name="col1" />
+                <ColumnDefinition Width="Auto" x:Name="col2"  />
+                <ColumnDefinition Width="187*" x:Name="col3" />
+                <ColumnDefinition Width="285*"/>
+                <ColumnDefinition Width="605*"/>
             </Grid.ColumnDefinitions>
-            <views:FileExplorerTree DataContext="{Binding FileExplorerViewModel}" Margin="6 6 3 6" HorizontalAlignment="Stretch" />
-            <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="Transparent" Cursor="SizeWE" />
-            <dragablz:TabablzControl Grid.Column="2" Margin="3 5 5 5" Style="{StaticResource TabablzControlStyle}">
+            <views:FileExplorerTree DataContext="{Binding FileExplorerViewModel}" Margin="6,6,3,6"   />
+            <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Center" Background="Transparent" Cursor="SizeWE" />
+            <dragablz:TabablzControl Grid.Column="2" Margin="3,5,5,5" Style="{StaticResource TabablzControlStyle}" Grid.ColumnSpan="3">
                 <dragablz:TabablzControl.InterTabController>
                     <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
                 </dragablz:TabablzControl.InterTabController>
             </dragablz:TabablzControl>
             <TextBlock Text="{res:Text UsageHint}" TextAlignment="Center"
-                    Style="{StaticResource UsageHint}" FontSize="18" VerticalAlignment="Center" Grid.Column="2" />
+                    Style="{StaticResource UsageHint}" FontSize="18" VerticalAlignment="Center" Grid.Column="2" Grid.ColumnSpan="3" />
         </Grid>
+
     </Grid>
 </Window>

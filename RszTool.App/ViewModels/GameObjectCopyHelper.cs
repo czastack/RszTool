@@ -1,4 +1,5 @@
 using RszTool.App.Views;
+using System.Windows;
 
 namespace RszTool.App.ViewModels
 {
@@ -53,6 +54,20 @@ namespace RszTool.App.ViewModels
                     };
                     dialog.ShowDialog();
                 }
+            }
+        }
+
+        public static void UpdateContextIDBatch(RszFileOption fileOption, IGameObjectData gameObjectData,int Index,int Group)
+        {
+            if (fileOption.GameName == GameName.re4)
+            {
+                var contextIDs = IterGameObjectContextID(gameObjectData).ToArray();
+                if (contextIDs.Length > 0)
+                {
+                    contextIDs[0].Items[0].Value = Group;
+                    contextIDs[0].Items[1].Value = Index;
+                }
+                
             }
         }
 

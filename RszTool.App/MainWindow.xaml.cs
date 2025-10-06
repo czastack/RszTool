@@ -26,6 +26,17 @@ namespace RszTool.App
             Closing += OnClosing;
         }
 
+        ///隐藏/显示侧边栏
+        private void SideColumn_Hide(object sender, RoutedEventArgs e)
+        {
+            if (col1.Width != new GridLength(0))
+            {
+                col1.Width = new GridLength(0);
+            }
+            else { 
+                col1.Width =new GridLength(200);
+            }
+        }
         public void OnDragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))

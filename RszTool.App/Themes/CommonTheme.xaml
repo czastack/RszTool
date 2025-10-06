@@ -1,8 +1,8 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:SearchTool">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    >
 
-    <SolidColorBrush x:Key="DarkForeground" Color="#F1F1F1"/>
+    <SolidColorBrush x:Key="DarkForeground" Color="#FFFBF5"/>
     <SolidColorBrush x:Key="DarkErrorBrush" Color="#D95D65"/>
     <SolidColorBrush x:Key="LightForeground" Color="Black"/>
     <SolidColorBrush x:Key="LightErrorBrush" Color="Red"/>
@@ -16,6 +16,177 @@
         <Setter Property="Background" Value="{DynamicResource PrimaryBackground}" />
         <Setter Property="Foreground" Value="{DynamicResource PrimaryForeground}" />
     </Style>
+
+    <Style TargetType="ToggleButton">
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
+        <Setter Property="BorderBrush" Value="#FFE0E0E0"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="5,2"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid>
+                        
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="CommonStates">
+                              
+                                <VisualState Name="Normal"/>
+
+                                
+                                <VisualState Name="MouseOver">
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                        Storyboard.TargetName="border"
+                                        Storyboard.TargetProperty="Background.Color"
+                                        To="#FFF8F8F8"   
+                                            Duration="0:0:0.2"/>
+                                            <ColorAnimation 
+                                        Storyboard.TargetName="border"
+                                        Storyboard.TargetProperty="BorderBrush.Color"
+                                        To="#FFAAAAAA"   
+                                                Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                 
+                                <VisualState Name="Pressed">
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                        Storyboard.TargetName="border"
+                                        Storyboard.TargetProperty="Background.Color"
+                                        To="#FFE0E0E0"  
+                                            Duration="0:0:0.1"/>
+                                            <DoubleAnimation 
+                                        Storyboard.TargetName="scaleTransform"
+                                        Storyboard.TargetProperty="ScaleX"
+                                        To="0.98" Duration="0:0:0.1"/>
+                                            <DoubleAnimation 
+                                        Storyboard.TargetName="scaleTransform"
+                                        Storyboard.TargetProperty="ScaleY"
+                                        To="0.98" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+
+                             
+                            <VisualStateGroup Name="ToggleStates">
+                                <VisualState Name="Checked">
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                        Storyboard.TargetName="border"
+                                        Storyboard.TargetProperty="Background.Color"
+                                        To="#FFE8E8E8"   
+                                            Duration="0:0:0.2"/>
+                                            <ColorAnimation 
+                                        Storyboard.TargetName="border"
+                                        Storyboard.TargetProperty="BorderBrush.Color"
+                                        To="#FF888888"   
+                                                Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState Name="Unchecked"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+ 
+                        <Border 
+                        x:Name="border"
+                        CornerRadius="4"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="scaleTransform" ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+ 
+                            <ContentPresenter 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center"
+                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style TargetType="ComboBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                         
+                        <Border 
+                        x:Name="border"
+                        CornerRadius="6"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
+                        Padding="5,3">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="24"/>
+                                </Grid.ColumnDefinitions>
+ 
+                                <ContentPresenter 
+                                Grid.Column="0"
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                IsHitTestVisible="False"
+                                Margin="0,0,5,0"/>
+ 
+                                <ToggleButton 
+                                Grid.Column="1"
+                                x:Name="toggleButton" 
+                                    Style="{StaticResource {x:Type ToggleButton}}"
+                                Margin="0"
+                                Padding="5"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                    <Path 
+                                    Fill="{TemplateBinding Foreground}"
+                                    Data="M0,0 L3,3 L6,0 Z" 
+                                    Width="8" 
+                                    Height="5"/>
+                                </ToggleButton>
+                            </Grid>
+                        </Border>
+ 
+                        <Popup 
+                        x:Name="popup"
+                        Placement="Bottom"
+                        IsOpen="{TemplateBinding IsDropDownOpen}"
+                        AllowsTransparency="True"
+                        PopupAnimation="Slide"
+                        Width="{TemplateBinding ActualWidth}">
+                            <Border 
+                            CornerRadius="6"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            Padding="1">
+                                <ScrollViewer MaxHeight="200">
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+  
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+
 
     <Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource DefaultControlStyle}" />
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DefaultControlStyle}" />

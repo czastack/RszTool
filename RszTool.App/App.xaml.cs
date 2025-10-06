@@ -31,7 +31,7 @@ namespace RszTool.App
         {
             base.OnStartup(e);
 
-            ThemeManager.Init(SaveData.IsDarkTheme);
+            ThemeManager.Init(SaveData.CurTheme);
             // 添加全局异常处理程序
             SetupUnhandledExceptionHandling();
         }

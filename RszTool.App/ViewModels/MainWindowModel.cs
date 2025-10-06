@@ -22,19 +22,12 @@ namespace RszTool.App.ViewModels
         public HeaderedItemViewModel? SelectedTabItem { get; set; }
         public FileExplorerViewModel FileExplorerViewModel { get; } = new();
 
+        
         private BaseRszFileViewModel? CurrentFile =>
             SelectedTabItem is FileTabItemViewModel fileTabItemViewModel ?
             fileTabItemViewModel.FileViewModel : null;
 
-        public bool IsDarkTheme
-        {
-            get => ThemeManager.Instance.IsDarkTheme;
-            set
-            {
-                SaveData.IsDarkTheme = value;
-                ThemeManager.Instance.IsDarkTheme = value;
-            }
-        }
+       
 
         public CustomInterTabClient InterTabClient { get; } = new();
         public static SaveData SaveData => App.Instance.SaveData;
@@ -64,6 +57,8 @@ namespace RszTool.App.ViewModels
             }
             FileExplorerViewModel.OnFileSelected += f => OpenFile(f.Path);
         }
+
+        
 
         /// <summary>
         /// 打开文件

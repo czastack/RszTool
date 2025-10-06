@@ -1,7 +1,8 @@
-using System.Collections.ObjectModel;
-using System.Windows;
 using RszTool.App.Common;
 using RszTool.App.Resources;
+using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace RszTool.App.ViewModels
 {
@@ -40,6 +41,7 @@ namespace RszTool.App.ViewModels
         public RelayCommand RemoveFolder => new(OnRemoveFolder);
         public RelayCommand RemoveGameObject => new(OnRemoveGameObject);
         public RelayCommand DuplicateGameObject => new(OnDuplicateGameObject);
+        public RelayCommand DuplicateMultiGameObject => new(OnDuplicateMultiGameObject);
         public RelayCommand PasteGameObject => new(OnPasteGameObject);
         public RelayCommand PasteGameObjectToFolder => new(OnPasteGameObjectToFolder);
         public RelayCommand AddFolder => new(OnAddFolder);
@@ -56,6 +58,10 @@ namespace RszTool.App.ViewModels
         private void UpdateContextID(IGameObjectData gameObject)
         {
             GameObjectCopyHelper.UpdateContextID(ScnFile.Option, gameObject);
+        }
+        private void UpdateContextIDBatch(IGameObjectData gameObject,int Index,int Group)
+        {
+            GameObjectCopyHelper.UpdateContextIDBatch(ScnFile.Option, gameObject,Index,Group);
         }
 
         /// <summary>
@@ -98,6 +104,113 @@ namespace RszTool.App.ViewModels
             Changed = true;
         }
 
+        /// <summary>
+        ///New MultiObject
+        /// </summary>
+        private void OnDuplicateMultiGameObject(object arg)
+        {
+ 
+            Views.InputDialog dialog = new()
+            {
+                Title = "Tip",
+                Message = Texts.InputObjectCount,
+                InputText = "5",
+                Owner = Application.Current.MainWindow,
+            };
+            bool? result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                string userInput = dialog.InputText;
+                MessageBoxResult Judge = MessageBox.Show(
+                    messageBoxText:Texts.InputContextCheck,  
+                    caption: "Attention!",                             
+                    button: MessageBoxButton.YesNo,                
+                    icon: MessageBoxImage.Question                 
+                );
+
+                // 判断用户点击的按钮
+                if (Judge == MessageBoxResult.Yes)
+                {
+                    Views.InputDialog Group = new()
+                    {
+                        Title = "Group",
+                        Message = Texts.InputGroupDefault,
+                        InputText = "5",
+                        Owner = Application.Current.MainWindow,
+                    };
+                    bool? GroupRes = Group.ShowDialog();
+                    if(GroupRes == true) {
+                        Views.InputDialog Index = new()
+                        {
+                            Title = "Index",
+                            Message = Texts.InputIndexDefault,
+                            InputText = "5",
+                            Owner = Application.Current.MainWindow,
+                        };
+                        bool? IndexRes = Index.ShowDialog();
+                        if (IndexRes == true)
+                        {
+                            Views.InputDialog Step = new()
+                            {
+                                Title = "Step",
+                                Message = Texts.InputStepDefault,
+                                InputText = "1",
+                                Owner = Application.Current.MainWindow,
+                            };
+                            bool? StepRes = Step.ShowDialog();
+                            if(StepRes == true){ 
+                       
+                                string GroupI = Group.InputText;
+                                string IndexI = Index.InputText;
+                                string StepI = Step.InputText;
+                                if (int.TryParse(userInput, out int count))
+                                {
+                                    if (count <= 0)
+                                    {
+                                        MessageBoxUtils.Error("Count must be greater than 0");
+                                        return;
+                                    }
+                                    if (count >= 20) { count = 20; }
+                                    if (int.TryParse(GroupI, out int GroupR))
+                                    {
+                                        if (int.TryParse(IndexI, out int IndexR))
+                                        {
+                                            if (int.TryParse(StepI, out int StepR))
+                                            {
+                                                for (int i = 0; i < count; i++)
+                                                {
+                                                    var newGameObject = ScnFile.DuplicateGameObject((ScnFile.GameObjectData)arg);
+                                                    UpdateContextIDBatch(newGameObject, IndexR + StepR * i, GroupR);
+                                                }
+                                                Changed = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                else if (Judge == MessageBoxResult.No)
+                {
+                   
+                   if (int.TryParse(userInput, out int count))
+                   {
+                        for (int i = 0; i < count; i++)
+                        {
+                            var newGameObject = ScnFile.DuplicateGameObject((ScnFile.GameObjectData)arg);
+                            UpdateContextID(newGameObject);
+                        }
+                    }
+                    Changed = true;
+                }
+            }
+           
+        }
+
+    
         /// <summary>
         /// 粘贴游戏对象
         /// </summary>

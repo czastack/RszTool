@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 
 namespace RszTool
 {
-    using GameObjectInfoModel = StructModel<ScnFile.GameObjectInfo>;
     using FolderInfoModel = StructModel<ScnFile.FolderInfo>;
+    using GameObjectInfoModel = StructModel<ScnFile.GameObjectInfo>;
 
     public class ScnFile : BaseRszFile
     {
@@ -1013,6 +1013,7 @@ namespace RszTool
             RszInstance.CleanCloneCache();
             return newGameObject;
         }
+ 
 
         /// <summary>
         /// 导入外部的游戏对象
@@ -1039,6 +1040,7 @@ namespace RszTool
             return ImportGameObject(gameObject, gameObject.Folder, gameObject.Parent, true);
         }
 
+      
         public void AddFolder(string name, FolderData? parent = null)
         {
             var folder = new FolderData
